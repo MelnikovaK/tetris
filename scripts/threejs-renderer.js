@@ -30,6 +30,7 @@ class ThreejsRenderer {
 		
 		this.initScene();
 		this.initContainers();
+		this.createAssets();
 		this.initGameField();
 		this.createTetrisFigures();
 
@@ -101,8 +102,8 @@ class ThreejsRenderer {
 
 	initGameField() {
 		//ground
-		var groundMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff });
-		var ground_plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_vertical ), groundMaterial );
+		var groundMaterial = new THREE.MeshLambertMaterial( { color: '#FFF13D', side: THREE.DoubleSide });
+		var ground_plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_vertical ), groundMaterial );;
 		ground_plane.rotation.x = -90 / 180 * Math.PI;
 
 		//3 walls
@@ -129,11 +130,89 @@ class ThreejsRenderer {
 	}
 
 	createTetrisFigures() {
-		var material = new THREE.MeshPhongMaterial({ color: '#3D0101' });
-		var shape = new THREE.BoxBufferGeometry( 4, 1, 1 );
-		var mesh = new THREE.Mesh(shape, material);
-		var tetris_figure = new THREE.Group();
+		var tetris_figure = this.AM.pullAsset('stairs-left');
 		this.game_container.add(tetris_figure);
-		tetris_figure.add(mesh);
 	}
+
+	createAssets() {
+		//game field
+		var groundMaterial = new THREE.MeshLambertMaterial( { color: '#FFF13D', side: THREE.DoubleSide });
+		var wallMaterial = new THREE.MeshLambertMaterial( { color:'#4D56FF', side: THREE.DoubleSide});
+
+		this.AM.addAsset('ground_plane', function() { return new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_vertical ), groundMaterial );} , 3);
+		this.AM.addAsset('wall_plane', function() { return new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_in_height ), wallMaterial );} , 4);
+
+		//shapes
+		var rect_material = new THREE.MeshLambertMaterial( { color: '#86DA10'});
+		this.AM.addAsset('rectangle', function() { return new THREE.Mesh( new THREE.BoxBufferGeometry( 4, 1, 1 ), rect_material );} , 15);
+		var square_material = new THREE.MeshLambertMaterial( { color: '#FF1C00'});
+		this.AM.addAsset('square', function() { return new THREE.Mesh( new THREE.BoxBufferGeometry( 2, 2, 2 ), square_material );} , 15);
+		//stairs-left
+		var stl_material = new THREE.MeshLambertMaterial( { color: '#00ACF5'});
+
+		this.AM.addAsset('stairs-left', function() { return createStairsShape(true, stl_material); }, 15);
+
+		//stairs-right
+		var str_material = new THREE.MeshLambertMaterial( { color: '#B400F5'});
+		this.AM.addAsset('stairs-right', function() { return createStairsShape(true, str_material); }, 15);
+
+		//t-shape
+		var t_material = new THREE.MeshLambertMaterial( { color: '#FF890A'});
+
+		this.AM.addAsset('t-shape', function() { 
+			var tetris_figure = new THREE.Group(),
+					shapes = [];
+			for ( var i = 0; i < 4 ; i++ ) {
+				shapes.push(new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), t_material));
+				shapes[i].position.x = i;
+				tetris_figure.add(shapes[i]);
+			}
+			shapes[3].position.z = shapes[1].position.z + 1;
+			shapes[3].position.x = shapes[1].position.x;
+			return tetris_figure;
+		} , 15);
+
+		//l-left
+		var ll_material = new THREE.MeshLambertMaterial( { color: '#ED50D8'});
+		this.AM.addAsset('l-left', function() { 
+			return createLShape(true, ll_material);
+		} , 15);
+
+		//l-right
+		var lr_material = new THREE.MeshLambertMaterial( { color: '#26009E'});
+		this.AM.addAsset('l-right', function() { 
+			return createLShape(false, lr_material);
+		} , 15);		
+
+
+		function createLShape(is_left, material) {
+			var tetris_figure = new THREE.Group(),
+					shapes = [];
+			for ( var i = 0; i < 4 ; i++ ) {
+				shapes.push(new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), material));
+				shapes[i].position.z = i;
+				tetris_figure.add(shapes[i]);
+			}
+			shapes[3].position.z = shapes[2].position.z;
+			shapes[3].position.x = is_left ? shapes[2].position.x - 1 : shapes[2].position.x + 1;
+			return tetris_figure;
+		}
+
+		function createStairsShape(is_left, material) {
+			var tetris_figure = new THREE.Group(),
+					shapes = [];
+			for ( var i = 0; i < 4 ; i++ ) {
+				shapes.push(new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), stl_material));
+				shapes[i].position.x = i;
+				tetris_figure.add(shapes[i]);
+			}
+			shapes[2].position.z = is_left ? shapes[1].position.z + 1 : shapes[1].position.z - 1;
+			shapes[2].position.x = shapes[1].position.x
+			;
+			shapes[3].position.z = shapes[2].position.z;
+			shapes[3].position.x = shapes[2].position.x + 1;
+			return tetris_figure;
+		}
+	}
+
 }
