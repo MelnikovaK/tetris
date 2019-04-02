@@ -5,17 +5,17 @@ var ASSETS_PATH = 'assets/';
 var config = {
 	ASSETS_PATH: ASSETS_PATH,
 	
-	cells_horizontal: 10,
-	cells_vertical: 10,
+	cells_horizontal: 6,
+	cells_vertical: 6,
 	cells_height: 15,
-	field_width: 600,
-	field_height: 600,
-	cell_width: 600/20,
-	cell_height: 600/20,
+	field_width: 900,
+	field_height: 900,
+	cell_width: 900/20,
+	cell_height: 900/20,
 
 	start_screen: 'start-screen',
 
-	logic_step_interval: 300,
+	logic_step_interval: 700,
 	
 	input: {
 		keyboard_enabled: true,
@@ -30,10 +30,10 @@ var config = {
 			"right": {
 				keys: [39,68],
 			},
-			"rotate": {
+			"up": {
 				keys: [38,87],
 			},
-			"accelerate": {
+			"down": {
 				keys: [83,40],
 			},
 			"fall": {

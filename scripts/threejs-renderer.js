@@ -41,11 +41,11 @@ class ThreejsRenderer {
 		});
 
 		window.addEventListener( "tetris: figure_moved" , function () {
-			// scope.updateFigurePosition();
+			scope.updateFigurePosition();
 		});
 
 		window.addEventListener( "tetris: figure_on-finish" , function () {
-			// scope.updateFigure();
+			scope.updateFigure();
 		});
 
 	}
@@ -115,7 +115,7 @@ class ThreejsRenderer {
 		//3 walls
 		var wallMaterial = new THREE.MeshLambertMaterial( { color:'#4D56FF', side: THREE.DoubleSide});
 		var walls = [];
-		for ( var i = 0; i < 3; i++ ) {
+		for ( var i = 0; i < 2; i++ ) {
 			walls.push(new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_in_height ), wallMaterial ));
 
 			walls[i].position.z = 0;
@@ -126,11 +126,8 @@ class ThreejsRenderer {
 			this.game_container.add(walls[i]);
 		}
 		walls[0].position.x =  - this.cells_horizontal / 2;
-
-		walls[1].position.x = this.cells_horizontal / 2;
-
-		walls[2].position.z = - this.cells_vertical / 2;
-		walls[2].rotation.y = 0;
+		walls[1].position.z = - this.cells_vertical / 2;
+		walls[1].rotation.y = 0;
 
 		this.game_container.add( ground_plane );
 	}
@@ -155,12 +152,14 @@ class ThreejsRenderer {
 	}
 
 	updateFigurePosition() {
+		var counter = 0;
 		for ( var i = 0; i < this.figure.lines.length; i++) {
 			for ( var j = 0; j < this.figure.lines[i].dots.length; j++ ) {
 				var dot = this.figure.lines[i].dots[j];
-				this.figure.shape.children[j + i].position.x = dot.x;
-				this.figure.shape.children[j + i].position.z = dot.y;
-				this.figure.shape.children[j + i].position.y = this.cells_in_height - this.figure.lines[i].number - 1;
+				this.figure.shape.children[counter].position.x = dot.x;
+				this.figure.shape.children[counter].position.z = dot.y;
+				this.figure.shape.children[counter].position.y = this.cells_in_height - this.figure.lines[i].number - 1;
+				counter++;
 			}
 		}
 	}

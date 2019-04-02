@@ -40,110 +40,124 @@ class Tetris {
 
 
 		//figures
-		this.figures = [{name: 'rectangle',
-										lines: [
-											{
-												number: 0,
-												dots :[{ x: 0, y: 0 }] 
-											},
-											{
-												number: 1,
-												dots :[{ x: 0, y: 0 }] 
-											},
-											{
-												number: 2,
-												dots :[{ x: 0, y: 0 }] 
-											},
-											{
-												number: 3,
-												dots :[{ x: 0, y: 0 }] 
-											}
-										]}, 
-										{name: 'square',
-										lines: [
-											{
-												number: 0,
-												dots :[{ x: 0, y: 0 },{ x: 1,  y: 0 }] 
-											},
-											{
-												number: 1,
-												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-											}
-										]}, 
-										{name:'l-left',
-										lines: [
-											{
-												number: 0,
-												dots :[{ x: 1, y: 0 }] 
-											},
-											{
-												number: 1,
-												dots :[{ x: 1, y: 0 }] 
-											},
-											{
-												number: 2,
-												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-											}
-										]}, 
-										{name:'l-right',
-										lines: [
-											{
-												number: 0,
-												dots :[{ x: 0, y: 0 }] 
-											},
-											{
-												number: 1,
-												dots :[{ x: 0, y: 0 }] 
-											},
-											{
-												number: 2,
-												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-											}
-										]},
-										{name: 'stairs-left',
-										lines: [
-											{
-												number: 0,
-												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }]  
-											},
-											{
-												number: 1,
-												dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
-											}
-										]}, 
-										{name: 'stairs-right',
-										lines: [
-											{
-												number: 0,
-												dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
-											},
-											{
-												number: 1,
-												dots :[{ x: 1, y: 0 }, { x: 0, y: 0 }] 
-											}
-										]}, 
-										{name: 't-shape',
-										lines: [
-											{
-												number: 0,
-												dots :[{ x: 0, y: 0 }] 
-											},
-											{
-												number: 1,
-												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-											},
-											{
-												number: 2,
-												dots :[{ x: 0, y: 0 }]
-											}
-										]
+		this.figures = [
+			{name: 'rectangle',
+			lines: [
+				{
+					number: 0,
+					dots :[{ x: 0, y: 0 }] 
+				},
+				{
+					number: 1,
+					dots :[{ x: 0, y: 0 }] 
+				},
+				{
+					number: 2,
+					dots :[{ x: 0, y: 0 }] 
+				},
+				{
+					number: 3,
+					dots :[{ x: 0, y: 0 }] 
+				}
+			]}, 
+			{name: 'square',
+			lines: [
+				{
+					number: 0,
+					dots :[{ x: 0, y: 0 },{ x: 1,  y: 0 }] 
+				},
+				{
+					number: 1,
+					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+				}
+			]}, 
+			{name:'l-left',
+			lines: [
+				{
+					number: 0,
+					dots :[{ x: 1, y: 0 }] 
+				},
+				{
+					number: 1,
+					dots :[{ x: 1, y: 0 }] 
+				},
+				{
+					number: 2,
+					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+				}
+			]}, 
+			{name:'l-right',
+			lines: [
+				{
+					number: 0,
+					dots :[{ x: 0, y: 0 }] 
+				},
+				{
+					number: 1,
+					dots :[{ x: 0, y: 0 }] 
+				},
+				{
+					number: 2,
+					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+				}
+			]},
+			{name: 'stairs-left',
+			lines: [
+				{
+					number: 0,
+					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }]  
+				},
+				{
+					number: 1,
+					dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
+				}
+			]}, 
+			{name: 'stairs-right',
+			lines: [
+				{
+					number: 0,
+					dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
+				},
+				{
+					number: 1,
+					dots :[{ x: 1, y: 0 }, { x: 0, y: 0 }] 
+				}
+			]}, 
+			{name: 't-shape',
+			lines: [
+				{
+					number: 0,
+					dots :[{ x: 0, y: 0 }] 
+				},
+				{
+					number: 1,
+					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+				},
+				{
+					number: 2,
+					dots :[{ x: 0, y: 0 }]
+				}
+			]
 		}];
+
+		this.directions = {};
+		this.directions['right']  = {x:1, y:0};
+		this.directions['left'] = {x:-1, y:0};
+		this.directions['down'] = {x:0, y:1};
+		this.directions['up'] = {x:0, y:-1};
 		//handlers
 		var scope = this;
 		window.addEventListener( "screens: start game" , function () {
 		  scope.startGame();
 		});
-		
+
+		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
+			scope.initInputControllerEvent(e.detail);
+			});
+	}
+
+	initInputControllerEvent(details) {
+		this.direction = this.directions[details.name];
 	}
 
 	initLines() {
@@ -161,9 +175,6 @@ class Tetris {
 		}
 	}
 
-	changeLinesArray() {
-	}
-
 	startGame() {
 		var scope = this;
 
@@ -179,9 +190,8 @@ class Tetris {
 				// schedule the next game step
 				scope.game_timeout = setTimeout( scope.gameStep, scope.logic_step_interval );
 				if ( scope.pause ) return;
-
-				scope.moveFigure();
-
+				scope.moveFigure(scope.direction);
+				scope.direction = undefined;
 				if ( scope.figure_on_finish ) {
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
@@ -196,14 +206,25 @@ class Tetris {
 		this.gameStep();
 	}
 
-	moveFigure() {
+	moveFigure(direction) {
 		var scope = this;
+		if ( direction ) {
+			this.figure.lines.forEach(function(line,i) {
+				line.dots.forEach( function(dot, j) {
+					var new_x = dot.x + direction.x;
+					var new_y = dot.y + direction.y;
+					dot.x += direction.x;
+					dot.y += direction.y;
+				});
+			})
+		}
+
 		lines:
 		for ( var i = this.figure.lines.length - 1; i >= 0; i-- ) {
 			var line = this.figure.lines[i];
 			for ( var j = 0; j < line.dots.length; j++ ) {
 				var dot = line.dots[j];
-				if ( line.number >= (scope.cells_height - 1) || scope.lines[line.number][dot.x][dot.y] ) {
+				if ( line.number >= (scope.cells_height - 1) || scope.lines[line.number + 1][dot.x][dot.y] ) {
 					scope.figure_on_finish = true;
 					break lines;
 				}
