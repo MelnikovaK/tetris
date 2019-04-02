@@ -39,6 +39,15 @@ var config = {
 			"fall": {
 				keys: [32],
 			},
+			"rotate_x": {
+				keys: [81],
+			},
+			"rotate_y": {
+				keys: [69],
+			},
+			"acceleration": {
+				keys: [65],
+			}
 		}
 	},
 

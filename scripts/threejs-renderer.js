@@ -90,9 +90,6 @@ class ThreejsRenderer {
 
 		var controls = this.controls = new THREE.OrbitControls( camera );
 		controls.update();
-
-		
-		
 	}
 
 	initContainers() {
@@ -148,7 +145,6 @@ class ThreejsRenderer {
 				this.figure.shape.children[counter].position.y = this.cells_in_height - this.figure.lines[i].number - 1;
 				counter++;
 			}
-		
 	}
 
 	updateFigurePosition() {

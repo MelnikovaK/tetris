@@ -14,6 +14,8 @@ class Tetris {
 					у
 
 	*/
+
+	//проверка на выход за пределды поля
 	constructor( config, inputController, ) {
 
 		this.FIGURE_MOVED = 'tetris: figure_moved';
@@ -152,12 +154,18 @@ class Tetris {
 		});
 
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
-			scope.initInputControllerEvent(e.detail);
-			});
+			if ( e.detail.name == 'acceleration') scope.accelerateMoving(true);
+			scope.direction = scope.directions[e.detail.name];
+		});
+
+		this.inputController.target.addEventListener( inputController.ACTION_DEACTIVATED, function (e) {
+			if ( e.detail.name == 'acceleration') scope.accelerateMoving(false);
+		});
 	}
 
-	initInputControllerEvent(details) {
-		this.direction = this.directions[details.name];
+	accelerateMoving(is_accelerate) {
+		if ( is_accelerate ) this.logic_step_interval = 40;
+		else this.logic_step_interval = this.config.logic_step_interval;
 	}
 
 	initLines() {
@@ -171,7 +179,7 @@ class Tetris {
 					line[i][j] = false;
 				}
 			}
-				this.lines.push(line);
+			this.lines.push(line);
 		}
 	}
 
@@ -205,6 +213,20 @@ class Tetris {
 		}
 		this.gameStep();
 	}
+
+	rotateByZ() {
+		for ( var i = 0; i < this.figure.lines.length; i++) {
+			var line = this.figure.lines[i];
+			for ( var j = 0; j < line.dots.length; j++ ) {
+				var dot = line.dots[j];
+				var temp = dot.x;
+				dot.x = dot.y;
+				dot.y = temp;
+			}
+		}
+	}
+
+
 
 	moveFigure(direction) {
 		var scope = this;
