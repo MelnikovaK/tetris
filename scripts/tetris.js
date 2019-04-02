@@ -22,6 +22,7 @@ class Tetris {
 
 		this.FIGURE_MOVED = 'tetris: figure_moved';
 		this.FIGURE_ON_FINISH = 'tetris: figure_on-finish';
+		this.GAME_IS_OVER = 'tetris: game_is_over';
 
 		this.inputController = inputController;
 		this.config = config;
@@ -219,12 +220,17 @@ class Tetris {
 				scope.moveFigure(scope.direction);
 				scope.direction = undefined;
 
-
 				if ( scope.figure_on_finish ) {
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
 					scope.checkLineIsFull();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
+				}
+
+				if(scope.game_is_over) {
+					scope.game_is_over = false;
+					scope.gameOver();
+					return;
 				}
 				// redraw
 				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED );
@@ -281,6 +287,9 @@ class Tetris {
 				var dot = line.dots[j];
 				if ( line.number >= (scope.cells_height - 1) || scope.lines[line.number + 1][dot.x][dot.y] ) {
 					scope.figure_on_finish = true;
+					if (line.number < 4) {
+						scope.game_is_over = true;
+					}
 					break lines;
 				}
 			}
@@ -298,6 +307,15 @@ class Tetris {
 
 	getNewFigureData() {
 		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
+	}
+
+	gameOver(){
+		clearTimeout( this.game_timeout );
+		this.inputController.enabled = false;
+
+		Utils.triggerCustomEvent( window, this.GAME_IS_OVER );
+		// Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "game over", loop: false} );
+
 	}
 
 }
