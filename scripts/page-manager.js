@@ -205,7 +205,6 @@ class PageManager {
 
 		`,
 			function(){
-				console.log('a')
 				Utils.triggerCustomEvent( window, this.START_GAME );
 			}.bind(this)
 

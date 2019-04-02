@@ -38,7 +38,14 @@ class ThreejsRenderer {
 			scope.updateFigure();
 			// scope.updateLines();
 			scope.startRendering();
+		});
 
+		window.addEventListener( "tetris: figure_moved" , function () {
+			// scope.updateFigurePosition();
+		});
+
+		window.addEventListener( "tetris: figure_on-finish" , function () {
+			// scope.updateFigure();
 		});
 
 	}
@@ -130,18 +137,30 @@ class ThreejsRenderer {
 
 	updateFigure() {
 		this.figure = this.tetris.figure;
-		this.figure['shape'] = this.AM.pullAsset(this.figure.name);
-		console.log(this.figure.name)
+		var counter = 0;
+		this.figure['shape'] = new THREE.Object3D();
+		for ( var i =  0; i < 4; i++) {
+			this.figure.shape.add(this.AM.pullAsset(this.figure.name))
+		}
 		this.game_field.add(this.figure.shape);
+		for ( var i = 0; i < this.figure.lines.length; i++) 
+			for ( var j = 0; j < this.figure.lines[i].dots.length; j++ ) {
+				var dot = this.figure.lines[i].dots[j];
+				this.figure.shape.children[counter].position.x = dot.x;
+				this.figure.shape.children[counter].position.z = dot.y;
+				this.figure.shape.children[counter].position.y = this.cells_in_height - this.figure.lines[i].number - 1;
+				counter++;
+			}
+		
+	}
+
+	updateFigurePosition() {
 		for ( var i = 0; i < this.figure.lines.length; i++) {
-			for ( var j = 0; j < this.figure.lines[i].length; j++ ) {
-				var dot = this.figure.lines[i][j];
-				console.log('( ' + dot.x + ' , ' + i + ' , ' + dot.y + ' )')
+			for ( var j = 0; j < this.figure.lines[i].dots.length; j++ ) {
+				var dot = this.figure.lines[i].dots[j];
 				this.figure.shape.children[j + i].position.x = dot.x;
 				this.figure.shape.children[j + i].position.z = dot.y;
-				console.log(i);
-				this.figure.shape.children[j + i].position.y = i;
-				console.log(this.figure.shape.children[j + i].position);
+				this.figure.shape.children[j + i].position.y = this.cells_in_height - this.figure.lines[i].number - 1;
 			}
 		}
 	}
@@ -193,11 +212,7 @@ class ThreejsRenderer {
 		this.AM.addAsset('l-right', function() {return createShape(lr_material);} , 15);		
 
 		function createShape(material) {
-			var tetris_figure = new THREE.Object3D();
-			for ( var i = 0; i < 4 ; i++ ) {
-				tetris_figure.add(new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), material));
-			}
-			return tetris_figure;
+			return new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), material);
 		}
 	}
 

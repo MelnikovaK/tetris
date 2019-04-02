@@ -40,41 +40,104 @@ class Tetris {
 
 
 		//figures
-		this.figures = [
-			{
-				name: 'rectangle',
-				lines: [[{ x: 0, y: 0 }, { x: 0, y: 0 }],[{ x: 0, y: 0 }], [{ x: 0, y: 0 }]]
-			}, 
-
-			{
-				name: 'square',
-				lines: [[{ x: 0, y: 0 }, { x: 1, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }]]
-			}, 
-			{
-				name:'l-left',
-				lines: [[{ x: 1, y: 0 }], [{ x: 1, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-			]}, 
-			{
-				name:'l-right',
-				lines: [[{ x: 0, y: 0 }], [{ x: 0, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-			]},
-			{
-				name: 'stairs-left',
-				lines: [[{ x: 1, y: 0 }, { x: 2, y: 0 }], [{ x: 1, y: 0 }, { x: 2, y: 0 }] 
-			]}, 
-			{
-				name: 'stairs-right',
-				lines: [[{ x: 3, y: 0 }, { x: 2, y: 0 }], [{ x: 1, y: 0 }, { x: 2, y: 0 }] 
-			]}, 
-			{
-				name: 't-shape',
-				lines: [[{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }], [{ x: 1, y: 0 }]]
-			}
-		];
-
-		this.startGame();
-
-
+		this.figures = [{name: 'rectangle',
+										lines: [
+											{
+												number: 0,
+												dots :[{ x: 0, y: 0 }] 
+											},
+											{
+												number: 1,
+												dots :[{ x: 0, y: 0 }] 
+											},
+											{
+												number: 2,
+												dots :[{ x: 0, y: 0 }] 
+											},
+											{
+												number: 3,
+												dots :[{ x: 0, y: 0 }] 
+											}
+										]}, 
+										{name: 'square',
+										lines: [
+											{
+												number: 0,
+												dots :[{ x: 0, y: 0 },{ x: 1,  y: 0 }] 
+											},
+											{
+												number: 1,
+												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+											}
+										]}, 
+										{name:'l-left',
+										lines: [
+											{
+												number: 0,
+												dots :[{ x: 1, y: 0 }] 
+											},
+											{
+												number: 1,
+												dots :[{ x: 1, y: 0 }] 
+											},
+											{
+												number: 2,
+												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+											}
+										]}, 
+										{name:'l-right',
+										lines: [
+											{
+												number: 0,
+												dots :[{ x: 0, y: 0 }] 
+											},
+											{
+												number: 1,
+												dots :[{ x: 0, y: 0 }] 
+											},
+											{
+												number: 2,
+												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+											}
+										]},
+										{name: 'stairs-left',
+										lines: [
+											{
+												number: 0,
+												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }]  
+											},
+											{
+												number: 1,
+												dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
+											}
+										]}, 
+										{name: 'stairs-right',
+										lines: [
+											{
+												number: 0,
+												dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
+											},
+											{
+												number: 1,
+												dots :[{ x: 1, y: 0 }, { x: 0, y: 0 }] 
+											}
+										]}, 
+										{name: 't-shape',
+										lines: [
+											{
+												number: 0,
+												dots :[{ x: 0, y: 0 }] 
+											},
+											{
+												number: 1,
+												dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+											},
+											{
+												number: 2,
+												dots :[{ x: 0, y: 0 }]
+											}
+										]
+		}];
 		//handlers
 		var scope = this;
 		window.addEventListener( "screens: start game" , function () {
@@ -120,8 +183,8 @@ class Tetris {
 				scope.moveFigure();
 
 				if ( scope.figure_on_finish ) {
-					this.figure_on_finish = false;
-					this.figure = getNewFigureData();
+					scope.figure_on_finish = false;
+					scope.figure = scope.getNewFigureData();
 					// this.checkLineIsFull();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 				}
@@ -135,15 +198,30 @@ class Tetris {
 
 	moveFigure() {
 		var scope = this;
-		this.figure.lines.forEach(function(x) {
-			x++;
-			if ( x >= scope.cells_height ) this.figure_on_finish = true;
-		});
+		lines:
+		for ( var i = this.figure.lines.length - 1; i >= 0; i-- ) {
+			var line = this.figure.lines[i];
+			for ( var j = 0; j < line.dots.length; j++ ) {
+				var dot = line.dots[j];
+				if ( line.number >= (scope.cells_height - 1) || scope.lines[line.number][dot.x][dot.y] ) {
+					scope.figure_on_finish = true;
+					break lines;
+				}
+			}
+			line.number++;
+		}
+
+		if ( this.figure_on_finish ) {
+			this.figure.lines.forEach(function(line,i) {
+				line.dots.forEach( function(dot, j) {
+					scope.lines[line.number][dot.x][dot.y] = true;
+				});
+			})
+		}
 	}
 
 	getNewFigureData() {
-		// return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		return JSON.parse(JSON.stringify(this.figures[6]));
+		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
 	}
 
 }

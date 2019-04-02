@@ -15,7 +15,7 @@ var config = {
 
 	start_screen: 'start-screen',
 
-	logic_step_interval: 700,
+	logic_step_interval: 300,
 	
 	input: {
 		keyboard_enabled: true,
