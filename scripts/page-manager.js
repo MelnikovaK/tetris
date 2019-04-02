@@ -2,6 +2,13 @@ class PageManager {
 	constructor($container, game, start_screen) {
 		var scope = this;
 
+		this.START_GAME = "screens: start game";
+		this.PAUSE = "screens: game paused";
+		this.PLAY = "screens: game playing";
+		this.TOGGLE_SOUND = "sound-manager:toggle_sound";
+		this.GAME_OVER = "screens:game-over";
+		this.CHANGE_CAMERA_POSITION = "renderer:change_camera_position";
+
 		this.$container = $container;
 		this.screens = {};
 
@@ -198,6 +205,7 @@ class PageManager {
 
 		`,
 			function(){
+				console.log('a')
 				Utils.triggerCustomEvent( window, this.START_GAME );
 			}.bind(this)
 

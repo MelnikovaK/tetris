@@ -32,11 +32,16 @@ class ThreejsRenderer {
 		this.initContainers();
 		this.createAssets();
 		this.initGameField();
-		this.createTetrisFigures();
+
+		window.addEventListener( "screens: start game" , function () {
+			// scope.resetCameraPosition(scope.camera);
+			scope.updateFigure();
+			// scope.updateLines();
+			scope.startRendering();
+
+		});
 
 	}
-
-
 
 	initScene() {
 		var scope = this;
@@ -54,8 +59,9 @@ class ThreejsRenderer {
 		        NEAR,
 		        FAR
 		    );
-    camera.position.set( 0, 15, 0 );
-		camera.lookAt( this.ZERO );
+
+		camera.position.set( 0, 25, 8 );
+		camera.lookAt( new THREE.Vector3(0,0,10) );
 
 		var scene = this.scene = new THREE.Scene();
 		this.scene.add(this.camera);
@@ -75,25 +81,18 @@ class ThreejsRenderer {
 		var spotLightHelper = new THREE.SpotLightHelper( spotLight );
 		scene.add( spotLightHelper );
 
-		var controls = new THREE.OrbitControls( camera );
-
-		camera.position.set( 0, 5, 5 );
+		var controls = this.controls = new THREE.OrbitControls( camera );
 		controls.update();
 
 		
-		function render() {
-        requestAnimationFrame( render );
-        controls.update();
-        scope.renderer.render( scene, camera );
-		}
-		render();
+		
 	}
 
 	initContainers() {
-		this.game_container = new THREE.Group();
+		this.game_container = new THREE.Object3D();
 		this.scene.add(this.game_container);
 
-		this.game_field = new THREE.Group();
+		this.game_field = new THREE.Object3D();
 		this.game_field.position.y = .5;
 		this.game_field.position.x = - this.cells_horizontal / 2 + .5;
 		this.game_field.position.z = - this.cells_vertical / 2 + .5;
@@ -129,9 +128,33 @@ class ThreejsRenderer {
 		this.game_container.add( ground_plane );
 	}
 
-	createTetrisFigures() {
-		var tetris_figure = this.AM.pullAsset('stairs-left');
-		this.game_container.add(tetris_figure);
+	updateFigure() {
+		this.figure = this.tetris.figure;
+		this.figure['shape'] = this.AM.pullAsset(this.figure.name);
+		console.log(this.figure.name)
+		this.game_field.add(this.figure.shape);
+		for ( var i = 0; i < this.figure.lines.length; i++) {
+			for ( var j = 0; j < this.figure.lines[i].length; j++ ) {
+				var dot = this.figure.lines[i][j];
+				console.log('( ' + dot.x + ' , ' + i + ' , ' + dot.y + ' )')
+				this.figure.shape.children[j + i].position.x = dot.x;
+				this.figure.shape.children[j + i].position.z = dot.y;
+				console.log(i);
+				this.figure.shape.children[j + i].position.y = i;
+				console.log(this.figure.shape.children[j + i].position);
+			}
+		}
+	}
+
+
+	startRendering() {
+		var scope = this;
+		function render() {
+      requestAnimationFrame( render );
+      scope.controls.update();
+      scope.renderer.render( scope.scene, scope.camera );
+		}
+		render();
 	}
 
 	createAssets() {
@@ -144,73 +167,36 @@ class ThreejsRenderer {
 
 		//shapes
 		var rect_material = new THREE.MeshLambertMaterial( { color: '#86DA10'});
-		this.AM.addAsset('rectangle', function() { return new THREE.Mesh( new THREE.BoxBufferGeometry( 4, 1, 1 ), rect_material );} , 15);
+		this.AM.addAsset('rectangle', function() { return createShape(rect_material);} , 15);
+
 		var square_material = new THREE.MeshLambertMaterial( { color: '#FF1C00'});
-		this.AM.addAsset('square', function() { return new THREE.Mesh( new THREE.BoxBufferGeometry( 2, 2, 2 ), square_material );} , 15);
+		this.AM.addAsset('square', function() { return createShape(square_material);} , 15);
 		//stairs-left
 		var stl_material = new THREE.MeshLambertMaterial( { color: '#00ACF5'});
 
-		this.AM.addAsset('stairs-left', function() { return createStairsShape(true, stl_material); }, 15);
+		this.AM.addAsset('stairs-left', function() { return createShape(stl_material); }, 15);
 
 		//stairs-right
 		var str_material = new THREE.MeshLambertMaterial( { color: '#B400F5'});
-		this.AM.addAsset('stairs-right', function() { return createStairsShape(true, str_material); }, 15);
+		this.AM.addAsset('stairs-right', function() { return createShape(str_material); }, 15);
 
 		//t-shape
 		var t_material = new THREE.MeshLambertMaterial( { color: '#FF890A'});
-
-		this.AM.addAsset('t-shape', function() { 
-			var tetris_figure = new THREE.Group(),
-					shapes = [];
-			for ( var i = 0; i < 4 ; i++ ) {
-				shapes.push(new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), t_material));
-				shapes[i].position.x = i;
-				tetris_figure.add(shapes[i]);
-			}
-			shapes[3].position.z = shapes[1].position.z + 1;
-			shapes[3].position.x = shapes[1].position.x;
-			return tetris_figure;
-		} , 15);
+		this.AM.addAsset('t-shape', function() { return createShape(t_material);} , 15);
 
 		//l-left
 		var ll_material = new THREE.MeshLambertMaterial( { color: '#ED50D8'});
-		this.AM.addAsset('l-left', function() { 
-			return createLShape(true, ll_material);
-		} , 15);
+		this.AM.addAsset('l-left', function() { return createShape(ll_material);} , 15);
 
 		//l-right
 		var lr_material = new THREE.MeshLambertMaterial( { color: '#26009E'});
-		this.AM.addAsset('l-right', function() { 
-			return createLShape(false, lr_material);
-		} , 15);		
+		this.AM.addAsset('l-right', function() {return createShape(lr_material);} , 15);		
 
-
-		function createLShape(is_left, material) {
-			var tetris_figure = new THREE.Group(),
-					shapes = [];
+		function createShape(material) {
+			var tetris_figure = new THREE.Object3D();
 			for ( var i = 0; i < 4 ; i++ ) {
-				shapes.push(new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), material));
-				shapes[i].position.z = i;
-				tetris_figure.add(shapes[i]);
+				tetris_figure.add(new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), material));
 			}
-			shapes[3].position.z = shapes[2].position.z;
-			shapes[3].position.x = is_left ? shapes[2].position.x - 1 : shapes[2].position.x + 1;
-			return tetris_figure;
-		}
-
-		function createStairsShape(is_left, material) {
-			var tetris_figure = new THREE.Group(),
-					shapes = [];
-			for ( var i = 0; i < 4 ; i++ ) {
-				shapes.push(new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), stl_material));
-				shapes[i].position.x = i;
-				tetris_figure.add(shapes[i]);
-			}
-			shapes[2].position.z = is_left ? shapes[1].position.z + 1 : shapes[1].position.z - 1;
-			shapes[2].position.x = shapes[1].position.x
-			;
-			shapes[3].position.z = shapes[2].position.z;
-			shapes[3].position.x = shapes[2].position.x + 1;
 			return tetris_figure;
 		}
 	}
