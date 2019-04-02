@@ -40,14 +40,14 @@ class ThreejsRenderer {
 			scope.startRendering();
 		});
 
-		window.addEventListener( "tetris: figure_moved" , function () {
-			scope.updateFigurePosition();
-		});
 
 		window.addEventListener( "tetris: figure_on-finish" , function () {
 			scope.updateFigure();
 		});
 
+		window.addEventListener( "tetris: figure_moved" , function () {
+			if (scope.figure) scope.updateFigurePosition();
+		});
 	}
 
 	initScene() {
@@ -203,7 +203,7 @@ class ThreejsRenderer {
 		this.AM.addAsset('l-left', function() { return createShape(ll_material);} , 15);
 
 		//l-right
-		var lr_material = new THREE.MeshLambertMaterial( { color: '#26009E'});
+		var lr_material = new THREE.MeshLambertMaterial( { color: '#0FFFC6'});
 		this.AM.addAsset('l-right', function() {return createShape(lr_material);} , 15);		
 
 		function createShape(material) {

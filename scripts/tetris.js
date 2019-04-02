@@ -16,6 +16,8 @@ class Tetris {
 	*/
 
 	//проверка на выход за пределды поля
+	//исчезновение линий
+	//повороты
 	constructor( config, inputController, ) {
 
 		this.FIGURE_MOVED = 'tetris: figure_moved';
@@ -71,6 +73,10 @@ class Tetris {
 				{
 					number: 1,
 					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
+				},
+				{
+					number:2,
+					dots:[]
 				}
 			]}, 
 			{name:'l-left',
@@ -112,6 +118,10 @@ class Tetris {
 				{
 					number: 1,
 					dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
+				},
+				{
+					number:2,
+					dots:[]
 				}
 			]}, 
 			{name: 'stairs-right',
@@ -123,6 +133,10 @@ class Tetris {
 				{
 					number: 1,
 					dots :[{ x: 1, y: 0 }, { x: 0, y: 0 }] 
+				},
+				{
+					number:2,
+					dots:[]
 				}
 			]}, 
 			{name: 't-shape',
@@ -147,7 +161,9 @@ class Tetris {
 		this.directions['left'] = {x:-1, y:0};
 		this.directions['down'] = {x:0, y:1};
 		this.directions['up'] = {x:0, y:-1};
-		//handlers
+
+
+		//   HANDLERS
 		var scope = this;
 		window.addEventListener( "screens: start game" , function () {
 		  scope.startGame();
@@ -155,6 +171,7 @@ class Tetris {
 
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			if ( e.detail.name == 'acceleration') scope.accelerateMoving(true);
+			if ( e.detail.name == 'rotate_x') scope.rotateByX();
 			scope.direction = scope.directions[e.detail.name];
 		});
 
@@ -174,7 +191,7 @@ class Tetris {
 			var line = [];
 			for ( var i = 0; i < this.cells_horizontal; i++){
 				line.push([])
-				for ( var j = 0; j < this.cells_horizontal; j++) {
+				for ( var j = 0; j < this.cells_vertical; j++) {
 					//информация о заполненности ячейки
 					line[i][j] = false;
 				}
@@ -198,15 +215,17 @@ class Tetris {
 				// schedule the next game step
 				scope.game_timeout = setTimeout( scope.gameStep, scope.logic_step_interval );
 				if ( scope.pause ) return;
+
 				scope.moveFigure(scope.direction);
 				scope.direction = undefined;
+
+
 				if ( scope.figure_on_finish ) {
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
-					// this.checkLineIsFull();
+					scope.checkLineIsFull();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 				}
-
 				// redraw
 				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED );
 			};
@@ -214,19 +233,33 @@ class Tetris {
 		this.gameStep();
 	}
 
-	rotateByZ() {
+	rotateByX() {
 		for ( var i = 0; i < this.figure.lines.length; i++) {
 			var line = this.figure.lines[i];
 			for ( var j = 0; j < line.dots.length; j++ ) {
 				var dot = line.dots[j];
 				var temp = dot.x;
 				dot.x = dot.y;
-				dot.y = temp;
+				dot.y = - temp;
 			}
 		}
 	}
 
-
+	checkLineIsFull() {
+		var full_lines = []
+		line:
+		for ( var i = 0; i < this.lines.length; i++ ) {
+			var line = this.lines[i];
+			for ( var j = 0; j < line.length; j++){
+				var row = line[j];
+				for ( var k = 0; k < row.length; k++) {
+					if ( !row[k] ) continue line;
+				}
+			}
+			full_lines.push(i);
+			//после того как мы получили заполненные линии нам сдиспачить событие для изменения в рендере и свдинуть все элементы массива
+		}
+	}
 
 	moveFigure(direction) {
 		var scope = this;
