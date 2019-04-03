@@ -67,8 +67,9 @@ class Tetris {
 
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			if ( e.detail.name == 'acceleration') scope.accelerateMoving(true);
-			if ( e.detail.name == 'rotate_x') scope.rotateBy('x');
-			if ( e.detail.name == 'rotate_z') scope.rotateBy('z');
+			if ( e.detail.name == 'rotate_x') scope.rotateBy('x', 'y');
+			if ( e.detail.name == 'rotate_y') scope.rotateBy('z', 'y');
+			if ( e.detail.name == 'rotate_z') scope.rotateBy('z', 'x');
 			if ( e.detail.name == 'fall') scope.dropFigure();
 			scope.direction = scope.directions[e.detail.name];
 		});
@@ -150,7 +151,7 @@ class Tetris {
 		this.gameStep();
 	}
 
-	rotateBy(rotation_parameter) {
+	rotateBy(f_rotation_parameter, s_rotation_parameter) {
 		var pivot;
 		for ( var i = 0; i < this.figure.dots.length; i++ ) {
 			var dot = this.figure.dots[i];
@@ -165,10 +166,10 @@ class Tetris {
 			if ( pivot == undefined ) return;
 			if ( dot.pivot ) continue;
 
-			var diff_rot_parameter = pivot[rotation_parameter] - dot[rotation_parameter];
-			var diff_y = pivot.y - dot.y;
-			dot.y += diff_y == 0 ? -diff_rot_parameter : diff_y;
-			dot[rotation_parameter] += diff_rot_parameter == 0 ? diff_y : diff_rot_parameter;
+			var diff_first_parameter = pivot[f_rotation_parameter] - dot[f_rotation_parameter];
+			var diff_second_parameter = pivot[s_rotation_parameter] - dot[s_rotation_parameter];
+			dot[s_rotation_parameter] += diff_second_parameter == 0 ? -diff_first_parameter : diff_second_parameter;
+			dot[f_rotation_parameter] += diff_first_parameter == 0 ? diff_second_parameter : diff_first_parameter;
 		}
 
 	}
