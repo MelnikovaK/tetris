@@ -157,6 +157,30 @@ class Tetris {
 			]
 		}];
 
+		this.figures = [
+			{name: 'rectangle',
+			dots: [{ x: 0, y: 0, z: 0 },{ x: 0, y: 0, z: 1 },{ x: 0, y: 0, z: 2 },{ x: 0, y: 0, z: 3 }
+			]}, 
+			{name: 'square',
+			dots: [{ x: 0, y: 0, z: 0 },{ x: 1,  y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 }
+			]}, 
+			{name:'l-left',
+			dots: [{ x: 1, y: 0, z: 0 }, { x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 2 }, { x: 1, y: 0 , z: 2}
+			]}, 
+			{name:'l-right',
+			dots: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0 , z: 1}, { x: 0, y: 0, z: 2 }, { x: 1, y: 0, z: 2 }
+			]},
+			{name: 'stairs-left',
+			dots: [{ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 },{ x: 1, y: 0 , z: 1}, { x: 2, y: 0, z: 1 }
+			]}, 
+			{name: 'stairs-right',
+			dots: [{ x: 1, y: 0, z: 0 }, { x: 2, y: 0, z: 0 },{ x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 1 }
+			]}, 
+			{name: 't-shape',
+			dots: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 },{ x: 0, y: 0, z: 2 }
+			]}
+		];
+
 		this.directions = {};
 		this.directions['right']  = {x:1, y:0};
 		this.directions['left'] = {x:-1, y:0};
@@ -173,6 +197,7 @@ class Tetris {
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			if ( e.detail.name == 'acceleration') scope.accelerateMoving(true);
 			if ( e.detail.name == 'rotate_x') scope.rotateByX();
+			if ( e.detail.name == 'fall') scope.dropFigure();
 			scope.direction = scope.directions[e.detail.name];
 		});
 
@@ -184,6 +209,20 @@ class Tetris {
 	accelerateMoving(is_accelerate) {
 		if ( is_accelerate ) this.logic_step_interval = 40;
 		else this.logic_step_interval = this.config.logic_step_interval;
+	}
+
+
+	dropFigure() {
+
+		for ( var i = 0; i < this.lines.length; i++ ) {
+			var line = this.lines[i];
+			for ( var j = 0; j < line.length; j++ ) {
+				var row = line[j];
+				for ( var k = 0; k < row.length; k++ ){
+					var cell = row[k]
+				}
+			}
+		}
 	}
 
 	initLines() {
@@ -263,59 +302,48 @@ class Tetris {
 				}
 			}
 			full_lines.push(i);
-			//после того как мы получили заполненные линии нам сдиспачить событие для изменения в рендере и свдинуть все элементы массива
 		}
 	}
 
 	moveFigure(direction) {
 		var scope = this;
 		if ( direction ) {
-			this.figure.lines.forEach(function(line,i) {
-				line.dots.forEach( function(dot, j) {
-					var new_x = dot.x + direction.x;
-					var new_y = dot.y + direction.y;
-					dot.x += direction.x;
-					dot.y += direction.y;
+			this.figure.dots.forEach(function(dot,i) {
+				var new_x = dot.x + direction.x;
+				var new_y = dot.y + direction.y;
+				dot.x += direction.x;
+				dot.y += direction.y;
 				});
-			})
 		}
 
-		lines:
-		for ( var i = this.figure.lines.length - 1; i >= 0; i-- ) {
-			var line = this.figure.lines[i];
-			for ( var j = 0; j < line.dots.length; j++ ) {
-				var dot = line.dots[j];
-				if ( line.number >= (scope.cells_height - 1) || scope.lines[line.number + 1][dot.x][dot.y] ) {
+		for ( var i = this.figure.dots.length - 1; i >= 0; i-- ) {
+			var dot = this.figure.dots[i];
+			if ( dot.z >= (scope.cells_height - 1) || scope.lines[dot.z + 1][dot.x][dot.y] ) {
 					scope.figure_on_finish = true;
-					if (line.number < 4) {
+					if (dot.z < 3) {
 						scope.game_is_over = true;
 					}
-					break lines;
+					break;
 				}
-			}
-			line.number++;
+			dot.z++;
 		}
 
 		if ( this.figure_on_finish ) {
-			this.figure.lines.forEach(function(line,i) {
-				line.dots.forEach( function(dot, j) {
-					scope.lines[line.number][dot.x][dot.y] = true;
-				});
-			})
+			this.figure.dots.forEach(function(dot,i) {
+				scope.lines[dot.z][dot.x][dot.y] = true;
+			});
 		}
 	}
 
-	getNewFigureData() {
-		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-	}
 
 	gameOver(){
 		clearTimeout( this.game_timeout );
 		this.inputController.enabled = false;
 
 		Utils.triggerCustomEvent( window, this.GAME_IS_OVER );
-		// Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "game over", loop: false} );
-
 	}
 
+	getNewFigureData() {
+		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
+	}
 }

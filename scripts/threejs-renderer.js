@@ -48,6 +48,10 @@ class ThreejsRenderer {
 		window.addEventListener( "tetris: figure_moved" , function () {
 			if (scope.figure) scope.updateFigurePosition();
 		});
+
+		window.addEventListener( "tetris: game_is_over" , function () {
+			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
+		});
 	}
 
 	initScene() {
@@ -137,26 +141,24 @@ class ThreejsRenderer {
 			this.figure.shape.add(this.AM.pullAsset(this.figure.name))
 		}
 		this.game_field.add(this.figure.shape);
-		for ( var i = 0; i < this.figure.lines.length; i++) 
-			for ( var j = 0; j < this.figure.lines[i].dots.length; j++ ) {
-				var dot = this.figure.lines[i].dots[j];
-				this.figure.shape.children[counter].position.x = dot.x;
-				this.figure.shape.children[counter].position.z = dot.y;
-				this.figure.shape.children[counter].position.y = this.cells_in_height - this.figure.lines[i].number - 1;
-				counter++;
-			}
+
+		for (var i = 0; i < this.figure.dots.length; i++) {
+			var dot = this.figure.dots[i];
+			this.figure.shape.children[counter].position.x = dot.x;
+			this.figure.shape.children[counter].position.z = dot.y;
+			this.figure.shape.children[counter].position.y = this.cells_in_height - dot.z - 1;
+			counter++;
+		}
 	}
 
 	updateFigurePosition() {
 		var counter = 0;
-		for ( var i = 0; i < this.figure.lines.length; i++) {
-			for ( var j = 0; j < this.figure.lines[i].dots.length; j++ ) {
-				var dot = this.figure.lines[i].dots[j];
-				this.figure.shape.children[counter].position.x = dot.x;
-				this.figure.shape.children[counter].position.z = dot.y;
-				this.figure.shape.children[counter].position.y = this.cells_in_height - this.figure.lines[i].number - 1;
-				counter++;
-			}
+		for (var i = 0; i < this.figure.dots.length; i++) {
+			var dot = this.figure.dots[i];
+			this.figure.shape.children[counter].position.x = dot.x;
+			this.figure.shape.children[counter].position.z = dot.y;
+			this.figure.shape.children[counter].position.y = this.cells_in_height - dot.z - 1;
+			counter++;
 		}
 	}
 
@@ -164,7 +166,7 @@ class ThreejsRenderer {
 	startRendering() {
 		var scope = this;
 		function render() {
-      requestAnimationFrame( render );
+      scope.requestAnimationFrame_id = requestAnimationFrame( render );
       scope.controls.update();
       scope.renderer.render( scope.scene, scope.camera );
 		}
