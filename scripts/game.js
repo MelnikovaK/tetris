@@ -15,7 +15,7 @@ var config = {
 
 	start_screen: 'start-screen',
 
-	logic_step_interval: 700,
+	logic_step_interval: 1000,
 	
 	input: {
 		keyboard_enabled: true,
@@ -46,7 +46,7 @@ var config = {
 				keys: [69],
 			},
 			"acceleration": {
-				keys: [65],
+				keys: [90],
 			}
 		}
 	},

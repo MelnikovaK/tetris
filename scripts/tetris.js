@@ -1,23 +1,5 @@
 class Tetris {
-	/*
-		линия - поле 10х10
-		каждая ячейка линии содержит информацию о своей заполненности, если все ячейки линии заполнены, то она удаляется и происходит сдвиг. 
-		фигуры нужны только до того как они упадут, после этого просто высчитыввается в какой линии какие ячейки заняты
-	*/
 
-	/*
-		информация о фигуре:
-			имя
-			массив занятых линий:
-				массив точек на линии:
-					х
-					у
-
-	*/
-
-	//проверка на выход за пределды поля
-	//исчезновение линий
-	//повороты
 	constructor( config, inputController, ) {
 
 		this.FIGURE_MOVED = 'tetris: figure_moved';
@@ -47,137 +29,25 @@ class Tetris {
 		//figures
 		this.figures = [
 			{name: 'rectangle',
-			lines: [
-				{
-					number: 0,
-					dots :[{ x: 0, y: 0 }] 
-				},
-				{
-					number: 1,
-					dots :[{ x: 0, y: 0 }] 
-				},
-				{
-					number: 2,
-					dots :[{ x: 0, y: 0 }] 
-				},
-				{
-					number: 3,
-					dots :[{ x: 0, y: 0 }] 
-				}
-			]}, 
-			{name: 'square',
-			lines: [
-				{
-					number: 0,
-					dots :[{ x: 0, y: 0 },{ x: 1,  y: 0 }] 
-				},
-				{
-					number: 1,
-					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-				},
-				{
-					number:2,
-					dots:[]
-				}
-			]}, 
-			{name:'l-left',
-			lines: [
-				{
-					number: 0,
-					dots :[{ x: 1, y: 0 }] 
-				},
-				{
-					number: 1,
-					dots :[{ x: 1, y: 0 }] 
-				},
-				{
-					number: 2,
-					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-				}
-			]}, 
-			{name:'l-right',
-			lines: [
-				{
-					number: 0,
-					dots :[{ x: 0, y: 0 }] 
-				},
-				{
-					number: 1,
-					dots :[{ x: 0, y: 0 }] 
-				},
-				{
-					number: 2,
-					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-				}
-			]},
-			{name: 'stairs-left',
-			lines: [
-				{
-					number: 0,
-					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }]  
-				},
-				{
-					number: 1,
-					dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
-				},
-				{
-					number:2,
-					dots:[]
-				}
-			]}, 
-			{name: 'stairs-right',
-			lines: [
-				{
-					number: 0,
-					dots :[{ x: 1, y: 0 }, { x: 2, y: 0 }] 
-				},
-				{
-					number: 1,
-					dots :[{ x: 1, y: 0 }, { x: 0, y: 0 }] 
-				},
-				{
-					number:2,
-					dots:[]
-				}
-			]}, 
-			{name: 't-shape',
-			lines: [
-				{
-					number: 0,
-					dots :[{ x: 0, y: 0 }] 
-				},
-				{
-					number: 1,
-					dots :[{ x: 0, y: 0 }, { x: 1, y: 0 }] 
-				},
-				{
-					number: 2,
-					dots :[{ x: 0, y: 0 }]
-				}
-			]
-		}];
-
-		this.figures = [
-			{name: 'rectangle',
-			dots: [{ x: 0, y: 0, z: 0 },{ x: 0, y: 0, z: 1 },{ x: 0, y: 0, z: 2 },{ x: 0, y: 0, z: 3 }
+			dots: [{ x: 0, y: 0, z: 0 },{ x: 0, y: 0, z: 1, pivot: true },{ x: 0, y: 0, z: 2 },{ x: 0, y: 0, z: 3 }
 			]}, 
 			{name: 'square',
 			dots: [{ x: 0, y: 0, z: 0 },{ x: 1,  y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 }
 			]}, 
 			{name:'l-left',
-			dots: [{ x: 1, y: 0, z: 0 }, { x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 2 }, { x: 1, y: 0 , z: 2}
+			dots: [{ x: 1, y: 0, z: 0 }, { x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 2 }, { x: 1, y: 0 , z: 2, pivot: true}
 			]}, 
 			{name:'l-right',
-			dots: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0 , z: 1}, { x: 0, y: 0, z: 2 }, { x: 1, y: 0, z: 2 }
+			dots: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0 , z: 1}, { x: 0, y: 0, z: 2, pivot: true }, { x: 1, y: 0, z: 2 }
 			]},
 			{name: 'stairs-left',
-			dots: [{ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 },{ x: 1, y: 0 , z: 1}, { x: 2, y: 0, z: 1 }
+			dots: [{ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0, pivot: true },{ x: 1, y: 0 , z: 1}, { x: 2, y: 0, z: 1 }
 			]}, 
 			{name: 'stairs-right',
-			dots: [{ x: 1, y: 0, z: 0 }, { x: 2, y: 0, z: 0 },{ x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 1 }
+			dots: [{ x: 1, y: 0, z: 0 }, { x: 2, y: 0, z: 0, pivot: true },{ x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 1 }
 			]}, 
 			{name: 't-shape',
-			dots: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 },{ x: 0, y: 0, z: 2 }
+			dots: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 1, pivot: true }, { x: 1, y: 0, z: 1 },{ x: 0, y: 0, z: 2 }
 			]}
 		];
 
@@ -197,6 +67,7 @@ class Tetris {
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			if ( e.detail.name == 'acceleration') scope.accelerateMoving(true);
 			if ( e.detail.name == 'rotate_x') scope.rotateByX();
+			if ( e.detail.name == 'rotate_y') scope.rotateByY();
 			if ( e.detail.name == 'fall') scope.dropFigure();
 			scope.direction = scope.directions[e.detail.name];
 		});
@@ -213,7 +84,6 @@ class Tetris {
 
 
 	dropFigure() {
-
 		for ( var i = 0; i < this.lines.length; i++ ) {
 			var line = this.lines[i];
 			for ( var j = 0; j < line.length; j++ ) {
@@ -279,17 +149,55 @@ class Tetris {
 	}
 
 	rotateByX() {
-		for ( var i = 0; i < this.figure.lines.length; i++) {
-			var line = this.figure.lines[i];
-			for ( var j = 0; j < line.dots.length; j++ ) {
-				var dot = line.dots[j];
-				var temp = dot.x;
-				dot.x = dot.y;
-				dot.y = - temp;
+		var pivot;
+		//отсчитывать относительно пивота
+		for ( var i = 0; i < this.figure.dots.length; i++ ) {
+			var dot = this.figure.dots[i];
+			pivot:
+			for (var j = 0; j < this.figure.dots.length; j++ ) {
+				var cur_dot = this.figure.dots[j]
+				if ( cur_dot.pivot ) {
+					pivot = cur_dot;
+					break pivot;
+				}
 			}
+			if ( pivot == undefined ) return;
+			if ( dot.pivot ) continue;
+
+			var diff_x = pivot.x - dot.x;
+			var diff_y = pivot.y - dot.y;
+			dot.y += diff_y == 0 ? diff_x : diff_y;
+			dot.x += diff_x == 0 ? diff_y : diff_x;
 		}
 	}
 
+	rotateByY() {
+		var pivot;
+		//отсчитывать относительно пивота
+		for ( var i = 0; i < this.figure.dots.length; i++ ) {
+			var dot = this.figure.dots[i];
+			pivot:
+			for (var j = 0; j < this.figure.dots.length; j++ ) {
+				var cur_dot = this.figure.dots[j]
+				if ( cur_dot.pivot ) {
+					pivot = cur_dot;
+					break pivot;
+				}
+			}
+			if ( pivot == undefined ) return;
+			if ( dot.pivot ) continue;
+			// console.log( 'curr: ' );
+			// console.log( 'y: ' + dot.y + ' z: ' + dot.z );
+			// console.log( 'pivot: ' );
+			// console.log( 'y: ' + pivot.y + ' z: ' + pivot.z);
+
+			var diff_z = pivot.z - dot.z;
+			var diff_y = pivot.y - dot.y;
+			dot.y += diff_y == 0 ? diff_z : diff_y;
+			dot.z += diff_z == 0 ? diff_y : diff_z;
+		}
+	}
+	
 	checkLineIsFull() {
 		var full_lines = []
 		line:
@@ -313,18 +221,18 @@ class Tetris {
 				var new_y = dot.y + direction.y;
 				dot.x += direction.x;
 				dot.y += direction.y;
-				});
+			});
 		}
 
 		for ( var i = this.figure.dots.length - 1; i >= 0; i-- ) {
 			var dot = this.figure.dots[i];
 			if ( dot.z >= (scope.cells_height - 1) || scope.lines[dot.z + 1][dot.x][dot.y] ) {
-					scope.figure_on_finish = true;
-					if (dot.z < 3) {
-						scope.game_is_over = true;
-					}
-					break;
+				scope.figure_on_finish = true;
+				if (dot.z < 3) {
+					scope.game_is_over = true;
 				}
+				break;
+			}
 			dot.z++;
 		}
 
@@ -345,5 +253,6 @@ class Tetris {
 
 	getNewFigureData() {
 		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
+		// return JSON.parse(JSON.stringify(this.figures[6]));
 	}
 }
