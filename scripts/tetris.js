@@ -33,7 +33,7 @@ class Tetris {
 			dots: [{ x: 0, y: 0, z: 0 },{ x: 0, y: 0, z: 1, pivot: true },{ x: 0, y: 0, z: 2 },{ x: 0, y: 0, z: 3 }
 			]}, 
 			{name: 'square',
-			dots: [{ x: 0, y: 0, z: 0 },{ x: 1,  y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 }
+			dots: [{ x: 0, y: 0, z: 0 },{ x: 1,  y: 0, z: 0 , pivot: true }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 }
 			]}, 
 			{name:'l-left',
 			dots: [{ x: 1, y: 0, z: 0 }, { x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 2 }, { x: 1, y: 0 , z: 2, pivot: true}

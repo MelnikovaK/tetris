@@ -21,12 +21,7 @@ class ThreejsRenderer {
 
 		this.AM = new AssetManager(this);
 
-		this.shapes = {};
-
-		this.shapes['square'] = {
-			color: '#3856F5',
-			shape: new THREE.BoxBufferGeometry( 2,2,2 )
-		}
+		this.lines = [];
 		
 		this.initScene();
 		this.initContainers();
@@ -37,11 +32,13 @@ class ThreejsRenderer {
 			// scope.resetCameraPosition(scope.camera);
 			scope.updateFigure();
 			// scope.updateLines();
+			scope.initLines();
 			scope.startRendering();
 		});
 
 
 		window.addEventListener( tetris.FIGURE_ON_FINISH , function () {
+			scope.fillLines();
 			scope.updateFigure();
 		});
 
@@ -54,7 +51,8 @@ class ThreejsRenderer {
 		});
 
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
-			scope.removeLine(e.detail);
+			console.log(e.detail)
+			scope.removeLine(e.detail.line_number);
 		});
 	}
 
@@ -139,7 +137,6 @@ class ThreejsRenderer {
 
 	updateFigure() {
 		this.figure = this.tetris.figure;
-		var counter = 0;
 		this.figure['shape'] = new THREE.Object3D();
 		for ( var i =  0; i < 4; i++) {
 			this.figure.shape.add(this.AM.pullAsset(this.figure.name))
@@ -148,26 +145,43 @@ class ThreejsRenderer {
 
 		for (var i = 0; i < this.figure.dots.length; i++) {
 			var dot = this.figure.dots[i];
-			this.figure.shape.children[counter].position.x = dot.x;
-			this.figure.shape.children[counter].position.z = dot.y;
-			this.figure.shape.children[counter].position.y = this.cells_in_height - dot.z - 1;
-			counter++;
+			this.figure.shape.children[i].position.x = dot.x;
+			this.figure.shape.children[i].position.z = dot.y;
+			this.figure.shape.children[i].position.y = this.cells_in_height - dot.z - 1;
 		}
 	}
 
 	updateFigurePosition() {
-		var counter = 0;
 		for (var i = 0; i < this.figure.dots.length; i++) {
 			var dot = this.figure.dots[i];
-			this.figure.shape.children[counter].position.x = dot.x;
-			this.figure.shape.children[counter].position.z = dot.y;
-			this.figure.shape.children[counter].position.y = this.cells_in_height - dot.z - 1;
-			counter++;
+			var shape = this.figure.shape.children[i];
+			shape.position.x = dot.x;
+			shape.position.z = dot.y;
+			shape.position.y = this.cells_in_height - dot.z - 1;
 		}
 	}
 
+	initLines() {
+		for ( var i = 0; i < this.tetris.lines.length; i++ ) {
+			this.lines[i] = [];
+		}
+	}
+
+	fillLines() {
+		var shapes = this.figure.shape.children;
+		for ( var i = 0; i < shapes.length; i++ ) {
+			var z = shapes[i].position.y;
+			this.lines[this.cells_in_height - z - 1].push(shapes[i]);
+		}
+		console.log(this.lines)
+	}
+
+
 	removeLine(line) {
-		
+		for ( var i = 0; i < this.lines[line].length; i++ ) {
+			this.AM.putAsset(this.lines[line][i]);
+			this.game_container.remove(this.lines[line][i])
+		}
 	}
 
 
