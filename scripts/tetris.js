@@ -197,7 +197,7 @@ class Tetris {
 			dot.z += diff_z == 0 ? diff_y : diff_z;
 		}
 	}
-	
+
 	checkLineIsFull() {
 		var full_lines = []
 		line:
@@ -216,12 +216,21 @@ class Tetris {
 	moveFigure(direction) {
 		var scope = this;
 		if ( direction ) {
-			this.figure.dots.forEach(function(dot,i) {
+			var correct_action = true;
+			for ( var i = 0; i < this.figure.dots.length; i++) {
+				var dot = this.figure.dots[i];
 				var new_x = dot.x + direction.x;
 				var new_y = dot.y + direction.y;
-				dot.x += direction.x;
-				dot.y += direction.y;
-			});
+				if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || new_y >= this.cells_vertical) correct_action = false;
+			}
+			if ( correct_action) {
+				for ( var i = 0; i < this.figure.dots.length; i++) {
+					var dot = this.figure.dots[i];
+					dot.x += direction.x;
+					dot.y += direction.y;
+				}
+
+			}
 		}
 
 		for ( var i = this.figure.dots.length - 1; i >= 0; i-- ) {
