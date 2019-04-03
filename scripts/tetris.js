@@ -66,8 +66,8 @@ class Tetris {
 
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			if ( e.detail.name == 'acceleration') scope.accelerateMoving(true);
-			if ( e.detail.name == 'rotate_x') scope.rotateByX();
-			if ( e.detail.name == 'rotate_y') scope.rotateByY();
+			if ( e.detail.name == 'rotate_x') scope.rotateBy('x');
+			if ( e.detail.name == 'rotate_z') scope.rotateBy('z');
 			if ( e.detail.name == 'fall') scope.dropFigure();
 			scope.direction = scope.directions[e.detail.name];
 		});
@@ -148,9 +148,8 @@ class Tetris {
 		this.gameStep();
 	}
 
-	rotateByX() {
+	rotateBy(rotation_parameter) {
 		var pivot;
-		//отсчитывать относительно пивота
 		for ( var i = 0; i < this.figure.dots.length; i++ ) {
 			var dot = this.figure.dots[i];
 			pivot:
@@ -164,37 +163,10 @@ class Tetris {
 			if ( pivot == undefined ) return;
 			if ( dot.pivot ) continue;
 
-			var diff_x = pivot.x - dot.x;
+			var diff_rot_parameter = pivot[rotation_parameter] - dot[rotation_parameter];
 			var diff_y = pivot.y - dot.y;
-			dot.y += diff_y == 0 ? diff_x : diff_y;
-			dot.x += diff_x == 0 ? diff_y : diff_x;
-		}
-	}
-
-	rotateByY() {
-		var pivot;
-		//отсчитывать относительно пивота
-		for ( var i = 0; i < this.figure.dots.length; i++ ) {
-			var dot = this.figure.dots[i];
-			pivot:
-			for (var j = 0; j < this.figure.dots.length; j++ ) {
-				var cur_dot = this.figure.dots[j]
-				if ( cur_dot.pivot ) {
-					pivot = cur_dot;
-					break pivot;
-				}
-			}
-			if ( pivot == undefined ) return;
-			if ( dot.pivot ) continue;
-			// console.log( 'curr: ' );
-			// console.log( 'y: ' + dot.y + ' z: ' + dot.z );
-			// console.log( 'pivot: ' );
-			// console.log( 'y: ' + pivot.y + ' z: ' + pivot.z);
-
-			var diff_z = pivot.z - dot.z;
-			var diff_y = pivot.y - dot.y;
-			dot.y += diff_y == 0 ? diff_z : diff_y;
-			dot.z += diff_z == 0 ? diff_y : diff_z;
+			dot.y += diff_y == 0 ? diff_rot_parameter : diff_y;
+			dot[rotation_parameter] += diff_rot_parameter == 0 ? diff_y : diff_rot_parameter;
 		}
 	}
 

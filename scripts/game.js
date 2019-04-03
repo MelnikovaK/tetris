@@ -42,7 +42,7 @@ var config = {
 			"rotate_x": {
 				keys: [81],
 			},
-			"rotate_y": {
+			"rotate_z": {
 				keys: [69],
 			},
 			"acceleration": {
