@@ -5,6 +5,7 @@ class Tetris {
 		this.FIGURE_MOVED = 'tetris: figure_moved';
 		this.FIGURE_ON_FINISH = 'tetris: figure_on-finish';
 		this.GAME_IS_OVER = 'tetris: game_is_over';
+		this.LINE_IS_FULL = 'tetris: line_is_full';
 
 		this.inputController = inputController;
 		this.config = config;
@@ -106,6 +107,7 @@ class Tetris {
 					line[i][j] = false;
 				}
 			}
+			if ( !this.empty_line ) this.empty_line = line;
 			this.lines.push(line);
 		}
 	}
@@ -132,7 +134,7 @@ class Tetris {
 				if ( scope.figure_on_finish ) {
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
-					scope.checkLineIsFull();
+					scope.removeFullLines();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 				}
 
@@ -165,13 +167,13 @@ class Tetris {
 
 			var diff_rot_parameter = pivot[rotation_parameter] - dot[rotation_parameter];
 			var diff_y = pivot.y - dot.y;
-			dot.y += diff_y == 0 ? diff_rot_parameter : diff_y;
+			dot.y += diff_y == 0 ? -diff_rot_parameter : diff_y;
 			dot[rotation_parameter] += diff_rot_parameter == 0 ? diff_y : diff_rot_parameter;
 		}
+
 	}
 
-	checkLineIsFull() {
-		var full_lines = []
+	removeFullLines() {
 		line:
 		for ( var i = 0; i < this.lines.length; i++ ) {
 			var line = this.lines[i];
@@ -181,7 +183,15 @@ class Tetris {
 					if ( !row[k] ) continue line;
 				}
 			}
-			full_lines.push(i);
+			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: i} );
+			this.points += 5;
+			for ( var j = i; j >= 0; j-- ) {
+				if ( j == 0 ) {
+					this.lines[j] = this.empty_line;
+					break;
+				}
+				this.lines[j] = this.lines[j-1];
+			}
 		}
 	}
 
@@ -201,7 +211,6 @@ class Tetris {
 					dot.x += direction.x;
 					dot.y += direction.y;
 				}
-
 			}
 		}
 
@@ -234,6 +243,6 @@ class Tetris {
 
 	getNewFigureData() {
 		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		// return JSON.parse(JSON.stringify(this.figures[6]));
+		// return JSON.parse(JSON.stringify(this.figures[1]));
 	}
 }

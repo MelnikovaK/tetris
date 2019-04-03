@@ -41,16 +41,20 @@ class ThreejsRenderer {
 		});
 
 
-		window.addEventListener( "tetris: figure_on-finish" , function () {
+		window.addEventListener( tetris.FIGURE_ON_FINISH , function () {
 			scope.updateFigure();
 		});
 
-		window.addEventListener( "tetris: figure_moved" , function () {
+		window.addEventListener( tetris.FIGURE_MOVED , function () {
 			if (scope.figure) scope.updateFigurePosition();
 		});
 
-		window.addEventListener( "tetris: game_is_over" , function () {
+		window.addEventListener( tetris.GAME_IS_OVER , function () {
 			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
+		});
+
+		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
+			scope.removeLine(e.detail);
 		});
 	}
 
@@ -160,6 +164,10 @@ class ThreejsRenderer {
 			this.figure.shape.children[counter].position.y = this.cells_in_height - dot.z - 1;
 			counter++;
 		}
+	}
+
+	removeLine(line) {
+		
 	}
 
 
