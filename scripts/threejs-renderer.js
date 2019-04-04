@@ -73,8 +73,8 @@ class ThreejsRenderer {
 		        FAR
 		    );
 
-		camera.position.set( 0, 25, 8 );
-		camera.lookAt( new THREE.Vector3(0,0,10) );
+		camera.position.set( 3, 13, 10);
+		camera.lookAt( new THREE.Vector3(0,8,3) );
 
 		var scene = this.scene = new THREE.Scene();
 		this.scene.add(this.camera);
@@ -94,8 +94,8 @@ class ThreejsRenderer {
 		var spotLightHelper = new THREE.SpotLightHelper( spotLight );
 		scene.add( spotLightHelper );
 
-		var controls = this.controls = new THREE.OrbitControls( camera );
-		controls.update();
+		// var controls = this.controls = new THREE.OrbitControls( camera );
+		// controls.update();
 	}
 
 	initContainers() {
@@ -190,7 +190,7 @@ class ThreejsRenderer {
 		var scope = this;
 		function render() {
 		  scope.requestAnimationFrame_id = requestAnimationFrame( render );
-		  scope.controls.update();
+		  // scope.controls.update();
 		  scope.renderer.render( scope.scene, scope.camera );
 		}
 		render();

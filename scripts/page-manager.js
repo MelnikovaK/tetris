@@ -4,7 +4,6 @@ class PageManager {
 
 		this.START_GAME = "screens: start game";
 		this.PAUSE = "screens: game paused";
-		this.PLAY = "screens: game playing";
 		this.TOGGLE_SOUND = "sound-manager:toggle_sound";
 		this.GAME_OVER = "screens:game-over";
 
@@ -73,7 +72,7 @@ class PageManager {
 			$points.text(scope.game.points);
 		});
 
-		window.addEventListener( scope.game.game_LOST_POINT, function() {
+		window.addEventListener( scope.game.LOST_POINT, function() {
 			var $points = $('.game-screen__points', scope.$container);
 			$points.text(scope.game.points);
 		});
@@ -82,14 +81,10 @@ class PageManager {
 			scope.showModalWindowWithScore('.game-over__modal-form', '.game-over__overlay')
 		});
 
-		window.addEventListener( scope.game.PAUSE, function() {
-			scope.showModalWindowWithScore('.game-screen__modal-form', '.overlay')
+		window.addEventListener( scope.game.PAUSE, function(e) {
+			if ( e.detail.on_pause ) scope.showModalWindowWithScore('.game-screen__modal-form', '.overlay');
+			else scope.hideModalWindow( $('.game-screen__modal-form'), $('.overlay') );
 		});
-
-		window.addEventListener( scope.game.PLAY, function() {
-			scope.hideModalWindow( $('.game-screen__modal-form'), $('.overlay') );
-		});
-
 		window.addEventListener( "screens:preload_progress", function(e) {
 
 			var $progressbar = $('.progressbar');
@@ -271,7 +266,7 @@ class PageManager {
 			<div class="game-screen__modal-form">
 				<h1> PAUSE </h1>
 				<div>Score: <span class="modal-form__score"></span></div>
-				<button class="modal-form__continue-btn button" data-emit-event="${this.PLAY}">Continue</button>
+				<button class="modal-form__continue-btn button" data-emit-event="${this.PAUSE}">Continue</button>
 				<button class="modal-form__soundon-btn button"">${this.SOUND_OFF}</button>
 							</div>
 			<div class="overlay"></div>

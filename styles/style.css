@@ -1,0 +1,101 @@
+canvas {
+	display: block;
+
+	border: 2px solid #FFF652;
+ 	position: relative;
+  	top: 0;
+  	left: 0;
+}
+
+#game_field {
+	/*background-color: #F5F2C6;*/
+}
+
+.game-screen__game_over {
+	width: 300px;
+	height: 100px;
+	border: 1px solid yellow;
+	background:: yellow;
+	opacity: 0.5; 
+	position: absolute;
+	display: none;
+	font-size: 30px;
+	top:120px;
+	left: 50%;
+	z-index: 50;
+}
+
+.screen{
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.pause {
+	display: block;
+	
+}
+button {
+	margin: 10px;
+}
+
+h1 {
+	text-align: center;
+}
+
+.game-screen__modal-form {
+	width: 280px;
+	height: 150px;
+	background: white;
+	border: 1px solid black;
+	display: none;
+	position: fixed; 
+	top: 100px; 
+	left: 10%;
+	z-index: 5;
+}
+
+.game-over__modal-form {
+	width: 280px;
+	height: 150px;
+	background: white;
+	border: 1px solid black;
+	display: none;
+	position: fixed; 
+	top: 100px; 
+	left: 10%;
+	z-index: 5;
+}
+
+.overlay, .game-over__overlay {
+	z-index:3; 
+	position:fixed;
+	background-color:#000; 
+	opacity:0.5; 
+	width:100%; 
+	height:100%;
+	top:0; 
+	left:0;
+	display:none;
+}
+
+.game_container {
+	outline-offset: 5px;
+}
+
+.game-screen_pause-btn {
+	position: absolute;
+	right: 0;
+	margin:  20px;
+	width: 80px;
+	height: 40px;
+	font-size: 20px;
+	z-index: 15;
+}
+
+.game-screen_points_container {
+	position: absolute;
+	font-size: 30px;
+	padding: 20px;
+	z-index: 15;	
+}

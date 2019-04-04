@@ -6,7 +6,8 @@ class Tetris {
 		this.FIGURE_ON_FINISH = 'tetris: figure_on-finish';
 		this.GAME_IS_OVER = 'tetris: game_is_over';
 		this.LINE_IS_FULL = 'tetris: line_is_full';
-		this.GET_POINT= 'tetris:get_point';
+		this.GET_POINT = 'tetris:get_point';
+		this.PAUSE = 'tetris:pause';
 
 		this.inputController = inputController;
 		this.config = config;
@@ -66,11 +67,16 @@ class Tetris {
 		  scope.startGame();
 		});
 
+		window.addEventListener( "screens: game paused" , function () {
+		  scope.setPause();
+		});
+
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			if ( e.detail.name == 'acceleration') scope.accelerateMoving(true);
 			if ( e.detail.name == 'rotate_x') scope.rotateBy('x', 'y');
 			if ( e.detail.name == 'rotate_y') scope.rotateBy('z', 'y');
 			if ( e.detail.name == 'rotate_z') scope.rotateBy('z', 'x');
+			if ( e.detail.name == 'pause') scope.setPause();
 			if ( e.detail.name == 'fall') scope.dropFigure();
 			scope.direction = scope.directions[e.detail.name];
 		});
@@ -78,6 +84,12 @@ class Tetris {
 		this.inputController.target.addEventListener( inputController.ACTION_DEACTIVATED, function (e) {
 			if ( e.detail.name == 'acceleration') scope.accelerateMoving(false);
 		});
+	}
+
+	setPause() {
+		this.on_pause = this.on_pause ? false : true;
+		console.log(this.on_pause);
+		Utils.triggerCustomEvent( window, this.PAUSE, {on_pause: this.on_pause} );
 	}
 
 	accelerateMoving(is_accelerate) {
@@ -120,6 +132,7 @@ class Tetris {
 		this.figure = this.getNewFigureData();
 		this.figure_on_finish = false;
 		this.points = 0;
+		this.on_pause = false;
 		this.inputController.enabled = true;
 		// this.resetGameField();
 
@@ -128,7 +141,8 @@ class Tetris {
 			this.gameStep = function(){
 				// schedule the next game step
 				scope.game_timeout = setTimeout( scope.gameStep, scope.logic_step_interval );
-				if ( scope.pause ) return;
+
+				if ( scope.on_pause ) return;
 
 				scope.moveFigure(scope.direction);
 				scope.direction = undefined;

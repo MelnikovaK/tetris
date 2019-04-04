@@ -36,6 +36,9 @@ var config = {
 			"down": {
 				keys: [83,40],
 			},
+			"pause": {
+				keys: [27],
+			},
 			"fall": {
 				keys: [32],
 			},
