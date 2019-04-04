@@ -3,7 +3,7 @@ class ThreejsRenderer {
 
 		//events
 		this.SHOW_FINISH_SCREEN = "screens: show_finish_modal";
-		
+
 
 		var scope = this;
 		this.container = document.getElementsByClassName('game-screen__container')[0];
@@ -33,9 +33,7 @@ class ThreejsRenderer {
 		this.initGameField();
 
 		window.addEventListener( "screens: start game" , function () {
-			// scope.resetCameraPosition(scope.camera);
 			scope.updateFigure();
-			// scope.updateLines();
 			scope.initLines();
 			scope.startRendering();
 		});
@@ -47,10 +45,14 @@ class ThreejsRenderer {
 		});
 
 		window.addEventListener( tetris.FIGURE_MOVED , function () {
-			if (scope.figure) scope.updateFigurePosition();
+			if (scope.figure) {
+			  if ( scope.figure.shape.children.length) scope.updateFigurePosition();
+			} 
 		});
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
+			scope.fillLines();
+			scope.removeAllFigures();
 			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 			setTimeout( function() {
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
@@ -156,9 +158,11 @@ class ThreejsRenderer {
 			this.figure.shape.children[i].position.z = dot.y;
 			this.figure.shape.children[i].position.y = this.cells_in_height - dot.z - 1;
 		}
+		// console.log(this.figure.name)
 	}
 
 	updateFigurePosition() {
+		console.log(this.figure.dots)
 		for (var i = 0; i < this.figure.dots.length; i++) {
 			var dot = this.figure.dots[i];
 			var shape = this.figure.shape.children[i];
@@ -189,6 +193,12 @@ class ThreejsRenderer {
 			this.AM.putAsset(this.lines[line][i]);
 			this.lines[line][i].parent.remove(this.lines[line][i])
 			this.lines[line].pop();
+		}
+	}
+
+	removeAllFigures() {
+		for ( var i = 0; i < this.lines.length; i++ ) {
+			this.removeLine(i);
 		}
 	}
 

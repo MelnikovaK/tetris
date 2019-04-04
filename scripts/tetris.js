@@ -26,7 +26,6 @@ class Tetris {
 		inputController.enabled = false;
 
 		//lines
-		this.initLines();
 
 
 		//figures
@@ -64,6 +63,7 @@ class Tetris {
 		//   HANDLERS
 		var scope = this;
 		window.addEventListener( "screens: start game" , function () {
+			scope.initLines();
 		  scope.startGame();
 		});
 
@@ -88,7 +88,6 @@ class Tetris {
 
 	setPause() {
 		this.on_pause = this.on_pause ? false : true;
-		console.log(this.on_pause);
 		Utils.triggerCustomEvent( window, this.PAUSE, {on_pause: this.on_pause} );
 	}
 
@@ -128,13 +127,12 @@ class Tetris {
 
 	startGame() {
 		var scope = this;
-
 		this.figure = this.getNewFigureData();
 		this.figure_on_finish = false;
 		this.points = 0;
 		this.on_pause = false;
 		this.inputController.enabled = true;
-		// this.resetGameField();
+		this.logic_step_interval = this.config.logic_step_interval;
 
 		if(!this.gameStep){
 
@@ -146,19 +144,21 @@ class Tetris {
 
 				scope.moveFigure(scope.direction);
 				scope.direction = undefined;
-
-				if ( scope.figure_on_finish ) {
-					scope.figure_on_finish = false;
-					scope.figure = scope.getNewFigureData();
-					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
-					scope.removeFullLines();
-				}
-
+				
 				if(scope.game_is_over) {
 					scope.game_is_over = false;
 					scope.gameOver();
 					return;
 				}
+
+				if ( scope.figure_on_finish ) {
+					scope.figure_on_finish = false;
+					scope.figure = scope.getNewFigureData();
+					console.log(scope.figure)
+					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
+					scope.removeFullLines();
+				}
+
 				// redraw
 				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED );
 			};
