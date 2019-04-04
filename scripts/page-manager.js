@@ -49,6 +49,8 @@ class PageManager {
 			scope.hideModalWindow( $('.game-over__modal-form'), $('.game-over__overlay') )
 		});
 
+		this.initEventHandlers();
+
 		// START
 		this.showScreen(start_screen);
 	}
@@ -66,7 +68,7 @@ class PageManager {
 	initEventHandlers(){
 		var scope = this;
 			// EVENT HANDLERS
-		window.addEventListener( scope.game.game_GET_POINT, function() {
+		window.addEventListener( scope.game.GET_POINT, function() {
 			var $points = $('.game-screen__points', scope.$container);
 			$points.text(scope.game.points);
 		});

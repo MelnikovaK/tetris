@@ -6,6 +6,7 @@ class Tetris {
 		this.FIGURE_ON_FINISH = 'tetris: figure_on-finish';
 		this.GAME_IS_OVER = 'tetris: game_is_over';
 		this.LINE_IS_FULL = 'tetris: line_is_full';
+		this.GET_POINT= 'tetris:get_point';
 
 		this.inputController = inputController;
 		this.config = config;
@@ -186,6 +187,8 @@ class Tetris {
 			}
 			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: i} );
 			this.points += 5;
+			Utils.triggerCustomEvent( window, this.GET_POINT );
+
 			for ( var j = i; j >= 0; j-- ) {
 				if ( j == 0 ) {
 					this.lines[j] = this.empty_line;
@@ -243,7 +246,7 @@ class Tetris {
 	}
 
 	getNewFigureData() {
-		// return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		return JSON.parse(JSON.stringify(this.figures[1]));
+		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
+		// return JSON.parse(JSON.stringify(this.figures[1]));
 	}
 }
