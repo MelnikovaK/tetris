@@ -1,6 +1,10 @@
 class ThreejsRenderer {
 	constructor( tetris, config ) {
 
+		//events
+		this.SHOW_FINISH_SCREEN = "screens: show_finish_modal";
+		
+
 		var scope = this;
 		this.container = document.getElementsByClassName('game-screen__container')[0];
 
@@ -48,6 +52,9 @@ class ThreejsRenderer {
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
 			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
+			setTimeout( function() {
+				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
+			}, 2000);
 		});
 
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
