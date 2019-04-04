@@ -173,7 +173,7 @@ class ThreejsRenderer {
 			var z = shapes[i].position.y;
 			this.lines[this.cells_in_height - z - 1].push(shapes[i]);
 		}
-		console.log('FILLING: ', this.lines)
+		// console.log('FILLING: ', this.lines)
 	}
 
 
