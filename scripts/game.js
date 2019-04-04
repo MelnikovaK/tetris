@@ -5,8 +5,8 @@ var ASSETS_PATH = 'assets/';
 var config = {
 	ASSETS_PATH: ASSETS_PATH,
 	
-	cells_horizontal: 2,
-	cells_vertical: 2,
+	cells_horizontal: 6,
+	cells_vertical: 6,
 	cells_height: 15,
 	field_width: 900,
 	field_height: 900,
@@ -15,7 +15,7 @@ var config = {
 
 	start_screen: 'start-screen',
 
-	logic_step_interval: 1000,
+	logic_step_interval: 700,
 	
 	input: {
 		keyboard_enabled: true,
