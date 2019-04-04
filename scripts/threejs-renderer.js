@@ -51,7 +51,7 @@ class ThreejsRenderer {
 		});
 
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
-			console.log(e.detail)
+			// console.log(e.detail)
 			scope.removeLine(e.detail.line_number);
 		});
 	}
@@ -173,14 +173,15 @@ class ThreejsRenderer {
 			var z = shapes[i].position.y;
 			this.lines[this.cells_in_height - z - 1].push(shapes[i]);
 		}
-		console.log(this.lines)
+		console.log('FILLING: ', this.lines)
 	}
 
 
 	removeLine(line) {
-		for ( var i = 0; i < this.lines[line].length; i++ ) {
+		for ( var i = this.lines[line].length - 1; i >= 0; i-- ) {
 			this.AM.putAsset(this.lines[line][i]);
-			this.game_container.remove(this.lines[line][i])
+			this.lines[line][i].parent.remove(this.lines[line][i])
+			this.lines[line].pop();
 		}
 	}
 
@@ -188,9 +189,9 @@ class ThreejsRenderer {
 	startRendering() {
 		var scope = this;
 		function render() {
-      scope.requestAnimationFrame_id = requestAnimationFrame( render );
-      scope.controls.update();
-      scope.renderer.render( scope.scene, scope.camera );
+		  scope.requestAnimationFrame_id = requestAnimationFrame( render );
+		  scope.controls.update();
+		  scope.renderer.render( scope.scene, scope.camera );
 		}
 		render();
 	}

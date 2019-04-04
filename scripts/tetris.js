@@ -135,8 +135,8 @@ class Tetris {
 				if ( scope.figure_on_finish ) {
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
-					scope.removeFullLines();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
+					scope.removeFullLines();
 				}
 
 				if(scope.game_is_over) {
@@ -243,7 +243,7 @@ class Tetris {
 	}
 
 	getNewFigureData() {
-		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		// return JSON.parse(JSON.stringify(this.figures[1]));
+		// return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
+		return JSON.parse(JSON.stringify(this.figures[1]));
 	}
 }
