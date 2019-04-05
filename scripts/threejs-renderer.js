@@ -33,6 +33,7 @@ class ThreejsRenderer {
 		this.initGameField();
 
 		window.addEventListener( "screens: start game" , function () {
+			scope.removeAllFigures();
 			scope.updateFigure();
 			scope.initLines();
 			scope.startRendering();
@@ -52,7 +53,6 @@ class ThreejsRenderer {
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
 			scope.fillLines();
-			scope.removeAllFigures();
 			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 			setTimeout( function() {
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
@@ -63,7 +63,7 @@ class ThreejsRenderer {
 			scope.removeLine(e.detail.line_number);
 		});
 	}
-
+	
 	initScene() {
 		var scope = this;
 

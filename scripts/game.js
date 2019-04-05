@@ -74,3 +74,5 @@ let inputController = new InputController( config.input, $game_container[0] );
 let tetris = new Tetris( config, inputController );
 let page_manager = new PageManager( $game_container, tetris, config.start_screen );
 let renderer = new ThreejsRenderer( tetris, config );
+
+let particles_manager = new ThreejsParticles($game_container, renderer, config, tetris);

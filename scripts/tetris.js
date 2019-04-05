@@ -28,14 +28,13 @@ class Tetris {
 
 		//lines
 
-
 		//figures
 		this.figures = [
 			{name: 'rectangle',
 			dots: [{ x: 0, y: 0, z: 0 },{ x: 1, y: 0, z: 0, pivot: true },{ x: 2, y: 0, z: 0 },{ x: 3, y: 0, z: 0 }
 			]}, 
 			{name: 'square',
-			dots: [{ x: 0, y: 0, z: 0 },{ x: 1,  y: 0, z: 0 , pivot: true }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 }
+			dots: [{ x: 0, y: 0, z: 0 },{ x: 1,  y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 , pivot: true }
 			]}, 
 			{name:'l-left',
 			dots: [{ x: 1, y: 0, z: 0 }, { x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 2 }, { x: 1, y: 0 , z: 2, pivot: true}
@@ -83,6 +82,7 @@ class Tetris {
 			if ( acttion_name == 'rotate_x') scope.rotateBy('x', 'y');
 			if ( acttion_name == 'rotate_y') scope.rotateBy('z', 'y');
 			if ( acttion_name == 'rotate_z') scope.rotateBy('x', 'z');
+			// if ( acttion_name == 'rotate_z') scope.rotateSquareBy('x', 'z');
 			if ( acttion_name == 'pause') scope.setPause();
 			if ( acttion_name == 'fall') scope.dropFigure();
 			var direction = scope.directions[acttion_name];
@@ -142,7 +142,7 @@ class Tetris {
 			var dot = this.figure.dots[i];
 			var new_x = dot.x + direction.x;
 			var new_y = dot.y + direction.y;
-			if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || new_y >= this.cells_vertical) correct_action = false;
+			if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || new_y >= this.cells_vertical ||  this.checkCoordinatesArentFill(new_x, new_y, dot.z) ) correct_action = false;
 		}
 		if ( correct_action) {
 			for ( var i = 0; i < this.figure.dots.length; i++) {
@@ -152,6 +152,10 @@ class Tetris {
 			}
 		}
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
+	}
+
+	checkCoordinatesArentFill(x,y,z) {
+		return this.lines[z][x][y];
 	}
 
 	setPause() {
@@ -240,7 +244,9 @@ class Tetris {
 			var diff_second_parameter = pivot[s_rotation_parameter] - dot[s_rotation_parameter];
 			var f_value = dot[s_rotation_parameter] + (diff_second_parameter == 0 ? -diff_first_parameter : diff_second_parameter);
 			var s_value = dot[f_rotation_parameter] + (diff_first_parameter == 0 ? diff_second_parameter : diff_first_parameter);
+
 			if ( f_value < 0 || f_value >= this.check_coordinates[s_rotation_parameter] || s_value < 0 || s_value >= this.check_coordinates[f_rotation_parameter] ) return;
+
 			new_values[i] = { s_rotation_parameter : f_value, f_rotation_parameter: s_value};
 		}
 
@@ -313,7 +319,7 @@ class Tetris {
 	}
 
 	getNewFigureData() {
-		// return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		return JSON.parse(JSON.stringify(this.figures[1]));
+		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
+		// return JSON.parse(JSON.stringify(this.figures[4]));
 	}
 }
