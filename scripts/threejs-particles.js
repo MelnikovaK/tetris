@@ -11,19 +11,20 @@ class ThreejsParticles {
 		this.game_container = renderer.game_container;
 		this.initEmitter();
 
+		var scope = this;
 		window.addEventListener( game.GAME_IS_OVER , function () {
-		}.bind(this));
+		});
 
 		window.addEventListener( game.FIGURE_ON_FINISH , function () {
-			// this.updateEmitterGroup(this.accel_group);
-		}.bind(this));
+			// this.updateEmitterGroup(scope.accel_group);
+		});
 
 		window.addEventListener( game.LINE_IS_FULL , function () {
-		}.bind(this));
+		});
 
 		window.addEventListener( "screens:preload_complete" , function (e) {
 			
-		}.bind(this));
+		});
 
 	}
 
@@ -70,6 +71,7 @@ class ThreejsParticles {
 	} 
 
 	updateEmitterGroup( emitter_group ) {
+		console.log(this.game.figure.dots)
 		var figure = this.game.figure.dots[0];
     	emitter_group.triggerPoolEmitter( 1, (new THREE.Vector3( figure.x, figure.y, figure.z )) );
 	}

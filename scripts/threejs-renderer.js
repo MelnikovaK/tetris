@@ -184,7 +184,6 @@ class ThreejsRenderer {
 			var z = shapes[i].position.y;
 			this.lines[this.cells_in_height - z - 1].push(shapes[i]);
 		}
-		// console.log('FILLING: ', this.lines)
 	}
 
 	moveLines(line_index) {
@@ -216,8 +215,8 @@ class ThreejsRenderer {
 		var scope = this;
 		function render() {
 		  scope.requestAnimationFrame_id = requestAnimationFrame( render );
-		  // scope.controls.update();
 		  scope.renderer.render( scope.scene, scope.camera );
+		  // scope.controls.update();
 		}
 		render();
 	}

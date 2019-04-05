@@ -84,7 +84,6 @@ class Tetris {
 			if ( acttion_name == 'rotate_x') scope.rotateBy('x', 'y');
 			if ( acttion_name == 'rotate_y') scope.rotateBy('z', 'y');
 			if ( acttion_name == 'rotate_z') scope.rotateBy('x', 'z');
-			// if ( acttion_name == 'rotate_z') scope.rotateSquareBy('x', 'z');
 			if ( acttion_name == 'pause') scope.setPause();
 			if ( acttion_name == 'fall') scope.dropFigure();
 			var direction = scope.directions[acttion_name];
