@@ -65,7 +65,6 @@ class InputController {
 
   //
   attach( target, dont_enable ) {
-
   	this.detach();
   	this.target = target;
   	target.focus();

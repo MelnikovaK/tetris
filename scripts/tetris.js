@@ -1,3 +1,4 @@
+//вращение z фигуры
 class Tetris {
 
 	constructor( config, inputController, ) {
@@ -31,7 +32,7 @@ class Tetris {
 		//figures
 		this.figures = [
 			{name: 'rectangle',
-			dots: [{ x: 0, y: 0, z: 0 },{ x: 0, y: 0, z: 1, pivot: true },{ x: 0, y: 0, z: 2 },{ x: 0, y: 0, z: 3 }
+			dots: [{ x: 0, y: 0, z: 0 },{ x: 1, y: 0, z: 0, pivot: true },{ x: 2, y: 0, z: 0 },{ x: 3, y: 0, z: 0 }
 			]}, 
 			{name: 'square',
 			dots: [{ x: 0, y: 0, z: 0 },{ x: 1,  y: 0, z: 0 , pivot: true }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 }
@@ -59,6 +60,11 @@ class Tetris {
 		this.directions['down'] = {x:0, y:1};
 		this.directions['up'] = {x:0, y:-1};
 
+		this.check_coordinates = {};
+		this.check_coordinates['x'] = this.cells_horizontal;
+		this.check_coordinates['y'] = this.cells_vertical;
+		this.check_coordinates['z'] = this.cells_height;
+
 
 		//   HANDLERS
 		var scope = this;
@@ -72,18 +78,75 @@ class Tetris {
 		});
 
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
-			if ( e.detail.name == 'acceleration') scope.accelerateMoving(true);
-			if ( e.detail.name == 'rotate_x') scope.rotateBy('x', 'y');
-			if ( e.detail.name == 'rotate_y') scope.rotateBy('z', 'y');
-			if ( e.detail.name == 'rotate_z') scope.rotateBy('z', 'x');
-			if ( e.detail.name == 'pause') scope.setPause();
-			if ( e.detail.name == 'fall') scope.dropFigure();
-			scope.direction = scope.directions[e.detail.name];
+			var acttion_name = e.detail.name;
+			if ( acttion_name == 'acceleration') scope.accelerateMoving(true);
+			if ( acttion_name == 'rotate_x') scope.rotateBy('x', 'y');
+			if ( acttion_name == 'rotate_y') scope.rotateBy('z', 'y');
+			if ( acttion_name == 'rotate_z') scope.rotateBy('z', 'x');
+			if ( acttion_name == 'pause') scope.setPause();
+			if ( acttion_name == 'fall') scope.dropFigure();
+			var direction = scope.directions[acttion_name];
+			if ( direction ) scope.moveFigureByDirection(direction)
 		});
 
 		this.inputController.target.addEventListener( inputController.ACTION_DEACTIVATED, function (e) {
 			if ( e.detail.name == 'acceleration') scope.accelerateMoving(false);
 		});
+	}
+
+	dropFigure() {
+		/*
+			определеяем какие x y заняты фигурой
+			проходимся по всем линиям где х и у совпадаю
+		*/
+
+		// var scope = this;
+		// var needed_line;
+
+		// var max_z = Math.max.apply(Math, this.figure.dots.map(function(x) { return x.z; }));
+
+		// line:
+		// for ( var i = this.lines.length - 1; i >= 0; i--) {
+		// 	var line = this.lines[i];
+		// 	row:
+		// 	for ( var j = 0; j < line.length; j++ ) {
+		// 		var row = line[j];
+		// 		for ( var k = 0; k < row.length; k++ ){
+		// 			var cell = row[k];
+		// 			for ( var c = 0; c < this.figure.dots.length; c++) {
+		// 				var elem = this.figure.dots[c];
+		// 				if ( elem.x != j || elem.y != k) continue row;
+		// 				if ( cell ) continue line;
+		// 			}
+		// 		}
+		// 	}
+		// 	needed_line = i;
+		// 	break;
+		// }
+		// for ( var i = 0; i < this.figure.dots.length; i++) {
+		// 	var dot = this.figure.dots[i];
+		// 	dot.z += needed_line - max_z;
+		// }
+		// this.fillLine();
+		// Utils.triggerCustomEvent( window, scope.FIGURE_MOVED );
+	}
+
+	moveFigureByDirection(direction) {
+		var correct_action = true;
+		for ( var i = 0; i < this.figure.dots.length; i++) {
+			var dot = this.figure.dots[i];
+			var new_x = dot.x + direction.x;
+			var new_y = dot.y + direction.y;
+			if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || new_y >= this.cells_vertical) correct_action = false;
+		}
+		if ( correct_action) {
+			for ( var i = 0; i < this.figure.dots.length; i++) {
+				var dot = this.figure.dots[i];
+				dot.x += direction.x;
+				dot.y += direction.y;
+			}
+		}
+		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
 	setPause() {
@@ -94,19 +157,6 @@ class Tetris {
 	accelerateMoving(is_accelerate) {
 		if ( is_accelerate ) this.logic_step_interval = 40;
 		else this.logic_step_interval = this.config.logic_step_interval;
-	}
-
-
-	dropFigure() {
-		for ( var i = 0; i < this.lines.length; i++ ) {
-			var line = this.lines[i];
-			for ( var j = 0; j < line.length; j++ ) {
-				var row = line[j];
-				for ( var k = 0; k < row.length; k++ ){
-					var cell = row[k]
-				}
-			}
-		}
 	}
 
 	initLines() {
@@ -154,7 +204,6 @@ class Tetris {
 				if ( scope.figure_on_finish ) {
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
-					console.log(scope.figure)
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 					scope.removeFullLines();
 				}
@@ -186,7 +235,7 @@ class Tetris {
 			var diff_second_parameter = pivot[s_rotation_parameter] - dot[s_rotation_parameter];
 			var f_value = dot[s_rotation_parameter] + (diff_second_parameter == 0 ? -diff_first_parameter : diff_second_parameter);
 			var s_value = dot[f_rotation_parameter] + (diff_first_parameter == 0 ? diff_second_parameter : diff_first_parameter);
-			if ( f_value < 0 || f_value >= this.cells_horizontal || s_value < 0 || s_value >= this.cells_horizontal ) return;
+			if ( f_value < 0 || f_value >= this.check_coordinates[s_rotation_parameter] || s_value < 0 || s_value >= this.check_coordinates[f_rotation_parameter] ) return;
 			new_values[i] = { s_rotation_parameter : f_value, f_rotation_parameter: s_value};
 		}
 
@@ -196,7 +245,7 @@ class Tetris {
 		  dot[s_rotation_parameter] = new_values[i].s_rotation_parameter;
       dot[f_rotation_parameter] = new_values[i].f_rotation_parameter;
 		}
-
+		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
 	removeFullLines() {
@@ -223,30 +272,14 @@ class Tetris {
 		}
 	}
 
-	moveFigure(direction) {
+	moveFigure() {
 		var scope = this;
-		if ( direction ) {
-			var correct_action = true;
-			for ( var i = 0; i < this.figure.dots.length; i++) {
-				var dot = this.figure.dots[i];
-				var new_x = dot.x + direction.x;
-				var new_y = dot.y + direction.y;
-				if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || new_y >= this.cells_vertical) correct_action = false;
-			}
-			if ( correct_action) {
-				for ( var i = 0; i < this.figure.dots.length; i++) {
-					var dot = this.figure.dots[i];
-					dot.x += direction.x;
-					dot.y += direction.y;
-				}
-			}
-		}
 
 		for ( var i = this.figure.dots.length - 1; i >= 0; i-- ) {
 			var dot = this.figure.dots[i];
 			if ( dot.z >= (scope.cells_height - 1) || scope.lines[dot.z + 1][dot.x][dot.y] ) {
 				scope.figure_on_finish = true;
-				if (dot.z < 3) {
+				if (dot.z <= 2) {
 					scope.game_is_over = true;
 				}
 				break;
@@ -255,10 +288,15 @@ class Tetris {
 		}
 
 		if ( this.figure_on_finish ) {
-			this.figure.dots.forEach(function(dot,i) {
-				scope.lines[dot.z][dot.x][dot.y] = true;
-			});
+			this.fillLine();
 		}
+	}
+
+	fillLine() {
+		var scope = this;
+		this.figure.dots.forEach(function(dot,i) {
+			scope.lines[dot.z][dot.x][dot.y] = true;
+		});
 	}
 
 

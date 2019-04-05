@@ -56,11 +56,10 @@ class ThreejsRenderer {
 			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 			setTimeout( function() {
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
-			}, 2000);
+			}, 1500);
 		});
 
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
-			// console.log(e.detail)
 			scope.removeLine(e.detail.line_number);
 		});
 	}
@@ -103,6 +102,7 @@ class ThreejsRenderer {
 		var spotLightHelper = new THREE.SpotLightHelper( spotLight );
 		scene.add( spotLightHelper );
 
+		
 		// var controls = this.controls = new THREE.OrbitControls( camera );
 		// controls.update();
 	}
@@ -162,7 +162,6 @@ class ThreejsRenderer {
 	}
 
 	updateFigurePosition() {
-		console.log(this.figure.dots)
 		for (var i = 0; i < this.figure.dots.length; i++) {
 			var dot = this.figure.dots[i];
 			var shape = this.figure.shape.children[i];
