@@ -100,40 +100,28 @@ class Tetris {
 	}
 
 	dropFigure() {
-		/*
-			определеяем какие x y заняты фигурой
-			проходимся по всем линиям где х и у совпадаю
-		*/
+		var x_array = this.figure.dots.map(function(dot) { return dot.x; });
+		var y_array = this.figure.dots.map(function(dot) { return dot.y; });
+		var max_z = Math.max.apply(Math, this.figure.dots.map(function(x) { return x.z; }));
+		var needed_line;
+		line:
+		for ( var i =  0; i < this.lines.length; i++ ) {
+			var line = this.lines[i]
+			for ( var j = 0; j < x_array.length; j++ ) {
+				for ( var k = 0; k < y_array.length; k++ ) {
+					if ( line[x_array[j]][y_array[k]] ) continue line;
+				}
+			}
+			needed_line = i;
+		}
 
-		// var scope = this;
-		// var needed_line;
+		for ( var i = 0; i < this.figure.dots.length; i++) {
+			var dot = this.figure.dots[i];
+			dot.z += needed_line - max_z;
+			console.log(dot.z)
+		}
 
-		// var max_z = Math.max.apply(Math, this.figure.dots.map(function(x) { return x.z; }));
-
-		// line:
-		// for ( var i = this.lines.length - 1; i >= 0; i--) {
-		// 	var line = this.lines[i];
-		// 	row:
-		// 	for ( var j = 0; j < line.length; j++ ) {
-		// 		var row = line[j];
-		// 		for ( var k = 0; k < row.length; k++ ){
-		// 			var cell = row[k];
-		// 			for ( var c = 0; c < this.figure.dots.length; c++) {
-		// 				var elem = this.figure.dots[c];
-		// 				if ( elem.x != j || elem.y != k) continue row;
-		// 				if ( cell ) continue line;
-		// 			}
-		// 		}
-		// 	}
-		// 	needed_line = i;
-		// 	break;
-		// }
-		// for ( var i = 0; i < this.figure.dots.length; i++) {
-		// 	var dot = this.figure.dots[i];
-		// 	dot.z += needed_line - max_z;
-		// }
-		// this.fillLine();
-		// Utils.triggerCustomEvent( window, scope.FIGURE_MOVED );
+		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
 	moveFigureByDirection(direction) {
@@ -142,7 +130,8 @@ class Tetris {
 			var dot = this.figure.dots[i];
 			var new_x = dot.x + direction.x;
 			var new_y = dot.y + direction.y;
-			if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || new_y >= this.cells_vertical ||  this.checkCoordinatesArentFill(new_x, new_y, dot.z) ) correct_action = false;
+			if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || 
+				new_y >= this.cells_vertical ||  this.checkCoordinatesArentFill(new_x, new_y, dot.z) ) correct_action = false;
 		}
 		if ( correct_action) {
 			for ( var i = 0; i < this.figure.dots.length; i++) {
