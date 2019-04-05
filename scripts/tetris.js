@@ -26,6 +26,8 @@ class Tetris {
 		this.logic_step_interval = config.logic_step_interval;
 		inputController.enabled = false;
 
+		this.active_action = {};
+
 		//lines
 
 		//figures
@@ -87,15 +89,16 @@ class Tetris {
 			if ( acttion_name == 'fall') scope.dropFigure();
 			var direction = scope.directions[acttion_name];
 			if ( direction )  {
-				scope.curren_move_direction = acttion_name; 
-				scope.moveFigureInterval = setInterval(function(){scope.moveFigureByDirection(direction)}, 50) 
+				if ( scope.current_action != acttion_name ) clearInterval(scope.moveFigureInterval);
+				scope.current_action = acttion_name;
+				scope.moveFigureInterval = setInterval(function(){scope.moveFigureByDirection(direction)}, 50);
 			}
 		});
 
 		this.inputController.target.addEventListener( inputController.ACTION_DEACTIVATED, function (e) {
 			var name = e.detail.name;
 			if ( name == 'acceleration') scope.accelerateMoving(false);
-			if ( scope.curren_move_direction == name ) clearInterval(scope.moveFigureInterval);
+			if ( scope.current_action == name ) clearInterval(scope.moveFigureInterval);
 		});
 	}
 
@@ -118,9 +121,7 @@ class Tetris {
 		for ( var i = 0; i < this.figure.dots.length; i++) {
 			var dot = this.figure.dots[i];
 			dot.z += needed_line - max_z;
-			console.log(dot.z)
 		}
-
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
