@@ -186,6 +186,15 @@ class ThreejsRenderer {
 		// console.log('FILLING: ', this.lines)
 	}
 
+	moveLines(line_index) {
+		for ( var i = 0; i < line_index; i++ ) {
+			var line = this.lines[i];
+			for ( var j = 0; j < line.length; j++ ) {
+				if (line[j].position.y > 0) line[j].position.y--; 
+			}
+		}
+	}
+
 
 	removeLine(line) {
 		for ( var i = this.lines[line].length - 1; i >= 0; i-- ) {
@@ -193,6 +202,7 @@ class ThreejsRenderer {
 			this.lines[line][i].parent.remove(this.lines[line][i])
 			this.lines[line].pop();
 		}
+		this.moveLines(line);
 	}
 
 	removeAllFigures() {
@@ -200,7 +210,6 @@ class ThreejsRenderer {
 			this.removeLine(i);
 		}
 	}
-
 
 	startRendering() {
 		var scope = this;
