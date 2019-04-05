@@ -222,30 +222,31 @@ class ThreejsRenderer {
 	}
 
 	jumpFigures() {
-		// for ( var i = 0; i < this.lines.length; i++ ) {
-		// 	var line = this.lines[i];
-		// 	for ( var j = 0; j < line.length; j++ ) {
-		// 		if (!line[j]) continue;
-		// 		var movin_sector = line[j];
-		// 		var amp = 10;
-		// 		var y =0;
-		// 		var t = 0;
-		// 		var moveBlocks = function() {
-		// 			var timeout_id = setTimeout(moveBlocks, 5);
-		// 		  	if (amp < 1) {
-		// 		  		clearTimeout(timeout_id);
-		// 		  		return;
-		// 		  	}
-		// 		  	t += .1;
-		// 		  	y = Math.sin(t)*amp;
-		// 		  	movin_sector.position.y += (amp + y) * 0.0005;
+		for ( var i = 0; i < this.lines.length; i++ ) {
+			var line = this.lines[i];
+			for ( var j = 0; j < line.length; j++ ) {
+				if ( !line[j] ) continue;
+				var movin_mesh = line[j];
+				var amp = 10;
+				var y =0;
+				var t = 0;
+				// var moveBlocks = function() {
+				// 	var timeout_id = setTimeout(moveBlocks, 5);
+				//   	if (amp < 1) {
+				//   		clearTimeout(timeout_id);
+				//   		return;
+				//   	}
+				//   	t += .1;
+				//   	y = Math.sin(t)*amp;
+				//   	movin_mesh.position.y += (amp + y) * 0.0005;
 				  
-		// 			  amp -= .05;
-		// 		}
-		// 		moveBlocks();
-		// 	}
-		// }
-	}
+				// 	  amp -= .05;
+				// }
+				// moveBlocks();
+			}
+			}
+		}
+	
 
 	createAssets() {
 		//game field
