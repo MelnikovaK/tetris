@@ -5,8 +5,8 @@ var ASSETS_PATH = 'assets/';
 var config = {
 	ASSETS_PATH: ASSETS_PATH,
 	
-	cells_horizontal: 4,
-	cells_vertical: 4,
+	cells_horizontal: 6,
+	cells_vertical: 6,
 	cells_height: 15,
 	field_width: 900,
 	field_height: 900,

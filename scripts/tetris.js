@@ -82,15 +82,20 @@ class Tetris {
 			if ( acttion_name == 'acceleration') scope.accelerateMoving(true);
 			if ( acttion_name == 'rotate_x') scope.rotateBy('x', 'y');
 			if ( acttion_name == 'rotate_y') scope.rotateBy('z', 'y');
-			if ( acttion_name == 'rotate_z') scope.rotateBy('z', 'x');
+			if ( acttion_name == 'rotate_z') scope.rotateBy('x', 'z');
 			if ( acttion_name == 'pause') scope.setPause();
 			if ( acttion_name == 'fall') scope.dropFigure();
 			var direction = scope.directions[acttion_name];
-			if ( direction ) scope.moveFigureByDirection(direction)
+			if ( direction )  {
+				scope.curren_move_direction = acttion_name; 
+				scope.moveFigureInterval = setInterval(function(){scope.moveFigureByDirection(direction)}, 50) 
+			}
 		});
 
 		this.inputController.target.addEventListener( inputController.ACTION_DEACTIVATED, function (e) {
-			if ( e.detail.name == 'acceleration') scope.accelerateMoving(false);
+			var name = e.detail.name;
+			if ( name == 'acceleration') scope.accelerateMoving(false);
+			if ( scope.curren_move_direction == name ) clearInterval(scope.moveFigureInterval);
 		});
 	}
 
@@ -308,7 +313,7 @@ class Tetris {
 	}
 
 	getNewFigureData() {
-		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		// return JSON.parse(JSON.stringify(this.figures[1]));
+		// return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
+		return JSON.parse(JSON.stringify(this.figures[1]));
 	}
 }
