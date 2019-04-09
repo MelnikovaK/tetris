@@ -94,6 +94,23 @@ class Tetris {
 		}
 	}
 
+	testMove(dx,dy,dz) {
+		var x_array = this.figure.shape.map(function(dot) { return dot.x; });
+		var y_array = this.figure.shape.map(function(dot) { return dot.y; });
+		row:
+		for ( var z = this.lines.length - 1; z >= 0 ; z--) {
+			var row = this.lines[z];
+			for (var x = 0; x < row.length; x++){
+				var line = row[x];
+				for ( var y = 0; y < line.length; y++) {
+					if ( row[x][y] ) continue row;
+				}
+			}
+			return z; 
+		}
+		return false;
+	}
+
 	dropFigure() {
 		var x_array = this.figure.shape.map(function(dot) { return dot.x; });
 		var y_array = this.figure.shape.map(function(dot) { return dot.y; });

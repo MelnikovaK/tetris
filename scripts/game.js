@@ -7,7 +7,7 @@
 	var config = {
 		ASSETS_PATH: ASSETS_PATH,
 		
-		cells_horizontal: 4,
+		cells_horizontal: 10,
 		cells_vertical: 1,
 		cells_height: 15,
 		field_width: 900,

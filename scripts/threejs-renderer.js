@@ -1,3 +1,4 @@
+
 class ThreejsRenderer {
 	constructor( tetris, config ) {
 
@@ -120,29 +121,12 @@ class ThreejsRenderer {
 	}
 
 	initGameField() {
-		//ground
-		var groundMaterial = new THREE.MeshLambertMaterial( { color: '#FFF13D', side: THREE.DoubleSide });
-		var ground_plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_vertical ), groundMaterial );;
-		ground_plane.rotation.x = -90 / 180 * Math.PI;
 
 		//3 walls
-		var wallMaterial = new THREE.MeshLambertMaterial( { color:'#4D56FF', side: THREE.DoubleSide});
-		var walls = [];
-		for ( var i = 0; i < 2; i++ ) {
-			walls.push(new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_in_height ), wallMaterial ));
-
-			walls[i].position.z = 0;
-			walls[i].position.y =  this.cells_in_height / 2;
-			walls[i].rotation.y = -90 / 180 * Math.PI;
-			walls[i].receiveShadow = true;
-
-			this.game_container.add(walls[i]);
-		}
-		walls[0].position.x =  - this.cells_horizontal / 2;
-		walls[1].position.z = - this.cells_vertical / 2;
-		walls[1].rotation.y = 0;
-
-		this.game_container.add( ground_plane );
+		var wallMaterial = new THREE.MeshLambertMaterial( { color:'#4D56FF', side: THREE.BackSide});
+		var wall = new THREE.Mesh(new THREE.BoxBufferGeometry( this.cells_horizontal, this.cells_in_height, this.cells_vertical ), wallMaterial);
+		wall.position.y = this.cells_in_height / 2;
+		this.game_container.add( wall );
 	}
 
 	updateFigure() {
