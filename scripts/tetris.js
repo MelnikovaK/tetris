@@ -26,47 +26,22 @@ class Tetris {
 		this.logic_step_interval = config.logic_step_interval;
 		inputController.enabled = false;
 
-		this.active_action = {};
-
-		//lines
-
 		//figures
-		this.figures = [
-			{name: 'rectangle',
-			dots: [{ x: 0, y: 0, z: 0 },{ x: 1, y: 0, z: 0, pivot: true },{ x: 2, y: 0, z: 0 },{ x: 3, y: 0, z: 0 }
-			]}, 
-			{name: 'square',
-			dots: [{ x: 0, y: 0, z: 0 },{ x: 1,  y: 0, z: 0 }, { x: 0, y: 0, z: 1 }, { x: 1, y: 0, z: 1 , pivot: true }
-			]}, 
-			{name:'l-left',
-			dots: [{ x: 1, y: 0, z: 0 }, { x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 2 }, { x: 1, y: 0 , z: 2, pivot: true}
-			]}, 
-			{name:'l-right',
-			dots: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0 , z: 1}, { x: 0, y: 0, z: 2, pivot: true }, { x: 1, y: 0, z: 2 }
-			]},
-			{name: 'stairs-left',
-			dots: [{ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0, pivot: true },{ x: 1, y: 0 , z: 1}, { x: 2, y: 0, z: 1 }
-			]}, 
-			{name: 'stairs-right',
-			dots: [{ x: 1, y: 0, z: 0 }, { x: 2, y: 0, z: 0, pivot: true },{ x: 1, y: 0, z: 1 }, { x: 0, y: 0, z: 1 }
-			]}, 
-			{name: 't-shape',
-			dots: [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 1, pivot: true }, { x: 1, y: 0, z: 1 },{ x: 0, y: 0, z: 2 }
-			]}
-		];
+		this.figures = [];
+		this.initFigures(config.figures);
 
-		this.directions = {};
-		this.directions['right']  = {x:1, y:0};
-		this.directions['left'] = {x:-1, y:0};
-		this.directions['down'] = {x:0, y:1};
-		this.directions['up'] = {x:0, y:-1};
+		this.directions = {
+			'right': {x:1, y:0},
+			'left': {x:-1, y:0},
+			'down': {x:0, y:1},
+			'up': {x:0, y:-1}
+		};
 
-		this.check_coordinates = {};
-		this.check_coordinates['x'] = this.cells_horizontal;
-		this.check_coordinates['y'] = this.cells_vertical;
-		this.check_coordinates['z'] = this.cells_height;
-
-
+		this.check_coordinates = {
+			'x': this.cells_horizontal,
+			'y': this.cells_vertical,
+			'z': this.cells_height
+		};
 		//   HANDLERS
 		var scope = this;
 		window.addEventListener( "screens: start game" , function () {
@@ -101,10 +76,28 @@ class Tetris {
 		});
 	}
 
+	initFigures(figures) {
+		var scope = this;
+		for ( var figure in figures ) {
+			var shape = [];
+			var new_figure = figures[figure].split('|');
+			new_figure.forEach( function( el, i ) {
+				var new_row_elements = el.split(';');
+				new_row_elements.forEach( function ( row_el, j) {
+					var pivot = false;
+					if (row_el.substr(-1) == '*') pivot = true;
+					shape.push({x: +row_el[0], y: +row_el[2], z: i, pivot: pivot})
+				})
+
+			});
+			this.figures.push({name: figure, shape: shape })
+		}
+	}
+
 	dropFigure() {
-		var x_array = this.figure.dots.map(function(dot) { return dot.x; });
-		var y_array = this.figure.dots.map(function(dot) { return dot.y; });
-		var max_z = Math.max.apply(Math, this.figure.dots.map(function(x) { return x.z; }));
+		var x_array = this.figure.shape.map(function(dot) { return dot.x; });
+		var y_array = this.figure.shape.map(function(dot) { return dot.y; });
+		var max_z = Math.max.apply(Math, this.figure.shape.map(function(x) { return x.z; }));
 		var needed_line;
 		line:
 		for ( var i =  0; i < this.lines.length; i++ ) {
@@ -117,8 +110,8 @@ class Tetris {
 			needed_line = i;
 		}
 
-		for ( var i = 0; i < this.figure.dots.length; i++) {
-			var dot = this.figure.dots[i];
+		for ( var i = 0; i < this.figure.shape.length; i++) {
+			var dot = this.figure.shape[i];
 			dot.z += needed_line - max_z;
 		}
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
@@ -126,16 +119,16 @@ class Tetris {
 
 	moveFigureByDirection(direction) {
 		var correct_action = true;
-		for ( var i = 0; i < this.figure.dots.length; i++) {
-			var dot = this.figure.dots[i];
+		for ( var i = 0; i < this.figure.shape.length; i++) {
+			var dot = this.figure.shape[i];
 			var new_x = dot.x + direction.x;
 			var new_y = dot.y + direction.y;
 			if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || 
 				new_y >= this.cells_vertical ||  this.checkCoordinatesArentFill(new_x, new_y, dot.z) ) correct_action = false;
 		}
 		if ( correct_action) {
-			for ( var i = 0; i < this.figure.dots.length; i++) {
-				var dot = this.figure.dots[i];
+			for ( var i = 0; i < this.figure.shape.length; i++) {
+				var dot = this.figure.shape[i];
 				dot.x += direction.x;
 				dot.y += direction.y;
 			}
@@ -215,11 +208,11 @@ class Tetris {
 	rotateBy(f_rotation_parameter, s_rotation_parameter) {
 		var pivot;
 		var new_values = []
-		for ( var i = 0; i < this.figure.dots.length; i++ ) {
-			var dot = this.figure.dots[i];
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var dot = this.figure.shape[i];
 			pivot:
-			for (var j = 0; j < this.figure.dots.length; j++ ) {
-				var cur_dot = this.figure.dots[j]
+			for (var j = 0; j < this.figure.shape.length; j++ ) {
+				var cur_dot = this.figure.shape[j]
 				if ( cur_dot.pivot ) {
 					pivot = cur_dot;
 					break pivot;
@@ -237,8 +230,8 @@ class Tetris {
 			new_values[i] = { s_rotation_parameter : f_value, f_rotation_parameter: s_value};
 		}
 
-		for ( var i = 0; i < this.figure.dots.length; i++ ) {
-			var dot = this.figure.dots[i];
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var dot = this.figure.shape[i];
 			if ( dot.pivot ) continue;
 		  dot[s_rotation_parameter] = new_values[i].s_rotation_parameter;
       dot[f_rotation_parameter] = new_values[i].f_rotation_parameter;
@@ -274,8 +267,8 @@ class Tetris {
 	moveFigure() {
 		var scope = this;
 
-		for ( var i = this.figure.dots.length - 1; i >= 0; i-- ) {
-			var dot = this.figure.dots[i];
+		for ( var i = this.figure.shape.length - 1; i >= 0; i-- ) {
+			var dot = this.figure.shape[i];
 			if ( dot.z >= (scope.cells_height - 1) || scope.lines[dot.z + 1][dot.x][dot.y] ) {
 				scope.figure_on_finish = true;
 				if (dot.z <= 3) {
@@ -285,7 +278,6 @@ class Tetris {
 			}
 			dot.z++;
 		}
-
 		if ( this.figure_on_finish ) {
 			this.fillLine();
 		}
@@ -293,7 +285,7 @@ class Tetris {
 
 	fillLine() {
 		var scope = this;
-		this.figure.dots.forEach(function(dot,i) {
+		this.figure.shape.forEach(function(dot,i) {
 			scope.lines[dot.z][dot.x][dot.y] = true;
 		});
 	}

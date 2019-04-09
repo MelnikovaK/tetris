@@ -48,7 +48,7 @@ class ThreejsRenderer {
 
 		window.addEventListener( tetris.FIGURE_MOVED , function () {
 			if (scope.figure) {
-			  if ( scope.figure.shape.children.length) scope.updateFigurePosition();
+			  if ( scope.figure.obj.children.length) scope.updateFigurePosition();
 			} 
 		});
 
@@ -147,28 +147,28 @@ class ThreejsRenderer {
 
 	updateFigure() {
 		this.figure = this.tetris.figure;
-		this.figure['shape'] = new THREE.Object3D();
-		for ( var i =  0; i < 4; i++) {
-			this.figure.shape.add(this.AM.pullAsset(this.figure.name))
+		this.figure['obj'] = new THREE.Object3D();
+		for ( var i =  0; i < this.figure.shape.length; i++) {
+			this.figure.obj.add(this.AM.pullAsset(this.figure.name))
 		}
-		this.game_field.add(this.figure.shape);
+		this.game_field.add(this.figure.obj);
 
-		for (var i = 0; i < this.figure.dots.length; i++) {
-			var dot = this.figure.dots[i];
-			this.figure.shape.children[i].position.x = dot.x;
-			this.figure.shape.children[i].position.z = dot.y;
-			this.figure.shape.children[i].position.y = this.cells_in_height - dot.z - 1;
+		for (var i = 0; i < this.figure.shape.length; i++) {
+			var dot = this.figure.shape[i];
+			this.figure.obj.children[i].position.x = dot.x;
+			this.figure.obj.children[i].position.z = dot.y;
+			this.figure.obj.children[i].position.y = this.cells_in_height - dot.z - 1;
 		}
 		// console.log(this.figure.name)
 	}
 
 	updateFigurePosition() {
-		for (var i = 0; i < this.figure.dots.length; i++) {
-			var dot = this.figure.dots[i];
-			var shape = this.figure.shape.children[i];
-			shape.position.x = dot.x;
-			shape.position.z = dot.y;
-			shape.position.y = this.cells_in_height - dot.z - 1;
+		for (var i = 0; i < this.figure.shape.length; i++) {
+			var dot = this.figure.shape[i];
+			var obj = this.figure.obj.children[i];
+			obj.position.x = dot.x;
+			obj.position.z = dot.y;
+			obj.position.y = this.cells_in_height - dot.z - 1;
 		}
 	}
 
@@ -179,10 +179,10 @@ class ThreejsRenderer {
 	}
 
 	fillLines() {
-		var shapes = this.figure.shape.children;
-		for ( var i = 0; i < shapes.length; i++ ) {
-			var z = shapes[i].position.y;
-			this.lines[this.cells_in_height - z - 1].push(shapes[i]);
+		var objects = this.figure.obj.children;
+		for ( var i = 0; i < objects.length; i++ ) {
+			var z = objects[i].position.y;
+			this.lines[this.cells_in_height - z - 1].push(objects[i]);
 		}
 	}
 
