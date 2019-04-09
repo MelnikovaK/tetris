@@ -226,16 +226,15 @@ class Tetris {
 					break pivot;
 				}
 			}
-			if ( pivot == undefined ) return;
 			if ( dot.pivot ) continue;
-
+  
 			var diff_first_parameter = pivot[f_rotation_parameter] - dot[f_rotation_parameter];
 			var diff_second_parameter = pivot[s_rotation_parameter] - dot[s_rotation_parameter];
+			
 			var f_value = dot[s_rotation_parameter] + (diff_second_parameter == 0 ? -diff_first_parameter : diff_second_parameter);
 			var s_value = dot[f_rotation_parameter] + (diff_first_parameter == 0 ? diff_second_parameter : diff_first_parameter);
-
 			if ( f_value < 0 || f_value >= this.check_coordinates[s_rotation_parameter] || s_value < 0 || s_value >= this.check_coordinates[f_rotation_parameter] ) return;
-
+			// if (this.checkCoordinatesArentFill(new_x, new_y, dot.z)) return; 
 			new_values[i] = { s_rotation_parameter : f_value, f_rotation_parameter: s_value};
 		}
 
@@ -258,8 +257,9 @@ class Tetris {
 					if ( !row[k] ) continue line;
 				}
 			}
-			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: i} );
+			this.logic_step_interval -= 15;
 			this.points += 5;
+			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: i} );
 			Utils.triggerCustomEvent( window, this.GET_POINT );
 
 			for ( var j = i; j >= 0; j-- ) {
@@ -279,7 +279,7 @@ class Tetris {
 			var dot = this.figure.dots[i];
 			if ( dot.z >= (scope.cells_height - 1) || scope.lines[dot.z + 1][dot.x][dot.y] ) {
 				scope.figure_on_finish = true;
-				if (dot.z <= 2) {
+				if (dot.z <= 3) {
 					scope.game_is_over = true;
 				}
 				break;
