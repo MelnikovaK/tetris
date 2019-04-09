@@ -138,10 +138,6 @@ class ThreejsRenderer {
 
 		var spotLightHelper = new THREE.SpotLightHelper( spotLight );
 		scene.add( spotLightHelper );
-
-		
-		// var controls = this.controls = new THREE.OrbitControls( camera );
-		// controls.update();
 	}
 
 	initContainers() {
@@ -178,7 +174,6 @@ class ThreejsRenderer {
 			this.figure.obj.children[i].position.z = dot.y;
 			this.figure.obj.children[i].position.y = this.cells_in_height - dot.z - 1;
 		}
-		// console.log(this.figure.name)
 	}
 
 	updateFigurePosition() {
@@ -235,7 +230,6 @@ class ThreejsRenderer {
 		function render() {
 		  scope.requestAnimationFrame_id = requestAnimationFrame( render );
 		  scope.renderer.render( scope.scene, scope.camera );
-		  // scope.controls.update();
 		}
 		render();
 	}

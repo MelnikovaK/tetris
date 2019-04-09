@@ -100,33 +100,19 @@ class Tetris {
 		row:
 		for ( var z = this.lines.length - 1; z >= 0 ; z--) {
 			var row = this.lines[z];
-			for (var x = 0; x < row.length; x++){
-				var line = row[x];
-				for ( var y = 0; y < line.length; y++) {
-					if ( row[x][y] ) continue row;
+			for (var x = 0; x < x_array.length; x++)
+				for ( var y = 0; y < y_array.length; y++) {
+					if ( row[ x_array[x] + dx ] == undefined || row[ x_array[x] + dx ][ y_array[y] + dy ] == undefined) return false;
+					if ( row[ x_array[x] + dx ][ y_array[y] + dy ] ) continue row;
 				}
-			}
 			return z; 
 		}
 		return false;
 	}
 
 	dropFigure() {
-		var x_array = this.figure.shape.map(function(dot) { return dot.x; });
-		var y_array = this.figure.shape.map(function(dot) { return dot.y; });
+		var needed_line = this.testMove(0,0);
 		var max_z = Math.max.apply(Math, this.figure.shape.map(function(x) { return x.z; }));
-		var needed_line;
-		line:
-		for ( var i =  0; i < this.lines.length; i++ ) {
-			var line = this.lines[i]
-			for ( var j = 0; j < x_array.length; j++ ) {
-				for ( var k = 0; k < y_array.length; k++ ) {
-					if ( line[x_array[j]][y_array[k]] ) continue line;
-				}
-			}
-			needed_line = i;
-		}
-
 		for ( var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
 			dot.z += needed_line - max_z;
@@ -135,15 +121,7 @@ class Tetris {
 	}
 
 	moveFigureByDirection(direction) {
-		var correct_action = true;
-		for ( var i = 0; i < this.figure.shape.length; i++) {
-			var dot = this.figure.shape[i];
-			var new_x = dot.x + direction.x;
-			var new_y = dot.y + direction.y;
-			if ( new_x < 0 || new_x >= this.cells_horizontal || new_y < 0 || 
-				new_y >= this.cells_vertical ||  this.checkCoordinatesArentFill(new_x, new_y, dot.z) ) correct_action = false;
-		}
-		if ( correct_action) {
+		if ( this.testMove (direction.x, direction.y)) {
 			for ( var i = 0; i < this.figure.shape.length; i++) {
 				var dot = this.figure.shape[i];
 				dot.x += direction.x;
