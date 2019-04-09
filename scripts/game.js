@@ -48,6 +48,19 @@
 				"down": {
 					keys: [83,40],
 				},
+				"camera_left": { // название активности
+					keys: [37], // список кодов кнопок соответствующих активности
+					enabled: true // отключенная активность по умолчанию
+				},
+				"camera_right": {
+					keys: [39],
+				},
+				"camera_up": {
+					keys: [38],
+				},
+				"camera_down": {
+					keys: [40],
+				},
 				"pause": {
 					keys: [27],
 				},
@@ -85,7 +98,7 @@
 	let inputController = new InputController( config.input, $game_container[0] );
 	let tetris = new Tetris( config, inputController );
 	let page_manager = new PageManager( $game_container, tetris, config.start_screen );
-	let renderer = new ThreejsRenderer( tetris, config );
+	let renderer = new ThreejsRenderer( tetris, config, inputController);
 
 	let particles_manager = new ThreejsParticles($game_container, renderer, config, tetris);
 

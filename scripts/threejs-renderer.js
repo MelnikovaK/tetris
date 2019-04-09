@@ -1,6 +1,6 @@
 
 class ThreejsRenderer {
-	constructor( tetris, config ) {
+	constructor( tetris, config, inputController ) {
 
 		//events
 		this.SHOW_FINISH_SCREEN = "screens: show_finish_modal";
@@ -64,7 +64,42 @@ class ThreejsRenderer {
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
 			scope.removeLine(e.detail.line_number);
 		});
+
+		inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
+			var acttion_name = e.detail.name;
+			if ( acttion_name == 'camera_left') scope.moveCameraHorizontal(true, true);
+			if ( acttion_name == 'camera_right') scope.moveCameraHorizontal(true, false);
+			if ( acttion_name == 'camera_up') scope.moveCameraVertical(true, true);
+			if ( acttion_name == 'camera_down') scope.moveCameraVertical(true, false);
+		});
+
+		inputController.target.addEventListener( inputController.ACTION_DEACTIVATED, function (e) {
+			var acttion_name = e.detail.name;
+			if ( acttion_name == 'camera_left') scope.moveCameraHorizontal(false);
+			if ( acttion_name == 'camera_right') scope.moveCameraHorizontal(false);
+			if ( acttion_name == 'camera_up') scope.moveCameraVertical(false);
+			if ( acttion_name == 'camera_down') scope.moveCameraVertical(false);
+		});
 	}
+
+	moveCameraHorizontal(is_start, is_left) {
+		var scope = this;
+		if ( is_start ) {
+			this.hor_interval_id = setInterval( function() {
+				scope.camera.position.x += is_left ? -1 : 1;
+			}, 60)
+		} else clearInterval(this.hor_interval_id);
+	}
+
+	moveCameraVertical(is_start, is_up) {
+		var scope = this;
+		if ( is_start ) {
+			this.ver_interval_id = setInterval( function() {
+				scope.camera.position.y += is_up ? 1 : -1;
+			}, 60)
+		} else clearInterval(this.ver_interval_id);
+	}
+
 
 	initScene() {
 		var scope = this;
