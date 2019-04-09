@@ -164,7 +164,6 @@ class Tetris {
 			for ( var i = 0; i < this.cells_horizontal; i++){
 				line.push([])
 				for ( var j = 0; j < this.cells_vertical; j++) {
-					//информация о заполненности ячейки
 					line[i][j] = false;
 				}
 			}
@@ -230,7 +229,7 @@ class Tetris {
   
 			var diff_first_parameter = pivot[f_rotation_parameter] - dot[f_rotation_parameter];
 			var diff_second_parameter = pivot[s_rotation_parameter] - dot[s_rotation_parameter];
-			
+
 			var f_value = dot[s_rotation_parameter] + (diff_second_parameter == 0 ? -diff_first_parameter : diff_second_parameter);
 			var s_value = dot[f_rotation_parameter] + (diff_first_parameter == 0 ? diff_second_parameter : diff_first_parameter);
 			if ( f_value < 0 || f_value >= this.check_coordinates[s_rotation_parameter] || s_value < 0 || s_value >= this.check_coordinates[f_rotation_parameter] ) return;
