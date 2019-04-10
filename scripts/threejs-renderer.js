@@ -152,8 +152,6 @@ class ThreejsRenderer {
 	}
 
 	initGameField() {
-
-		//3 walls
 		var wallMaterial = new THREE.MeshLambertMaterial( { color:'#4D56FF', side: THREE.BackSide});
 		var wall = new THREE.Mesh(new THREE.BoxBufferGeometry( this.cells_horizontal, this.cells_in_height, this.cells_vertical ), wallMaterial);
 		wall.position.y = this.cells_in_height / 2;
@@ -171,8 +169,8 @@ class ThreejsRenderer {
 		for (var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
 			this.figure.obj.children[i].position.x = dot.x;
-			this.figure.obj.children[i].position.z = dot.y;
-			this.figure.obj.children[i].position.y = this.cells_in_height - dot.z - 1;
+			// this.figure.obj.children[i].position.z = dot.y;
+			this.figure.obj.children[i].position.y = this.cells_in_height - dot.y - 1;
 		}
 	}
 
@@ -181,8 +179,8 @@ class ThreejsRenderer {
 			var dot = this.figure.shape[i];
 			var obj = this.figure.obj.children[i];
 			obj.position.x = dot.x;
-			obj.position.z = dot.y;
-			obj.position.y = this.cells_in_height - dot.z - 1;
+			// obj.position.z = dot.y;
+			obj.position.y = this.cells_in_height - dot.y - 1;
 		}
 	}
 
