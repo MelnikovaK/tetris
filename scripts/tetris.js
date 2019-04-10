@@ -88,7 +88,7 @@ class Tetris {
 				if (el.substr(-1) == '*') pivot = true;
 				shape.push({x: +el[0], y: +el[2], pivot: pivot})
 			});
-			this.figures.push({name: figure, shape: shape })
+			this.figures.push({name: figure, shape: shape, rotation_state: 0 })
 		}
 	}
 
@@ -221,56 +221,72 @@ class Tetris {
 	}
 
 	rotate() {
-		var pivot;
-		var new_values = []
+		// var pivot;
+		// var new_values = []
+		// for ( var i = 0; i < this.figure.shape.length; i++ ) {
+		// 	var dot = this.figure.shape[i];
+		// 	pivot:
+		// 	for (var j = 0; j < this.figure.shape.length; j++ ) {
+		// 		var cur_dot = this.figure.shape[j]
+		// 		if ( cur_dot.pivot ) {
+		// 			pivot = cur_dot;
+		// 			break pivot;
+		// 		}
+		// 	}
+		// 	if ( dot.pivot ) continue;
+  
+		// 	var diffX = pivot.x - dot.x;
+		// 	var diffY = pivot.y - dot.y;
+
+
+		// 	dot.y += diffY == 0 ? -diffX : diffY;
+		// 	dot.x += diffX == 0 ? diffY : diffX;	
+		// }
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var dot = this.figure.shape[i];
-			pivot:
-			for (var j = 0; j < this.figure.shape.length; j++ ) {
-				var cur_dot = this.figure.shape[j]
-				if ( cur_dot.pivot ) {
-					pivot = cur_dot;
-					break pivot;
-				}
-			}
-			if ( dot.pivot ) continue;
-  
-			var diffX = pivot.x - dot.x;
-			var diffY = pivot.y - dot.y;
-
-
-			dot.y += diffY == 0 ? -diffX : diffY;
-			dot.x += diffX == 0 ? diffY : diffX;	
+			dot.x += this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
+			dot.y += this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
 		}
+		
+		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0;
+		else this.figure.rotation_state++;
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
 	initFiguresRotations() {
-		var new_values = []
+		//у каждой фигуры есть 4 состояния, нужно добавить массив где будет сумма свдига для каждой точки фигуры в каждом состяонии, и данное состояние будет помечаться
+		//все состояния одинаковые а надо изменить
+
 		for ( var i = 0; i < this.figures.length; i++ ) {
+			var figure = JSON.parse(JSON.stringify(this.figures[i]));
+			this.figure_rotations[figure.name] = {};
 			var pivot;
-			var figure = this.figures[i];
-			this.figure_rotations[figure.name] = [];
-			pivot:
-			for (var j = 0; j < figure.shape.length; j++ ) {
-				var cur_dot = figure.shape[j]
-				if ( cur_dot.pivot ) {
-					pivot = cur_dot;
-					break pivot;
+			//find pivot
+			for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) {
+				if (figure.shape[part_i].pivot) {
+					pivot = figure.shape[part_i];
+					break;
 				}
 			}
-			var diffX = pivot.x - cur_dot.x;
-			var diffY = pivot.y - cur_dot.y;
+			for ( var state = 0; state < 4; state++ ) {
+				this.figure_rotations[figure.name][state] = [];
+				for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) {
+					var dot = figure.shape[part_i];
+					var diffX = pivot.x - dot.x;
+					var diffY = pivot.y - dot.y;
 
-			var x = diffY == 0 ? -diffX : diffY;
-			var y = diffX == 0 ? diffY : diffX;	
-			this.figure_rotations[figure.name].push({x:x, y: y});
+					var y = diffY == 0 ? -diffX : diffY;
+					var x = diffX == 0 ? diffY : diffX;	
+					dot.x += x;
+					dot.y += y;
 
+					this.figure_rotations[figure.name][state].push({x: x, y: y});
+				}
+			}
 		}
 	}
 
 	removeFullLines() {
-		// var last_index = this.lines.length - 1;
 		row:
 		for ( var y = 0; y < this.lines.length; y++ ) {
 			var row = this.lines[y];
@@ -285,7 +301,6 @@ class Tetris {
 				this.lines[i] = this.lines[i-1]
 			}
 			this.lines[0] = this.empty_line;
-			console.log(this.lines);
 		}
 	}
 
@@ -303,8 +318,6 @@ class Tetris {
 		}
 	}
 
-	
-
 	fillLine() {
 		var scope = this;
 		this.figure.shape.forEach(function(dot,i) {
@@ -316,7 +329,6 @@ class Tetris {
 	gameOver(){
 		clearTimeout( this.game_timeout );
 		this.inputController.enabled = false;
-
 		Utils.triggerCustomEvent( window, this.GAME_IS_OVER );
 	}
 

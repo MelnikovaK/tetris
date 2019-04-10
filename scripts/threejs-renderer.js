@@ -209,7 +209,6 @@ class ThreejsRenderer {
 
 
 	removeLine(line) {
-		console.log(this.lines)
 		for ( var i = this.lines[line].length - 1; i >= 0; i-- ) {
 			this.AM.putAsset(this.lines[line][i]);
 			this.lines[line][i].parent.remove(this.lines[line][i])
