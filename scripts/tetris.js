@@ -144,9 +144,17 @@ class Tetris {
 		}
 	}
 
+	moveToTheMiddle() {
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var dot = this.figure.shape[i];
+			dot.x += this.cells_horizontal / 2.5;
+		} 
+	}
+
 	startGame() {
 		var scope = this;
 		this.figure = this.getNewFigureData();
+		this.moveToTheMiddle();
 		this.figure_on_finish = false;
 		this.points = 0;
 		this.on_pause = false;
@@ -172,6 +180,7 @@ class Tetris {
 				if ( scope.figure_on_finish ) {
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
+					scope.moveToTheMiddle();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 					scope.removeFullLines();
 				}
@@ -261,8 +270,12 @@ class Tetris {
 					var diffX = pivot.x - dot.x;
 					var diffY = pivot.y - dot.y;
 
-					var y = diffY == 0 ? -diffX : diffY;
-					var x = diffX == 0 ? diffY : diffX;	
+          var y = diffY == 0 ? -diffX : diffY;
+          var x = diffX == 0 ? diffY : diffX;    
+
+					// var x = diffY == 0 ? diffX : diffX == 0 ? diffY : (-diffX - diffY) * -1;
+					// var y = diffX == 0 ? diffY : diffY == 0 ? -diffX : 0;	
+
 					dot.x += x;
 					dot.y += y;
 
@@ -320,6 +333,6 @@ class Tetris {
 
 	getNewFigureData() {
 		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		// return JSON.parse(JSON.stringify(this.figures[1]));
+		// return JSON.parse(JSON.stringify(this.figures[4]));
 	}
 }
