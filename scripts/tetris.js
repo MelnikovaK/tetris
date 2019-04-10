@@ -35,9 +35,7 @@ class Tetris {
 
 		this.directions = {
 			'right': {x:1, y:0},
-			'left': {x:-1, y:0},
-			'down': {x:0, y:1},
-			'up': {x:0, y:-1}
+			'left': {x:-1, y:0}
 		};
 
 		this.check_coordinates = {
@@ -215,48 +213,36 @@ class Tetris {
 			if ( dot.pivot ) continue;
 		  dot[s_rotation_parameter] = new_values[i].s_rotation_parameter;
       dot[f_rotation_parameter] = new_values[i].f_rotation_parameter;
-      console.log(dot)
 		}
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
 	rotate() {
-		// var pivot;
-		// var new_values = []
-		// for ( var i = 0; i < this.figure.shape.length; i++ ) {
-		// 	var dot = this.figure.shape[i];
-		// 	pivot:
-		// 	for (var j = 0; j < this.figure.shape.length; j++ ) {
-		// 		var cur_dot = this.figure.shape[j]
-		// 		if ( cur_dot.pivot ) {
-		// 			pivot = cur_dot;
-		// 			break pivot;
-		// 		}
-		// 	}
-		// 	if ( dot.pivot ) continue;
-  
-		// 	var diffX = pivot.x - dot.x;
-		// 	var diffY = pivot.y - dot.y;
+		var possibility_to_move = true;
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
+			var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
+			if ( !this.testMove( diffX, diffY )) possibility_to_move = false;
+		}
+		// if (possibility_to_move) {
 
-
-		// 	dot.y += diffY == 0 ? -diffX : diffY;
-		// 	dot.x += diffX == 0 ? diffY : diffX;	
-		// }
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var dot = this.figure.shape[i];
-			dot.x += this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
-			dot.y += this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
+			var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
+			var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
+			if ( this.testMove(diffX, diffY)); {
+				dot.x += diffX;
+				dot.y += diffY;
+			}
 		}
-		
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0;
 		else this.figure.rotation_state++;
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
+		// }
+		
 	}
 
 	initFiguresRotations() {
-		//у каждой фигуры есть 4 состояния, нужно добавить массив где будет сумма свдига для каждой точки фигуры в каждом состяонии, и данное состояние будет помечаться
-		//все состояния одинаковые а надо изменить
-
 		for ( var i = 0; i < this.figures.length; i++ ) {
 			var figure = JSON.parse(JSON.stringify(this.figures[i]));
 			this.figure_rotations[figure.name] = {};
