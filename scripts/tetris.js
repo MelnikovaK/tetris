@@ -92,21 +92,28 @@ class Tetris {
 		}
 	}
 
-	
-
 	dropFigure() {
 		var counter = 14;
-		var possibility_to_move = this.testMove(0, counter);
-		while ( !possibility_to_move ) {
+		while ( 1 ) {
+			if ( this.testMove(0, counter) ) break;
 			counter--;
-			possibility_to_move = this.testMove(0, counter);
 		}
-		var max_y = Math.max.apply(Math, this.figure.shape.map(function(x) { return x.y; }));
 		for ( var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
-			dot.y += counter - max_y;
+			dot.y += counter;
 		}
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
+	}
+
+	testMove(dx,dy) {
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var part = this.figure.shape[i];
+			var new_x = part.x + dx;
+			var new_y = part.y + dy;
+			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false;
+			if ( this.lines[new_y][new_x]) return false;
+		}
+		return true;
 	}
 
 	moveFigureByDirection(direction) {
@@ -271,16 +278,7 @@ class Tetris {
 		}
 	}
 
-	testMove(dx,dy) {
-		for ( var i = 0; i < this.figure.shape.length; i++ ) {
-			var part = this.figure.shape[i];
-			var new_x = part.x + dx;
-			var new_y = part.y + dy;
-			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false;
-			if ( this.lines[new_y][new_x]) return false;
-		}
-		return true;
-	}
+	
 
 	fillLine() {
 		var scope = this;
