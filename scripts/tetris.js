@@ -60,7 +60,7 @@ class Tetris {
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			var acttion_name = e.detail.name;
 			if ( acttion_name == 'acceleration') scope.accelerateMoving(true);
-			if ( acttion_name == 'rotate_x') scope.rotateBy('x', 'z');
+			if ( acttion_name == 'rotate_x') scope.rotate();
 			if ( acttion_name == 'pause') scope.setPause();
 			if ( acttion_name == 'fall') scope.dropFigure();
 			var direction = scope.directions[acttion_name];
@@ -215,7 +215,43 @@ class Tetris {
 			if ( dot.pivot ) continue;
 		  dot[s_rotation_parameter] = new_values[i].s_rotation_parameter;
       dot[f_rotation_parameter] = new_values[i].f_rotation_parameter;
+      console.log(dot)
 		}
+		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
+	}
+
+	rotate() {
+		var pivot;
+		var new_values = []
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var dot = this.figure.shape[i];
+			pivot:
+			for (var j = 0; j < this.figure.shape.length; j++ ) {
+				var cur_dot = this.figure.shape[j]
+				if ( cur_dot.pivot ) {
+					pivot = cur_dot;
+					break pivot;
+				}
+			}
+			if ( dot.pivot ) continue;
+  
+			var diffX = pivot.x - dot.x;//first
+			var diffY = pivot.y - dot.y;//sec
+
+
+			dot.y += diffY == 0 ? -diffX : diffY;
+			dot.x += diffX == 0 ? diffY : diffX;
+			// var temp = dot.x; 
+			// dot.x = dot.y;
+			// dot.y = temp;					
+		}
+
+		// for ( var i = 0; i < this.figure.shape.length; i++ ) {
+		// 	var dot = this.figure.shape[i];
+		// 	if ( dot.pivot ) continue;
+		//   dot[s_rotation_parameter] = new_values[i].s_rotation_parameter;
+  //     dot[f_rotation_parameter] = new_values[i].f_rotation_parameter;
+		// }
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
