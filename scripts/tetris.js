@@ -235,23 +235,13 @@ class Tetris {
 			}
 			if ( dot.pivot ) continue;
   
-			var diffX = pivot.x - dot.x;//first
-			var diffY = pivot.y - dot.y;//sec
+			var diffX = pivot.x - dot.x;
+			var diffY = pivot.y - dot.y;
 
 
 			dot.y += diffY == 0 ? -diffX : diffY;
-			dot.x += diffX == 0 ? diffY : diffX;
-			// var temp = dot.x; 
-			// dot.x = dot.y;
-			// dot.y = temp;					
+			dot.x += diffX == 0 ? diffY : diffX;	
 		}
-
-		// for ( var i = 0; i < this.figure.shape.length; i++ ) {
-		// 	var dot = this.figure.shape[i];
-		// 	if ( dot.pivot ) continue;
-		//   dot[s_rotation_parameter] = new_values[i].s_rotation_parameter;
-  //     dot[f_rotation_parameter] = new_values[i].f_rotation_parameter;
-		// }
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
@@ -272,30 +262,30 @@ class Tetris {
 			var diffX = pivot.x - cur_dot.x;
 			var diffY = pivot.y - cur_dot.y;
 
-			var x = -diffY;
-			var y = diffX;
+			var x = diffY == 0 ? -diffX : diffY;
+			var y = diffX == 0 ? diffY : diffX;	
 			this.figure_rotations[figure.name].push({x:x, y: y});
 
 		}
 	}
 
 	removeFullLines() {
-		line:
+		// var last_index = this.lines.length - 1;
+		row:
 		for ( var y = 0; y < this.lines.length; y++ ) {
-			var line = this.lines[y];
-			for ( var x= 0; x < line.length;x++) if ( !line[x] ) continue line;
+			var row = this.lines[y];
+			for ( var x = 0; x < row.length; x++ ) {
+				if ( !row[x] ) continue row;
+			}
 			this.logic_step_interval -= 15;
 			this.points += 5;
-			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: i} );
+			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: y} );
 			Utils.triggerCustomEvent( window, this.GET_POINT );
-
-			for ( var j = y; j >= 0; j-- ) {
-				if ( j == 0 ) {
-					this.lines[j] = this.empty_line;
-					break;
-				}
-				this.lines[j] = this.lines[j-1];
+			for ( var i = y; i > 0; i-- ) {
+				this.lines[i] = this.lines[i-1]
 			}
+			this.lines[0] = this.empty_line;
+			console.log(this.lines);
 		}
 	}
 
@@ -307,7 +297,6 @@ class Tetris {
 			if ( possibility_to_move ) dot.y++;
 			else scope.figure_on_finish = true;
 			// if ( !possibility_to_move ) scope.game_is_over = true;
-
 		}
 		if ( this.figure_on_finish ) {
 			this.fillLine();
