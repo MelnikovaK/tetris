@@ -44,6 +44,7 @@ class ThreejsRenderer {
 		window.addEventListener( tetris.FIGURE_ON_FINISH , function () {
 			scope.fillLines();
 			scope.jumpFigures();
+			scope.removeProjection();
 			scope.updateFigure();
 		});
 
@@ -164,21 +165,33 @@ class ThreejsRenderer {
 
 	updateFigure() {
 		this.figure = this.tetris.figure;
+		this.projection = this.tetris.projection;
 		this.figure['obj'] = new THREE.Object3D();
+		this.projection['obj'] = new THREE.Object3D();
 		for ( var i =  0; i < this.figure.shape.length; i++) {
 			this.figure.obj.add(this.AM.pullAsset(this.figure.name))
 			this.figure.obj.children[i].visible = false;
+			this.projection.obj.add(this.AM.pullAsset(this.projection.name))
+			this.projection.obj.children[i].visible = false;
 		}
 		this.game_field.add(this.figure.obj);
+		this.game_field.add(this.projection.obj);
 	}
 
 	updateFigurePosition() {
 		for (var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
-			if (dot.y >= 2) this.figure.obj.children[i].visible = true;
+			var proj = this.projection.shape[i];
+
+			if (dot.y >= 2) {
+				this.figure.obj.children[i].visible = true;
+				this.projection.obj.children[i].visible = true;
+			}
 			var obj = this.figure.obj.children[i];
 			obj.position.x = dot.x;
 			obj.position.y = this.cells_in_height - dot.y - 1;
+			this.projection.obj.children[i].position.x = dot.x;
+			this.projection.obj.children[i].position.y = this.cells_in_height - proj.y - 1;
 		}
 	}
 
@@ -218,6 +231,13 @@ class ThreejsRenderer {
 	removeAllFigures() {
 		for ( var i = 0; i < this.lines.length; i++ ) {
 			this.removeLine(i);
+		}
+	}
+
+	removeProjection() {
+		for ( var i = 0; i < this.projection.shape.length; i++ ) {
+			this.AM.putAsset(this.projection.shape[i]);
+			this.projection.obj.remove(this.projection.shape[i])
 		}
 	}
 

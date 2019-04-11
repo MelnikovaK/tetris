@@ -76,6 +76,7 @@ class Tetris {
 		});
 	}
 
+
 	initFigures(figures) {
 		var scope = this;
 		for ( var figure in figures ) {
@@ -90,17 +91,24 @@ class Tetris {
 		}
 	}
 
+
+
 	dropFigure() {
+		var counter = this.getDropPosition();
+		for ( var i = 0; i < this.figure.shape.length; i++) {
+			var dot = this.figure.shape[i];
+			dot.y += counter;
+		}
+		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
+	}
+
+	getDropPosition() {
 		var counter = 0;
 		while ( 1 ) {
 			if ( !this.testMove(0, counter) ) break;
 			counter++;
 		}
-		for ( var i = 0; i < this.figure.shape.length; i++) {
-			var dot = this.figure.shape[i];
-			dot.y += counter - 1;
-		}
-		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
+		return counter - 1;
 	}
 
 
@@ -137,6 +145,7 @@ class Tetris {
 				dot.x += direction.x;
 			}                                               
 		}
+		this.updateProjection();
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
@@ -170,6 +179,8 @@ class Tetris {
 		var scope = this;
 		this.figure = this.getNewFigureData();
 		this.moveToTheMiddle();
+		this.projection = JSON.parse(JSON.stringify(this.figure));
+		this.updateProjection();
 		this.figure_on_finish = false;
 		this.points = 0;
 		this.on_pause = false;
@@ -196,6 +207,8 @@ class Tetris {
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
 					scope.moveToTheMiddle();
+					scope.projection = JSON.parse(JSON.stringify(scope.figure));
+					scope.updateProjection();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 					scope.removeFullLines();
 				}
@@ -220,6 +233,7 @@ class Tetris {
 		// изменение состояния фигуры
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0;
 		else this.figure.rotation_state++;
+		this.updateProjection();
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
@@ -304,5 +318,17 @@ class Tetris {
 	getNewFigureData() {
 		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
 		// return JSON.parse(JSON.stringify(this.figures[6]));
+	}
+
+		updateProjection() {
+		var counter = this.getDropPosition();
+		for ( var i = 0; i < this.projection.shape.length; i++) {
+			var dot = this.projection.shape[i];
+			dot.x = this.figure.shape[i].x;
+			//counter = это насколько надо уронить фигуру
+			// console.log(this.cells_height - counter)
+			// dot.y -= ( counter - this.cells_height )
+			dot.y = this.figure.shape[i].y + counter; 
+		}
 	}
 }
