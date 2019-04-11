@@ -325,9 +325,6 @@ class Tetris {
 		for ( var i = 0; i < this.projection.shape.length; i++) {
 			var dot = this.projection.shape[i];
 			dot.x = this.figure.shape[i].x;
-			//counter = это насколько надо уронить фигуру
-			// console.log(this.cells_height - counter)
-			// dot.y -= ( counter - this.cells_height )
 			dot.y = this.figure.shape[i].y + counter; 
 		}
 	}

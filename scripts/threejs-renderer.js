@@ -173,6 +173,8 @@ class ThreejsRenderer {
 			this.figure.obj.children[i].visible = false;
 			this.projection.obj.add(this.AM.pullAsset(this.projection.name))
 			this.projection.obj.children[i].visible = false;
+			// this.projection.obj.children[i].material.transparent = true;
+			// this.projection.obj.children[i].material.opacity = 0.5;
 		}
 		this.game_field.add(this.figure.obj);
 		this.game_field.add(this.projection.obj);
@@ -290,12 +292,6 @@ class ThreejsRenderer {
 	
 
 	createAssets() {
-		//game field
-		var groundMaterial = new THREE.MeshLambertMaterial( { color: '#FFF13D', side: THREE.DoubleSide });
-		var wallMaterial = new THREE.MeshLambertMaterial( { color:'#4D56FF', side: THREE.DoubleSide});
-
-		this.AM.addAsset('ground_plane', function() { return new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_vertical ), groundMaterial );} , 3);
-		this.AM.addAsset('wall_plane', function() { return new THREE.Mesh( new THREE.PlaneBufferGeometry( this.cells_horizontal, this.cells_in_height ), wallMaterial );} , 4);
 
 		//shapes
 		var rect_material = new THREE.MeshLambertMaterial( { color: '#86DA10'});
