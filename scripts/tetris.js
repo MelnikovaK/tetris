@@ -91,14 +91,14 @@ class Tetris {
 	}
 
 	dropFigure() {
-		var counter = 14;
+		var counter = 0;
 		while ( 1 ) {
-			if ( this.testMove(0, counter) ) break;
-			counter--;
+			if ( !this.testMove(0, counter) ) break;
+			counter++;
 		}
 		for ( var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
-			dot.y += counter;
+			dot.y += counter - 1;
 		}
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
@@ -240,13 +240,10 @@ class Tetris {
 				this.figure_rotations[figure.name][state] = [];
 				for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) {
 					var dot = figure.shape[part_i];
-
 					var diffX = dot.x - pivot.x;
-					var diffY = dot.y  -  pivot.y;
-
+					var diffY = dot.y - pivot.y;
 					dot.x = dot.x - diffX - diffY;
 					dot.y = dot.y - diffY + diffX;
-				
 					this.figure_rotations[figure.name][state].push({x: diffX, y: diffY});
 				}
 			}
@@ -277,7 +274,6 @@ class Tetris {
 			var dot = this.figure.shape[i];
 			if ( possibility_to_move ) dot.y++;
 			else this.figure_on_finish = true;
-			console.log(dot.y)
 			if ( dot.y < 3 && this.checkGameIsOver()) this.game_is_over = true;
 		}
 		if ( this.figure_on_finish ) {
