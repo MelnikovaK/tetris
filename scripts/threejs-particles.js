@@ -16,7 +16,7 @@ class ThreejsParticles {
 		});
 
 		window.addEventListener( game.FIGURE_ON_FINISH , function () {
-			// this.updateEmitterGroup(scope.accel_group);
+			scope.updateEmitterGroup(scope.accel_group);
 		});
 
 		window.addEventListener( game.LINE_IS_FULL , function () {
@@ -34,7 +34,7 @@ class ThreejsParticles {
 		var stats = new Stats();
 
 		//GROUPS
-		this.accel_group = this.createGroup('particles/cloudSml.png');
+		this.accel_group = this.createGroup('particles/eye.png');
 
 		this.accel_group.addPool(10, new SPE.Emitter( accel ), false);
 
@@ -71,8 +71,7 @@ class ThreejsParticles {
 	} 
 
 	updateEmitterGroup( emitter_group ) {
-		console.log(this.game.figure.dots)
-		var figure = this.game.figure.dots[0];
+		var figure = this.game.figure.shape[1];
     	emitter_group.triggerPoolEmitter( 1, (new THREE.Vector3( figure.x, figure.y, figure.z )) );
 	}
 

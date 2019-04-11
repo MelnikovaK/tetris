@@ -55,6 +55,7 @@ class ThreejsRenderer {
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
 			scope.fillLines();
+			scope.destroyFigures();
 			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 			setTimeout( function() {
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
@@ -196,7 +197,6 @@ class ThreejsRenderer {
 	}
 
 	moveLines(line_index) {
-		console.log(this.lines);
 		for ( var i = line_index; i > 0; i-- ) {
 			this.lines[i] = this.lines[i-1];
 			for ( var j = 0; j < this.lines[i].length; j++ ) {
@@ -231,31 +231,48 @@ class ThreejsRenderer {
 		render();
 	}
 
+	destroyFigures() {
+		// for ( var i = 0; i < this.lines.length; i++) {
+		// 	if ( !this.lines[i].length ) continue;
+		// 	for ( var j = 0; j < this.lines[i].length; i++ ) {
+		// 		var counter = 0;
+
+			// }
+		// }
+	}
+
 	jumpFigures() {
-		for ( var i = 0; i < this.lines.length; i++ ) {
-			var line = this.lines[i];
-			for ( var j = 0; j < line.length; j++ ) {
-				if ( !line[j] ) continue;
-				var movin_mesh = line[j];
-				var amp = 10;
-				var y =0;
-				var t = 0;
-				// var moveBlocks = function() {
-				// 	var timeout_id = setTimeout(moveBlocks, 5);
-				//   	if (amp < 1) {
-				//   		clearTimeout(timeout_id);
-				//   		return;
-				//   	}
-				//   	t += .1;
-				//   	y = Math.sin(t)*amp;
-				//   	movin_mesh.position.y += (amp + y) * 0.0005;
-				  
-				// 	  amp -= .05;
-				// }
-				// moveBlocks();
-			}
-			}
-		}
+		var scope = this;
+		for ( var i = 0; i < this.lines.length; i++) {
+			if ( !this.lines[i].length ) continue;
+			for ( var j = 0; j < this.lines[i].length; j++ ) {
+			(function(i, j) {
+				var counter = 0.5;
+				var obj = scope.lines[i][j];
+				var old_value = obj.position.y;
+				if ( !move ) {
+					var interv = 40;
+					var height = 0.25;
+					var move = function() {
+						if (counter > 6 ) {
+							interv = 20;
+							height = 0.05;
+						}
+		        if ( counter < 12) setTimeout( move, interv );
+						else {
+						obj.position.y = old_value;
+						return;
+						} 
+
+						obj.position.y += Math.sin(counter) * height;
+						counter++;
+					}				
+				}
+				move();
+   		 })(i,j);
+			} 
+		};
+	}
 	
 
 	createAssets() {
