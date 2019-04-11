@@ -35,7 +35,8 @@ class ThreejsRenderer {
 
 		window.addEventListener( "screens: start game" , function () {
 			scope.removeAllFigures();
-			scope.updateFigure();
+			scope.updateGameObjects('figure', 1, false);
+			scope.updateGameObjects('projection', 0.7, true);
 			scope.initLines();
 			scope.startRendering();
 		});
@@ -45,7 +46,8 @@ class ThreejsRenderer {
 			scope.fillLines();
 			scope.jumpFigures();
 			scope.removeProjection();
-			scope.updateFigure();
+			scope.updateGameObjects('figure', 1, false);
+			scope.updateGameObjects('projection', 0.7, true);
 		});
 
 		window.addEventListener( tetris.FIGURE_MOVED , function () {
@@ -163,21 +165,17 @@ class ThreejsRenderer {
 		this.game_container.add( wall );
 	}
 
-	updateFigure() {
-		this.figure = this.tetris.figure;
-		this.projection = this.tetris.projection;
-		this.figure['obj'] = new THREE.Object3D();
-		this.projection['obj'] = new THREE.Object3D();
-		for ( var i =  0; i < this.figure.shape.length; i++) {
-			this.figure.obj.add(this.AM.pullAsset(this.figure.name))
-			this.figure.obj.children[i].visible = false;
-			this.projection.obj.add(this.AM.pullAsset(this.projection.name))
-			this.projection.obj.children[i].visible = false;
-			// this.projection.obj.children[i].material.transparent = true;
-			// this.projection.obj.children[i].material.opacity = 0.5;
+	updateGameObjects(name, opacity, is_visible) {
+		this[name] = this.tetris[name];
+		this[name]['obj'] = new THREE.Object3D();
+		for ( var i =  0; i < this[name].shape.length; i++) {
+			this[name].obj.add(this.AM.pullAsset(this[name].name))
+			this[name].obj.children[i].visible = is_visible;
+
+			this[name].obj.children[i].material.transparent = true;
+			this[name].obj.children[i].material.opacity = opacity;
 		}
-		this.game_field.add(this.figure.obj);
-		this.game_field.add(this.projection.obj);
+		this.game_field.add(this[name].obj);
 	}
 
 	updateFigurePosition() {
@@ -185,13 +183,11 @@ class ThreejsRenderer {
 			var dot = this.figure.shape[i];
 			var proj = this.projection.shape[i];
 
-			if (dot.y >= 2) {
-				this.figure.obj.children[i].visible = true;
-				this.projection.obj.children[i].visible = true;
-			}
+			if (dot.y >= 2)this.figure.obj.children[i].visible = true;
 			var obj = this.figure.obj.children[i];
 			obj.position.x = dot.x;
 			obj.position.y = this.cells_in_height - dot.y - 1;
+			console.log()
 			this.projection.obj.children[i].position.x = dot.x;
 			this.projection.obj.children[i].position.y = this.cells_in_height - proj.y - 1;
 		}
@@ -237,9 +233,10 @@ class ThreejsRenderer {
 	}
 
 	removeProjection() {
-		for ( var i = 0; i < this.projection.shape.length; i++ ) {
-			this.AM.putAsset(this.projection.shape[i]);
-			this.projection.obj.remove(this.projection.shape[i])
+		for ( var i = this.projection.obj.children.length - 1; i >= 0; i = this.projection.obj.children.length - 1 ) {
+
+			this.AM.putAsset(this.projection.obj.children[i]);
+			this.projection.obj.remove(this.projection.obj.children[i]);
 		}
 	}
 
@@ -293,32 +290,24 @@ class ThreejsRenderer {
 
 	createAssets() {
 
-		//shapes
-		var rect_material = new THREE.MeshLambertMaterial( { color: '#86DA10'});
-		this.AM.addAsset('rectangle', function() { return createShape(rect_material);} , 15);
+		//shapes;
+		this.AM.addAsset('rectangle', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#86DA10'}));} , 15);
 
-		var square_material = new THREE.MeshLambertMaterial( { color: '#FF1C00'});
-		this.AM.addAsset('square', function() { return createShape(square_material);} , 15);
+		this.AM.addAsset('square', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#FF1C00'}));} , 15);
 		//stairs-left
-		var stl_material = new THREE.MeshLambertMaterial( { color: '#00ACF5'});
-
-		this.AM.addAsset('stairs-left', function() { return createShape(stl_material); }, 15);
+		this.AM.addAsset('stairs-left', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#00ACF5'})); }, 15);
 
 		//stairs-right
-		var str_material = new THREE.MeshLambertMaterial( { color: '#B400F5'});
-		this.AM.addAsset('stairs-right', function() { return createShape(str_material); }, 15);
+		this.AM.addAsset('stairs-right', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#B400F5'})); }, 15);
 
 		//t-shape
-		var t_material = new THREE.MeshLambertMaterial( { color: '#FF890A'});
-		this.AM.addAsset('t-shape', function() { return createShape(t_material);} , 15);
+		this.AM.addAsset('t-shape', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#FF890A'}));} , 15);
 
 		//l-left
-		var ll_material = new THREE.MeshLambertMaterial( { color: '#ED50D8'});
-		this.AM.addAsset('l-left', function() { return createShape(ll_material);} , 15);
+		this.AM.addAsset('l-left', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#ED50D8'}));} , 15);
 
 		//l-right
-		var lr_material = new THREE.MeshLambertMaterial( { color: '#0FFFC6'});
-		this.AM.addAsset('l-right', function() {return createShape(lr_material);} , 15);		
+		this.AM.addAsset('l-right', function() {return createShape(new THREE.MeshLambertMaterial( { color: '#0FFFC6'}));} , 15);		
 
 		function createShape(material) {
 			return new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), material);
