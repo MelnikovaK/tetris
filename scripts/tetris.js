@@ -103,6 +103,7 @@ class Tetris {
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
+
 	testMove(dx,dy) {
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var part = this.figure.shape[i];
@@ -115,11 +116,10 @@ class Tetris {
 	}
 
 	moveFigureByDirection(direction) {
-		if ( this.testMove (direction.x, direction.y)) {
+		if ( this.testMove (direction.x, 0)) {
 			for ( var i = 0; i < this.figure.shape.length; i++) {
 				var dot = this.figure.shape[i];
 				dot.x += direction.x;
-				dot.y += direction.y;
 			}                                               
 		}
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
@@ -184,7 +184,6 @@ class Tetris {
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 					scope.removeFullLines();
 				}
-
 				// redraw
 				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED );
 			};
@@ -217,7 +216,6 @@ class Tetris {
 		else this.figure.rotation_state++;
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 		// }
-		
 	}
 
 	initFiguresRotations() {
