@@ -299,6 +299,6 @@ class Tetris {
 
 	getNewFigureData() {
 		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		// return JSON.parse(JSON.stringify(this.figures[4]));
+		// return JSON.parse(JSON.stringify(this.figures[6]));
 	}
 }

@@ -209,7 +209,7 @@ class ThreejsRenderer {
 
 
 	removeLine(line) {
-		for ( var i = this.lines[line].length - 1; i > 0; i = this.lines[line].length - 1 ) {
+		for ( var i = this.lines[line].length - 1; i >= 0; i = this.lines[line].length - 1 ) {
 			this.AM.putAsset(this.lines[line][i]);
 			this.lines[line][i].parent.remove(this.lines[line][i])
 			this.lines[line].pop();
