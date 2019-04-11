@@ -237,11 +237,19 @@ class Tetris {
 
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var dot = this.figure.shape[i];
+			if ( dot.pivot ) continue;
 			var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
 			var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
 			if ( this.testMove(diffX, diffY)); {
-				dot.x += diffX;
-				dot.y += diffY;
+				if ( this.figure.rotation_state%2 ) {
+						dot.x = dot.x - diffX + diffY;
+						dot.y = dot.y - diffY + diffX;
+				} else {
+					dot.x = dot.x - diffX - diffY;
+					dot.y = dot.y - diffY + diffX;
+
+				}
+				
 			}
 		}
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0;
@@ -252,36 +260,44 @@ class Tetris {
 	}
 
 	initFiguresRotations() {
+
 		for ( var i = 0; i < this.figures.length; i++ ) {
+		// for ( var i = 4; i < 5; i++ ) {
 			var figure = JSON.parse(JSON.stringify(this.figures[i]));
 			this.figure_rotations[figure.name] = {};
 			var pivot;
 			//find pivot
 			for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) {
-				if (figure.shape[part_i].pivot) {
+				if ( figure.shape[part_i].pivot ) {
 					pivot = figure.shape[part_i];
 					break;
 				}
 			}
+
+			//states
 			for ( var state = 0; state < 4; state++ ) {
 				this.figure_rotations[figure.name][state] = [];
 				for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) {
 					var dot = figure.shape[part_i];
-					var diffX = pivot.x - dot.x;
-					var diffY = pivot.y - dot.y;
+					console.log(dot)
 
-          var y = diffY == 0 ? -diffX : diffY;
-          var x = diffX == 0 ? diffY : diffX;    
+					var diffX =   dot.x - pivot.x;
+					var diffY = dot.y  -  pivot.y;
+					console.log( diffX, diffY)
+					if ( state%2 ) {
+						dot.x = dot.x - diffX + diffY;
+						dot.y = dot.y - diffY + diffX;
+				} else {
+					dot.x = dot.x - diffX - diffY;
+					dot.y = dot.y - diffY + diffX;
 
-					// var x = diffY == 0 ? diffX : diffX == 0 ? diffY : (-diffX - diffY) * -1;
-					// var y = diffX == 0 ? diffY : diffY == 0 ? -diffX : 0;	
+				}
 
-					dot.x += x;
-					dot.y += y;
 
-					this.figure_rotations[figure.name][state].push({x: x, y: y});
+					this.figure_rotations[figure.name][state].push({x: diffX, y: diffY});
 				}
 			}
+			console.log(this.figure_rotations)
 		}
 	}
 
