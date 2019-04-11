@@ -16,7 +16,14 @@
 		cell_height: 900/20,
 
 		figures: {
-			"square": "0,0;1,0;0,1;1,1*",
+			// "square": "0,0;1,0;0,1;1,1*",
+			// "rectangle": "0,0;1,0*;2,0;3,0",
+			// "l-left": "1,0;1,1;1,2;0,2*",
+			// "l-right": "0,0;0,1;0,2*;1,2",
+			// "stairs-left": "0,0;1,0*;1,1;2,1",
+			// "stairs-right": "0,1;1,1*;1,0;2,0",
+			// "t-shape": "0,0;1,0*;2,0;1,1",
+			"square": "0,1;1,1;0,0;1,0*",
 			"rectangle": "0,0;1,0*;2,0;3,0",
 			"l-left": "1,0;1,1;1,2;0,2*",
 			"l-right": "0,0;0,1;0,2*;1,2",
@@ -27,7 +34,7 @@
 
 		start_screen: 'start-screen',
 
-		logic_step_interval: 700,
+		logic_step_interval: 300,
 		
 		input: {
 			keyboard_enabled: true,

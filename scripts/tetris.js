@@ -14,7 +14,7 @@ class Tetris {
 
 		this.cells_horizontal = config.cells_horizontal;
 		this.cells_vertical = config.cells_vertical;
-		this.cells_height = config.cells_height;
+		this.cells_height = config.cells_height + 2;
 
 		this.field_width = config.field_width;
 		this.field_height = config.field_height;
@@ -110,6 +110,7 @@ class Tetris {
 			var new_x = part.x + dx;
 			var new_y = part.y + dy;
 			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false;
+			if ( new_y < 3 && JSON.stringify(this.lines[new_y]) == JSON.stringify(this.full_line) ) this.game_is_over = true;
 			if ( this.lines[new_y][new_x]) return false;
 		}
 		return true;
@@ -122,6 +123,7 @@ class Tetris {
 			var dy = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
 			var new_x = part.x - dx - dy;
 	    var new_y = part.y - dy + dx;
+
 			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false;
 			if ( this.lines[new_y][new_x]) return false;
 		}
@@ -215,7 +217,7 @@ class Tetris {
 				dot.y = dot.y - diffY + diffX;
 			}
 		}
-		// изменение состояния у фигуры
+		// изменение состояния фигуры
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0;
 		else this.figure.rotation_state++;
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
@@ -242,6 +244,7 @@ class Tetris {
 
 					var diffX = dot.x - pivot.x;
 					var diffY = dot.y  -  pivot.y;
+
 					dot.x = dot.x - diffX - diffY;
 					dot.y = dot.y - diffY + diffX;
 				
@@ -270,13 +273,12 @@ class Tetris {
 	}
 
 	moveFigure() {
-		var scope = this;
 		var possibility_to_move = this.testMove(0,1);
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var dot = this.figure.shape[i];
 			if ( possibility_to_move ) dot.y++;
-			else scope.figure_on_finish = true;
-			// if ( !possibility_to_move ) scope.game_is_over = true;
+			else this.figure_on_finish = true
+			if ( dot.y < 3 && this.checkGameIsOver()) this.game_is_over = true;
 		}
 		if ( this.figure_on_finish ) {
 			this.fillLine();
@@ -290,6 +292,12 @@ class Tetris {
 		});
 	}
 
+	checkGameIsOver() {
+		for ( var x = 0; x < this.lines[3].length; x++ ) {
+			if ( this.lines[3][x] ) return true;
+		}
+		return false
+	}
 
 	gameOver(){
 		clearTimeout( this.game_timeout );

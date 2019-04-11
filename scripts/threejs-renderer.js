@@ -87,6 +87,8 @@ class ThreejsRenderer {
 		if ( is_start ) {
 			this.hor_interval_id = setInterval( function() {
 				scope.camera.position.x += is_left ? -1 : 1;
+				scope.camera.lookAt( new THREE.Vector3(0,9,3) );
+
 			}, 60)
 		} else clearInterval(this.hor_interval_id);
 	}
@@ -96,6 +98,7 @@ class ThreejsRenderer {
 		if ( is_start ) {
 			this.ver_interval_id = setInterval( function() {
 				scope.camera.position.y += is_up ? 1 : -1;
+				scope.camera.lookAt( new THREE.Vector3(0,9,3) );
 			}, 60)
 		} else clearInterval(this.ver_interval_id);
 	}
@@ -153,8 +156,8 @@ class ThreejsRenderer {
 
 	initGameField() {
 		var wallMaterial = new THREE.MeshLambertMaterial( { color:'#4D56FF', side: THREE.BackSide});
-		var wall = new THREE.Mesh(new THREE.BoxBufferGeometry( this.cells_horizontal, this.cells_in_height, this.cells_vertical ), wallMaterial);
-		wall.position.y = this.cells_in_height / 2;
+		var wall = new THREE.Mesh(new THREE.BoxBufferGeometry( this.cells_horizontal, this.cells_in_height - 2, this.cells_vertical ), wallMaterial);
+		wall.position.y = this.cells_in_height / 2 - 1;
 		this.game_container.add( wall );
 	}
 
@@ -163,23 +166,17 @@ class ThreejsRenderer {
 		this.figure['obj'] = new THREE.Object3D();
 		for ( var i =  0; i < this.figure.shape.length; i++) {
 			this.figure.obj.add(this.AM.pullAsset(this.figure.name))
+			this.figure.obj.children[i].visible = false;
 		}
 		this.game_field.add(this.figure.obj);
-
-		for (var i = 0; i < this.figure.shape.length; i++) {
-			var dot = this.figure.shape[i];
-			this.figure.obj.children[i].position.x = dot.x;
-			// this.figure.obj.children[i].position.z = dot.y;
-			this.figure.obj.children[i].position.y = this.cells_in_height - dot.y - 1;
-		}
 	}
 
 	updateFigurePosition() {
 		for (var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
+			if (dot.y >= 2) this.figure.obj.children[i].visible = true;
 			var obj = this.figure.obj.children[i];
 			obj.position.x = dot.x;
-			// obj.position.z = dot.y;
 			obj.position.y = this.cells_in_height - dot.y - 1;
 		}
 	}
