@@ -196,10 +196,11 @@ class ThreejsRenderer {
 	}
 
 	moveLines(line_index) {
-		for ( var i = 0; i < line_index; i++ ) {
-			var line = this.lines[i];
-			for ( var j = 0; j < line.length; j++ ) {
-				if (line[j].position.y > 0) line[j].position.y--; 
+		console.log(this.lines);
+		for ( var i = line_index; i > 0; i-- ) {
+			this.lines[i] = this.lines[i-1];
+			for ( var j = 0; j < this.lines[i].length; j++ ) {
+				if (this.lines[i][j].position.y > 0) this.lines[i][j].position.y--; 
 			}
 		}
 	}
@@ -210,6 +211,7 @@ class ThreejsRenderer {
 			this.AM.putAsset(this.lines[line][i]);
 			this.lines[line][i].parent.remove(this.lines[line][i])
 			this.lines[line].pop();
+
 		}
 		this.moveLines(line);
 	}
