@@ -192,41 +192,8 @@ class Tetris {
 		this.gameStep();
 	}
 
-	rotateBy(f_rotation_parameter, s_rotation_parameter) {
-		var pivot;
-		var new_values = []
-		for ( var i = 0; i < this.figure.shape.length; i++ ) {
-			var dot = this.figure.shape[i];
-			pivot:
-			for (var j = 0; j < this.figure.shape.length; j++ ) {
-				var cur_dot = this.figure.shape[j]
-				if ( cur_dot.pivot ) {
-					pivot = cur_dot;
-					break pivot;
-				}
-			}
-			if ( dot.pivot ) continue;
-  
-			var diff_first_parameter = pivot[f_rotation_parameter] - dot[f_rotation_parameter];
-			var diff_second_parameter = pivot[s_rotation_parameter] - dot[s_rotation_parameter];
-
-
-			var f_value = dot[s_rotation_parameter] + (diff_second_parameter == 0 ? -diff_first_parameter : diff_second_parameter);
-			var s_value = dot[f_rotation_parameter] + (diff_first_parameter == 0 ? diff_second_parameter : diff_first_parameter);
-			if ( f_value < 0 || f_value >= this.check_coordinates[s_rotation_parameter] || s_value < 0 || s_value >= this.check_coordinates[f_rotation_parameter] ) return;
-			new_values[i] = { s_rotation_parameter : f_value, f_rotation_parameter: s_value};
-		}
-
-		for ( var i = 0; i < this.figure.shape.length; i++ ) {
-			var dot = this.figure.shape[i];
-			if ( dot.pivot ) continue;
-		  dot[s_rotation_parameter] = new_values[i].s_rotation_parameter;
-      dot[f_rotation_parameter] = new_values[i].f_rotation_parameter;
-		}
-		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
-	}
-
 	rotate() {
+		if ( this.figure.name == 'square') return;
 		var possibility_to_move = true;
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
@@ -255,7 +222,7 @@ class Tetris {
 
 	initFiguresRotations() {
 
-		for ( var i = 0; i < this.figures.length; i++ ) {
+		for ( var i = 1; i < this.figures.length; i++ ) {
 			var figure = JSON.parse(JSON.stringify(this.figures[i]));
 			this.figure_rotations[figure.name] = {};
 			var pivot;
@@ -272,7 +239,7 @@ class Tetris {
 				for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) {
 					var dot = figure.shape[part_i];
 
-					var diffX =   dot.x - pivot.x;
+					var diffX = dot.x - pivot.x;
 					var diffY = dot.y  -  pivot.y;
 					dot.x = dot.x - diffX - diffY;
 					dot.y = dot.y - diffY + diffX;
