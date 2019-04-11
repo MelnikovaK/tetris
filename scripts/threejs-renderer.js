@@ -200,18 +200,17 @@ class ThreejsRenderer {
 		for ( var i = line_index; i > 0; i-- ) {
 			this.lines[i] = this.lines[i-1];
 			for ( var j = 0; j < this.lines[i].length; j++ ) {
-				if (this.lines[i][j].position.y > 0) this.lines[i][j].position.y--; 
+				if (this.lines[i][j].position.y > 0) this.lines[i][j].position.y--;
 			}
 		}
-	}
 
+	}
 
 	removeLine(line) {
 		for ( var i = this.lines[line].length - 1; i >= 0; i = this.lines[line].length - 1 ) {
 			this.AM.putAsset(this.lines[line][i]);
 			this.lines[line][i].parent.remove(this.lines[line][i])
 			this.lines[line].pop();
-
 		}
 		this.moveLines(line);
 	}
@@ -247,9 +246,8 @@ class ThreejsRenderer {
 			if ( !this.lines[i].length ) continue;
 			for ( var j = 0; j < this.lines[i].length; j++ ) {
 			(function(i, j) {
-				var counter = 0.5;
+				var counter = 1;
 				var obj = scope.lines[i][j];
-				var old_value = obj.position.y;
 				if ( !move ) {
 					var interv = 40;
 					var height = 0.25;
@@ -259,11 +257,7 @@ class ThreejsRenderer {
 							height = 0.05;
 						}
 		        if ( counter < 12) setTimeout( move, interv );
-						else {
-						obj.position.y = old_value;
-						return;
-						} 
-
+						else return;
 						obj.position.y += Math.sin(counter) * height;
 						counter++;
 					}				
