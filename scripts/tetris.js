@@ -115,6 +115,19 @@ class Tetris {
 		return true;
 	}
 
+	testRotattion() {
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var part = this.figure.shape[i];
+			var dx = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
+			var dy = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
+			var new_x = part.x - dx - dy;
+	    var new_y = part.y - dy + dx;
+			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false;
+			if ( this.lines[new_y][new_x]) return false;
+		}
+		return true;
+	}
+
 	moveFigureByDirection(direction) {
 		if ( this.testMove (direction.x, 0)) {
 			for ( var i = 0; i < this.figure.shape.length; i++) {
@@ -192,18 +205,9 @@ class Tetris {
 	}
 
 	rotate() {
-		if ( this.figure.name == 'square') return;
-		var possibility_to_move = true;
-		for ( var i = 0; i < this.figure.shape.length; i++ ) {
-			var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
-			var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
-			if ( !this.testMove( diffX, diffY )) possibility_to_move = false;
-		}
-		// if (possibility_to_move) {
-
+		if ( this.figure.name == 'square' || !this.testRotattion()) return;
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var dot = this.figure.shape[i];
-			// if ( dot.pivot ) continue;
 			var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x;
 			var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y;
 			if ( this.testMove(diffX, diffY)); {
@@ -215,7 +219,6 @@ class Tetris {
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0;
 		else this.figure.rotation_state++;
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
-		// }
 	}
 
 	initFiguresRotations() {
