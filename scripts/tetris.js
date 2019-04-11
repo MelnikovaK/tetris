@@ -224,7 +224,6 @@ class Tetris {
 	}
 
 	initFiguresRotations() {
-
 		for ( var i = 1; i < this.figures.length; i++ ) {
 			var figure = JSON.parse(JSON.stringify(this.figures[i]));
 			this.figure_rotations[figure.name] = {};
@@ -277,7 +276,8 @@ class Tetris {
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var dot = this.figure.shape[i];
 			if ( possibility_to_move ) dot.y++;
-			else this.figure_on_finish = true
+			else this.figure_on_finish = true;
+			console.log(dot.y)
 			if ( dot.y < 3 && this.checkGameIsOver()) this.game_is_over = true;
 		}
 		if ( this.figure_on_finish ) {
@@ -293,8 +293,8 @@ class Tetris {
 	}
 
 	checkGameIsOver() {
-		for ( var x = 0; x < this.lines[3].length; x++ ) {
-			if ( this.lines[3][x] ) return true;
+		for ( var x = 0; x < this.lines[2].length; x++ ) {
+			if ( this.lines[2][x] ) return true;
 		}
 		return false
 	}
