@@ -200,7 +200,7 @@ class Tetris {
 
 				// scope.updateProjection();
 				scope.moveFigure();
-				
+
 				if(scope.game_is_over) {
 					scope.game_is_over = false;
 					scope.gameOver();
@@ -236,7 +236,7 @@ class Tetris {
 				dot.y = dot.y - diffY + diffX;
 			}
 		}
-		// изменение состояния фигуры
+
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0;
 		else this.figure.rotation_state++;
 		this.updateProjection();
@@ -295,16 +295,17 @@ class Tetris {
 			if ( possibility_to_move ) dot.y++;
 			if ( !possibility_to_move ) {
 				this.figure_on_finish = true;
-				if ( dot.y < 2 ) this.game_is_over = true;
+				if ( dot.y < 3 ) this.game_is_over = true;
 			}
 		}
 	}
 
 	fillLine() {
 		var scope = this;
-		this.figure.shape.forEach(function(dot) {
-			scope.lines[dot.y][dot.x] = true;
-		});
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var dot = this.figure.shape[i];
+			this.lines[dot.y][dot.x] = true;
+		}
 	}
 
 
