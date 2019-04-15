@@ -1,9 +1,11 @@
-
 class ThreejsRenderer {
 	constructor( tetris, config, inputController ) {
 
 		//events
 		this.SHOW_FINISH_SCREEN = "screens: show_finish_modal";
+		this.PRELOAD_COMPLETE = "screens:preload_complete";
+
+		this.PARTICLES_PATH = tetris.PARTICLES_PATH;
 
 
 		var scope = this;
@@ -28,10 +30,8 @@ class ThreejsRenderer {
 
 		this.lines = [];
 		
-		this.initScene();
-		this.initContainers();
-		this.createAssets();
-		this.initGameField();
+		this.preloadTextures();
+		
 
 		window.addEventListener( "screens: start game" , function () {
 			scope.removeAllFigures();
@@ -58,16 +58,19 @@ class ThreejsRenderer {
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
 			scope.fillLines();
+			setTimeout( function() {
+				scope.destroyAllFigures();
+			}, 800);
 			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 			setTimeout( function() {
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
-			}, 1500);
+				scope.removeAllFigures();
+			}, 4000);
 		});
 
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
 			var line_index = e.detail.line_number;
-			// scope.removeLine(line_index);
-			scope.destroyFigures(line_index);
+			scope.destroyFigures(line_index, false);
 			
 		});
 
@@ -86,6 +89,30 @@ class ThreejsRenderer {
 			if ( acttion_name == 'camera_up') scope.moveCameraVertical(false);
 			if ( acttion_name == 'camera_down') scope.moveCameraVertical(false);
 		});
+	}
+	preloadTextures() {
+		var scope = this;
+
+		var manager = new THREE.LoadingManager();
+
+		manager.onLoad = function() {
+			scope.initScene();
+			scope.initContainers();
+			scope.createAssets();
+			scope.initGameField();
+
+		 	Utils.triggerCustomEvent( window, scope.PRELOAD_COMPLETE, {scene: scope.scene, camera: scope.camera, 
+		 														renderer: scope.renderer, game_container: scope.game_field});
+		};
+
+		manager.onProgress = function( item, loaded, total ) {
+	    Utils.triggerCustomEvent( window, scope.PRELOAD_PROGRESS, loaded / total * 100 );
+		};
+
+		var textureLoader = new THREE.TextureLoader(manager);
+
+		this.ground_texture = textureLoader.load( this.PARTICLES_PATH + "smokeparticle.png");
+		this.wall_texture = textureLoader.load( this.PARTICLES_PATH + "sprite-explosion2.png");
 	}
 
 	moveCameraHorizontal(is_start, is_left) {
@@ -252,23 +279,24 @@ class ThreejsRenderer {
 		render();
 	}
 
-	destroyFigures(i) {
+	destroyFigures(i, game_is_over) {
 		var scope = this;
 		var removing_figures;
 		for ( var j = 0; j < this.lines[i].length; j++ ) {
 		(function(i, j) {
 			var counter = 0.1;
+			var x_direction_value = ~~( Math.random() * i) * Math.random();
 			var obj = scope.lines[i][j];
 			if ( !move ) {
 				var move = function() {
-					if ( counter == 0.2 && j == scope.lines[i].length - 1 ) removing_figures = scope.moveLines(i);
+					if ( counter == 0.2 && j == scope.lines[i].length - 1 && !game_is_over) removing_figures = scope.moveLines(i);
 	        if ( counter < 4 ) setTimeout( move, 60 );
 					else {
-						if ( j == scope.lines[i].length - 1) scope.removeFigures(removing_figures);
+						if ( j == scope.lines[i].length - 1 && !game_is_over) scope.removeFigures(removing_figures);
 						return;
 					}
 					obj.position.y -= (Math.random() + 1) * counter * 0.1;
-					obj.position.x += Math.sin(~~( Math.random() * 7)) * counter * Math.random();
+					obj.position.x += Math.sin( x_direction_value );
 
 					obj.rotation.z += Math.sin(Math.random()) * counter * 0.1;
 					counter += 0.1;
@@ -277,6 +305,12 @@ class ThreejsRenderer {
 			move();
  		 })(i,j);
 		} 
+	}
+
+	destroyAllFigures(i) {
+		for ( var i = 0; i < this.lines.length; i++ ) {
+			this.destroyFigures(i, true);
+		}
 	}
 
 	jumpFigures() {
@@ -311,6 +345,7 @@ class ThreejsRenderer {
 	createAssets() {
 
 		this.AM.addAsset('rectangle', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#86DA10'}));} , 15);
+		this.AM.addAsset('cross', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#FFB3F9'}));} , 15);
 		this.AM.addAsset('square', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#FF1C00'}));} , 15);
 		this.AM.addAsset('stairs-left', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#00ACF5'})); }, 15);
 		this.AM.addAsset('stairs-right', function() { return createShape(new THREE.MeshLambertMaterial( { color: '#B400F5'})); }, 15);

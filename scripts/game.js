@@ -6,7 +6,7 @@
 
 	var config = {
 		ASSETS_PATH: ASSETS_PATH,
-		
+		PARTICLES_PATH: 'assets/particles/',
 		cells_horizontal: 10,
 		cells_vertical: 1,
 		cells_height: 15,
@@ -17,6 +17,7 @@
 
 		figures: {
 			"square": "0,1;1,1;0,0;1,0*",
+			"cross": "1,0;0,1;1,1*;2,1;1,2",
 			"rectangle": "0,0;1,0*;2,0;3,0",
 			"l-left": "1,0;1,1;1,2;0,2*",
 			"l-right": "0,0;0,1;0,2*;1,2",
@@ -94,6 +95,6 @@
 	let page_manager = new PageManager( $game_container, tetris, config.start_screen );
 	let renderer = new ThreejsRenderer( tetris, config, inputController);
 
-	let particles_manager = new ThreejsParticles($game_container, renderer, config, tetris);
+	let particles_manager = new ThreejsParticles(tetris);
 
 })();

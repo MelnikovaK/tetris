@@ -8,6 +8,9 @@ class Tetris {
 		this.LINE_IS_FULL = 'tetris: line_is_full';
 		this.GET_POINT = 'tetris:get_point';
 		this.PAUSE = 'tetris:pause';
+		this.EMIT_PARTICLES = 'tetris:emit_particles';
+
+		this.PARTICLES_PATH = config.PARTICLES_PATH;
 
 		this.inputController = inputController;
 		this.config = config;
@@ -204,6 +207,7 @@ class Tetris {
 				}
 
 				if ( scope.figure_on_finish ) {
+					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES );
 					scope.fillLine();
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();

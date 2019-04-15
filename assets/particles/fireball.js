@@ -1,25 +1,25 @@
 var accel = {
-			maxAge: {
-                        value: 1
-                    },
-                    position: {
-                        value: new THREE.Vector3(-50 + (2 * 25), -40, 0),
-                        radius: 5,
-                        spread: new THREE.Vector3( 3, 3, 3 )
-                    },
+	particleCount: 90,
+    type: SPE.distributions.DISC,
+    position: {
+      radius: 2,
+      spread: new THREE.Vector3( 0.5 )
+    },
+    activeMultiplier: 200,
 
-                    velocity: {
-                        value: new THREE.Vector3( 3, 3, 3 ),
-                        distribution: SPE.distributions.BOX
-                    },
-
-                    color: {
-                        value: [ new THREE.Color('white'), new THREE.Color('red') ]
-                    },
-
-                    size: {
-                        value: 1
-                    },
-
-                    particleCount: 250
-		}
+    velocity: {
+      value: new THREE.Vector3( 1 )
+    },
+    rotation: {
+      axis: new THREE.Vector3( 1, 0, 0 ),
+      angle: Math.PI * 0.5,
+      static: true
+    },
+    size: { value: 1 },
+    color: {
+      value: [
+        new THREE.Color('grey'), new THREE.Color('skyblue')
+      ]
+    },
+    opacity: { value: [0.1, 0.2, 0] }
+}

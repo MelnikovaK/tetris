@@ -1,21 +1,15 @@
 class ThreejsParticles {
-	constructor($container, renderer, config, game) {
+	constructor(game) {
 
-		this.ASSETS_PATH = config.ASSETS_PATH;
+		this.PARTICLES_PATH = game.PARTICLES_PATH;
 
 		this.game = game;
-
-		this.scene = renderer.scene;
-		this.camera = renderer.camera;
-		this.renderer = renderer.renderer;
-		this.game_container = renderer.game_container;
-		this.initEmitter();
 
 		var scope = this;
 		window.addEventListener( game.GAME_IS_OVER , function () {
 		});
 
-		window.addEventListener( game.FIGURE_ON_FINISH , function () {
+		window.addEventListener( game.EMIT_PARTICLES , function () {
 			scope.updateEmitterGroup(scope.accel_group);
 		});
 
@@ -23,7 +17,11 @@ class ThreejsParticles {
 		});
 
 		window.addEventListener( "screens:preload_complete" , function (e) {
-			
+			scope.scene = e.detail.scene;
+			scope.camera = e.detail.camera;
+			scope.renderer = e.detail.renderer;
+			scope.game_container = e.detail.game_container;
+			scope.initEmitter();
 		});
 
 	}
@@ -34,7 +32,7 @@ class ThreejsParticles {
 		var stats = new Stats();
 
 		//GROUPS
-		this.accel_group = this.createGroup('particles/eye.png');
+		this.accel_group = this.createGroup( this.PARTICLES_PATH + 'sprite-explosion2.png' );
 
 		this.accel_group.addPool(10, new SPE.Emitter( accel ), false);
 
@@ -58,21 +56,21 @@ class ThreejsParticles {
 	}
 
 	createGroup( texture_name ) {
-		var textureLoader = new THREE.TextureLoader();
 		return new SPE.Group({
 			texture: {
-				value: textureLoader.load( this.ASSETS_PATH + texture_name ),
+				value: THREE.ImageUtils.loadTexture( this.PARTICLES_PATH + 'sprite-explosion2.png' ),
 				frames: new THREE.Vector2( 5, 5 ),
 				loop: 1
 			},
+			depthTest: true,
+			depthWrite: false,
 			blending: THREE.AdditiveBlending,
-			scale: 100
+			scale: 600
 		});
 	} 
 
 	updateEmitterGroup( emitter_group ) {
-		var figure = this.game.figure.shape[1];
-    	emitter_group.triggerPoolEmitter( 1, (new THREE.Vector3( figure.x, figure.y, figure.z )) );
+		var figure = this.game.figure.shape[3];
+    	emitter_group.triggerPoolEmitter( 1, (new THREE.Vector3( figure.x, 0, this.game.cells_height - figure.y )) );
 	}
-
 }
