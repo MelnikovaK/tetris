@@ -118,7 +118,7 @@ class Tetris {
 			var new_x = part.x + dx;
 			var new_y = part.y + dy;
 			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false;
-			if ( new_y < 3 && JSON.stringify(this.lines[new_y]) == JSON.stringify(this.full_line) ) this.game_is_over = true;
+			// if ( new_y < 3 && JSON.stringify(this.lines[new_y]) == JSON.stringify(this.full_line) ) this.game_is_over = true;
 			if ( this.lines[new_y][new_x]) return false;
 		}
 		return true;
@@ -204,6 +204,7 @@ class Tetris {
 				}
 
 				if ( scope.figure_on_finish ) {
+					scope.fillLine();
 					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
 					scope.moveToTheMiddle();
@@ -276,7 +277,7 @@ class Tetris {
 			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: y} );
 			Utils.triggerCustomEvent( window, this.GET_POINT );
 			for ( var i = y; i > 0; i-- ) {
-				this.lines[i] = this.lines[i-1]
+				this.lines[i] = this.lines[i - 1];
 			}
 			this.lines[0] = this.empty_line;
 		}
@@ -287,27 +288,20 @@ class Tetris {
 		for ( var i = 0; i < this.figure.shape.length; i++ ) {
 			var dot = this.figure.shape[i];
 			if ( possibility_to_move ) dot.y++;
-			else this.figure_on_finish = true;
-			if ( dot.y < 3 && this.checkGameIsOver()) this.game_is_over = true;
-		}
-		if ( this.figure_on_finish ) {
-			this.fillLine();
+			if ( !possibility_to_move ) {
+				this.figure_on_finish = true;
+				if ( dot.y < 2 ) this.game_is_over = true;
+			}
 		}
 	}
 
 	fillLine() {
 		var scope = this;
-		this.figure.shape.forEach(function(dot,i) {
+		this.figure.shape.forEach(function(dot) {
 			scope.lines[dot.y][dot.x] = true;
 		});
 	}
 
-	checkGameIsOver() {
-		for ( var x = 0; x < this.lines[2].length; x++ ) {
-			if ( this.lines[2][x] ) return true;
-		}
-		return false
-	}
 
 	gameOver(){
 		clearTimeout( this.game_timeout );
@@ -315,12 +309,7 @@ class Tetris {
 		Utils.triggerCustomEvent( window, this.GAME_IS_OVER );
 	}
 
-	getNewFigureData() {
-		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
-		// return JSON.parse(JSON.stringify(this.figures[6]));
-	}
-
-		updateProjection() {
+	updateProjection() {
 		var counter = this.getDropPosition();
 		for ( var i = 0; i < this.projection.shape.length; i++) {
 			var dot = this.projection.shape[i];
@@ -328,4 +317,10 @@ class Tetris {
 			dot.y = this.figure.shape[i].y + counter; 
 		}
 	}
+
+	getNewFigureData() {
+		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)]));
+		// return JSON.parse(JSON.stringify(this.figures[0]));
+	}
+
 }
