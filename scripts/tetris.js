@@ -198,6 +198,7 @@ class Tetris {
 
 				if ( scope.on_pause ) return;
 
+				// scope.updateProjection();
 				scope.moveFigure();
 				
 				if(scope.game_is_over) {
@@ -213,9 +214,9 @@ class Tetris {
 					scope.figure = scope.getNewFigureData();
 					scope.moveToTheMiddle();
 					scope.projection = JSON.parse(JSON.stringify(scope.figure));
-					scope.updateProjection();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 					scope.removeFullLines();
+					scope.updateProjection();
 				}
 				// redraw
 				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED );

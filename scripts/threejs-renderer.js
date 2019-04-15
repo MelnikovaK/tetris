@@ -34,7 +34,6 @@ class ThreejsRenderer {
 		
 
 		window.addEventListener( "screens: start game" , function () {
-			scope.removeAllFigures();
 			scope.updateGameObjects('figure', 1, false);
 			scope.updateGameObjects('projection', 0.7, true);
 			scope.initLines();
@@ -57,6 +56,7 @@ class ThreejsRenderer {
 		});
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
+			scope.removeProjection();	
 			scope.fillLines();
 			setTimeout( function() {
 				scope.destroyAllFigures();
@@ -65,7 +65,7 @@ class ThreejsRenderer {
 			setTimeout( function() {
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
 				scope.removeAllFigures();
-			}, 4000);
+			}, 3000);
 		});
 
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
