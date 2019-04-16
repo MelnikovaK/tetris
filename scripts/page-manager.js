@@ -6,6 +6,7 @@ class PageManager {
 		this.PAUSE = "screens: game paused";
 		this.TOGGLE_SOUND = "sound-manager:toggle_sound";
 		this.GAME_OVER = "screens:game-over";
+		this.PLAY_SOUND = "sound-manager:play";
 
 		this.$container = $container;
 		this.screens = {};
@@ -29,14 +30,17 @@ class PageManager {
 
 		// init buttons by data-attribute
 		this.initButtonsByDataAttribute('show-screen', function( screen_name ){
+			Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} );
 			scope.showScreen( screen_name );
 		});
 
 		this.initButtonsByDataAttribute('emit-event', function( event_name, data ){
+			Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} );
 			Utils.triggerCustomEvent( window, event_name, data );
 		});
 
 		this.initButtonsByDataAttribute('emit-sound-event', function( event_name, data ){
+			Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} );
 			Utils.triggerCustomEvent( window, event_name, data );
 		});
 

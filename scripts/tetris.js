@@ -287,12 +287,11 @@ class Tetris {
 			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: y} );
 			Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "row", loop: false} );
 			Utils.triggerCustomEvent( window, this.GET_POINT );
+			this.lines[0] = this.empty_line;
 			for ( var i = y; i > 0; i-- ) {
 				this.lines[i] = this.lines[i - 1];
 			}
-			this.lines[0] = this.empty_line;
 		}
-
 	}
 
 	moveFigure() {
@@ -308,11 +307,11 @@ class Tetris {
 	}
 
 	fillLine() {
-		for ( var i = this.figure.shape.length - 1; i >= 0; i-- ) {
-			this.lines[this.figure.shape[i].y][this.figure.shape[i].x] = true;
+		for ( var i = 0; i < this.figure.shape.length; i++ ) {
+			var part = this.figure.shape[i];
+			this.lines[part.y][part.x] = true;
 		}
 	}
-
 
 	gameOver(){
 		clearTimeout( this.game_timeout );
