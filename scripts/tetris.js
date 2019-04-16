@@ -9,6 +9,8 @@ class Tetris {
 		this.GET_POINT = 'tetris:get_point';
 		this.PAUSE = 'tetris:pause';
 		this.EMIT_PARTICLES = 'tetris:emit_particles';
+		this.PLAY_SOUND = "sound-manager:play";
+		this.PAUSE_SOUND = "sound-manager:pause";
 
 		this.PARTICLES_PATH = config.PARTICLES_PATH;
 
@@ -202,12 +204,14 @@ class Tetris {
 				scope.moveFigure();
 
 				if(scope.game_is_over) {
+					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "over", loop: false} );
 					scope.game_is_over = false;
 					scope.gameOver();
 					return;
 				}
 
 				if ( scope.figure_on_finish ) {
+					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} );
 					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES );
 					scope.fillLine();
 					scope.figure_on_finish = false;
@@ -240,6 +244,7 @@ class Tetris {
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0;
 		else this.figure.rotation_state++;
 		this.updateProjection();
+		Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "rotation", loop: false} );
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED );
 	}
 
@@ -280,6 +285,7 @@ class Tetris {
 			this.logic_step_interval -= 15;
 			this.points += 5;
 			Utils.triggerCustomEvent( window, this.LINE_IS_FULL, {line_number: y} );
+			Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "row", loop: false} );
 			Utils.triggerCustomEvent( window, this.GET_POINT );
 			for ( var i = y; i > 0; i-- ) {
 				this.lines[i] = this.lines[i - 1];

@@ -46,7 +46,7 @@ class ThreejsRenderer {
 			scope.jumpFigures();
 			scope.removeProjection();
 			scope.updateGameObjects('figure', 1, false);
-			scope.updateGameObjects('projection', 0.7, true);
+			scope.updateGameObjects('projection', 0.4, true);
 		});
 
 		window.addEventListener( tetris.FIGURE_MOVED , function () {
@@ -218,7 +218,6 @@ class ThreejsRenderer {
 			var obj = this.figure.obj.children[i];
 			obj.position.x = dot.x;
 			obj.position.y = this.cells_in_height - dot.y - 1;
-			console.log()
 			this.projection.obj.children[i].position.x = dot.x;
 			this.projection.obj.children[i].position.y = this.cells_in_height - proj.y - 1;
 		}

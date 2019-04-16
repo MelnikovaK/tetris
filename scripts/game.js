@@ -3,10 +3,12 @@
 	var $game_container = $('.game_container');
 
 	var ASSETS_PATH = 'assets/';
+	var SOUNDS_PATH = ASSETS_PATH + 'sounds/';
 
 	var config = {
 		ASSETS_PATH: ASSETS_PATH,
-		PARTICLES_PATH: 'assets/particles/',
+		PARTICLES_PATH: ASSETS_PATH + 'particles/',
+		SOUNDS_PATH: SOUNDS_PATH,
 		cells_horizontal: 10,
 		cells_vertical: 1,
 		cells_height: 15,
@@ -78,15 +80,17 @@
 		},
 
 		preload_list: [
-			ASSETS_PATH+"bonus.mp3",
-			ASSETS_PATH+"game over.mp3",
-			ASSETS_PATH+"music.mp3"
+			SOUNDS_PATH+"interface.mp3",
+			SOUNDS_PATH+"over.mp3",
+			SOUNDS_PATH+"rotation.wav",
+			SOUNDS_PATH+"row.mp3"
 		],
 
 		sounds: {
-			"bonus": ASSETS_PATH+"bonus.mp3",
-			"game over": ASSETS_PATH+"game over.mp3",
-			"music": ASSETS_PATH+"music.mp3",
+			"interface": SOUNDS_PATH+"interface.mp3",
+			"over": SOUNDS_PATH+"over.mp3",
+			"rotation": SOUNDS_PATH+"rotation.wav",
+			"row": SOUNDS_PATH+"row.mp3",
 		}
 	}
 
@@ -96,5 +100,6 @@
 	let renderer = new ThreejsRenderer( tetris, config, inputController);
 
 	let particles_manager = new ThreejsParticles(tetris);
+	let sounds_manager = new SoundManager( config, tetris );
 
 })();
