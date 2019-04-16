@@ -140,6 +140,7 @@ class Tetris {
 			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false;
 			if ( this.lines[new_y][new_x]) return false;
 		}
+
 		return true;
 	}
 
@@ -211,10 +212,10 @@ class Tetris {
 				}
 
 				if ( scope.figure_on_finish ) {
+					scope.figure_on_finish = false;
 					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} );
 					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES );
 					scope.fillLine();
-					scope.figure_on_finish = false;
 					scope.figure = scope.getNewFigureData();
 					scope.moveToTheMiddle();
 					scope.projection = JSON.parse(JSON.stringify(scope.figure));
@@ -260,7 +261,6 @@ class Tetris {
 					break;
 				}
 			}
-			//states
 			for ( var state = 0; state < 4; state++ ) {
 				this.figure_rotations[figure.name][state] = [];
 				for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) {
@@ -292,6 +292,7 @@ class Tetris {
 			}
 			this.lines[0] = this.empty_line;
 		}
+
 	}
 
 	moveFigure() {
@@ -307,10 +308,8 @@ class Tetris {
 	}
 
 	fillLine() {
-		var scope = this;
-		for ( var i = 0; i < this.figure.shape.length; i++ ) {
-			var dot = this.figure.shape[i];
-			this.lines[dot.y][dot.x] = true;
+		for ( var i = this.figure.shape.length - 1; i >= 0; i-- ) {
+			this.lines[this.figure.shape[i].y][this.figure.shape[i].x] = true;
 		}
 	}
 

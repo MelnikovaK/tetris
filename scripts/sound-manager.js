@@ -1,12 +1,9 @@
 class SoundManager {
 
 	constructor(config, game) {
-
 		this.sounds_list = config.sounds;
 		this.enabled = true;
-
 		this.initEventHandlers(game);
-
 	}
 
 	playSound( sound_name, loop ){
