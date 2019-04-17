@@ -182,6 +182,15 @@ class ThreejsRenderer {
 		this.game_container.add( wall );
 	}
 
+	startRendering() {
+		var scope = this;
+		function render() {
+		  scope.requestAnimationFrame_id = requestAnimationFrame( render );
+		  scope.renderer.render( scope.scene, scope.camera );
+		}
+		render();
+	}
+
 	updateGameObjects(name, opacity, is_visible) {
 		this[name] = this.tetris[name];
 		this[name]['obj'] = new THREE.Object3D();
@@ -212,9 +221,7 @@ class ThreejsRenderer {
 	}
 
 	initLines() {
-		for ( var i = 0; i < this.tetris.lines.length; i++ ) {
-			this.lines[i] = [];
-		}
+		for ( var i = 0; i < this.tetris.lines.length; i++ ) this.lines[i] = [];
 	}
 
 	fillLines() {
@@ -255,15 +262,6 @@ class ThreejsRenderer {
 			this.AM.putAsset(this.projection.obj.children[i]);
 			this.projection.obj.remove(this.projection.obj.children[i]);
 		}
-	}
-
-	startRendering() {
-		var scope = this;
-		function render() {
-		  scope.requestAnimationFrame_id = requestAnimationFrame( render );
-		  scope.renderer.render( scope.scene, scope.camera );
-		}
-		render();
 	}
 
 	destroyFigures(i, game_is_over) {

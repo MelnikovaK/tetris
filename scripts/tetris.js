@@ -84,7 +84,7 @@ class Tetris {
 
 	initFigures(figures) { 
 		var scope = this; 
-		for ( var figure in figures ) { 
+		for ( var figure in figures ) {
 			var shape = []; 
 			var new_figure = figures[figure].split(';'); 
 			new_figure.forEach( function( el, i ) { 
@@ -95,8 +95,6 @@ class Tetris {
 		this.figures.push({name: figure, shape: shape, rotation_state: 0 }) 
 		} 
 	} 
-
-
 
 	dropFigure() { 
 		var counter = this.getDropPosition(); 
@@ -329,8 +327,7 @@ class Tetris {
 	} 
 
 	getNewFigureData() { 
-		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * 7)])); 
-		// return JSON.parse(JSON.stringify(this.figures[0])); 
+		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * this.figures.length)]));
 	} 
 
 }
