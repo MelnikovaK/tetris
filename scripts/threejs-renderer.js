@@ -193,10 +193,10 @@ class ThreejsRenderer {
 		var wall = new THREE.Mesh(new THREE.BoxBufferGeometry( this.cells_horizontal, this.cells_in_height - 2, this.cells_vertical ), wallMaterial);
 		wall.position.y = this.cells_in_height / 2 - 1;
 		this.game_container.add( wall );
-		var preview = new THREE.Mesh(new THREE.PlaneBufferGeometry( 7, 6, 1, 1 ), previewMaterial);
+		var preview = new THREE.Mesh(new THREE.PlaneBufferGeometry( 6, 6, 1, 1 ), previewMaterial);
 		this.game_container.add( preview );
 
-		preview.position.x = -10;
+		preview.position.x = -9;
 		preview.position.y = 9;
 	}
 
