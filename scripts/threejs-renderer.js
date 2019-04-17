@@ -69,7 +69,6 @@ class ThreejsRenderer {
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
 			scope.removeAccessoryFigures('projection');
-			scope.removePreview();
 			scope.fillLines();
 			setTimeout( function() {
 				scope.destroyAllFigures();
@@ -107,6 +106,7 @@ class ThreejsRenderer {
 			if ( scope.current_action == acttion_name ) clearInterval(scope.moveCam);
 		});
 	}
+
 	preloadTextures() {
 		var scope = this;
 
@@ -214,6 +214,7 @@ class ThreejsRenderer {
 			shape: is_proj ? this.tetris.figure.shape.slice() : this.tetris[name].shape,
 			obj: new THREE.Object3D()
 		}
+
 		for ( var i =  0; i < this[name].shape.length; i++) {
 			this[name].obj.add(this.AM.pullAsset(is_proj ? this.tetris.figure.name : this.tetris[name].name))
 			var child = this[name].obj.children[i];
@@ -292,10 +293,6 @@ class ThreejsRenderer {
 			this.AM.putAsset(this[figure].obj.children[i]);
 			this[figure].obj.remove(this[figure].obj.children[i]);
 		}
-	}
-
-	removePreview() {
-
 	}
 
 	destroyFigures(i, game_is_over) {
