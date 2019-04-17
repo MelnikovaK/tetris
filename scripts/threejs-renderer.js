@@ -221,7 +221,7 @@ class ThreejsRenderer {
 			child.material.transparent = true;
 			child.material.opacity = opacity;
 			child.position.x = this[name].shape[i].x;
-			child.position.y = this.cells_in_height - this[name].shape[i].y - 1;
+			child.position.y = is_proj ? this[name].shape[this[name].shape.length - 1 - i].y - 1 : this.cells_in_height - this[name].shape[i].y - 1;
 			child.rotation.z = 0;
 			child.position.z = 0;
 		}
