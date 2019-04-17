@@ -41,9 +41,10 @@ class ThreejsRenderer {
 		
 
 		window.addEventListener( "screens: start game" , function () {
-			scope.updateGameObjects('figure', 1, false);
-			scope.updateGameObjects('projection', 0.7, true);
-			scope.updateFigurePosition();
+			scope.updateGameObjects('next_figure',false, 1, true);
+			scope.setPreview();
+			scope.updateGameObjects('figure', false,  1, false);
+			scope.updateGameObjects('projection', true, 0.4, true);
 			scope.initLines();
 			scope.startRendering();
 		});
@@ -52,19 +53,23 @@ class ThreejsRenderer {
 		window.addEventListener( tetris.FIGURE_ON_FINISH , function () {
 			scope.fillLines();
 			scope.jumpFigures();
-			scope.removeProjection();
-			scope.updateGameObjects('figure', 1, false);
-			scope.updateGameObjects('projection', 0.4, true);
+			scope.removeAccessoryFigures('projection');
+			scope.removeAccessoryFigures('next_figure');
+			scope.updateGameObjects('next_figure',false, 1, true);
+			scope.setPreview();
+			scope.updateGameObjects('figure', false, 1, false);
+			scope.updateGameObjects('projection', true, 0.4, true);
+
 		});
 
-		window.addEventListener( tetris.FIGURE_MOVED , function () {
-			if (scope.figure) {
-			  if ( scope.figure.obj.children.length) scope.updateFigurePosition();
-			} 
+		window.addEventListener( tetris.FIGURE_MOVED , function (e) {
+			if ( scope.figure ) scope.updateFigurePosition(e.detail.projection_coord);
 		});
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
-			scope.removeProjection();	
+			scope.removeAccessoryFigures('projection');
+			scope.removeAccessoryFigures('next_figure');
+			scope.removePreview();
 			scope.fillLines();
 			setTimeout( function() {
 				scope.destroyAllFigures();
@@ -80,6 +85,12 @@ class ThreejsRenderer {
 			var line_index = e.detail.line_number;
 			scope.destroyFigures(line_index, false);
 		});
+
+		window.addEventListener(tetris.PAUSE, function(e) {
+			if ( e.detail.on_pause ) window.cancelAnimationFrame(scope.requestAnimationFrame_id);
+			else scope.startRendering();
+		});
+
 
 		inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			var acttion_name = e.detail.name;
@@ -191,32 +202,48 @@ class ThreejsRenderer {
 		render();
 	}
 
-	updateGameObjects(name, opacity, is_visible) {
-		this[name] = this.tetris[name];
-		this[name]['obj'] = new THREE.Object3D();
+	updateGameObjects(name, is_proj, opacity, is_visible) {
+		this[name] = {
+			shape: is_proj ? this.tetris.figure.shape.slice() : this.tetris[name].shape,
+			obj: new THREE.Object3D()
+		}
 		for ( var i =  0; i < this[name].shape.length; i++) {
-			this[name].obj.add(this.AM.pullAsset(this[name].name))
-			this[name].obj.children[i].visible = is_visible;
+			this[name].obj.add(this.AM.pullAsset(is_proj ? this.tetris.figure.name : this.tetris[name].name))
+			var child = this[name].obj.children[i];
+			child.visible = is_visible;
 
-			this[name].obj.children[i].rotation.z = 0;
+			child.rotation.z = 0;
 
-			this[name].obj.children[i].material.transparent = true;
-			this[name].obj.children[i].material.opacity = opacity;
+			child.material.transparent = true;
+			child.material.opacity = opacity;
+			child.position.x = this[name].shape[i].x;
+			child.position.y = this.cells_in_height - this[name].shape[i].y - 1;
+			child.position.z = 0;
 		}
 		this.game_field.add(this[name].obj);
 	}
 
-	updateFigurePosition() {
+	updateFigurePosition(proj_coord) {
 		for (var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
 			var proj = this.projection.shape[i];
 
 			if (dot.y >= 2)this.figure.obj.children[i].visible = true;
 			var obj = this.figure.obj.children[i];
+			console.log(this.figure)
 			obj.position.x = dot.x;
 			obj.position.y = this.cells_in_height - dot.y - 1;
 			this.projection.obj.children[i].position.x = dot.x;
-			this.projection.obj.children[i].position.y = this.cells_in_height - proj.y - 1;
+			this.projection.obj.children[i].position.y = obj.position.y - proj_coord;
+		}
+	}
+
+	setPreview() {
+		for ( var i = 0; i < this.next_figure.obj.children.length; i++ ) {
+			var child = this.next_figure.obj.children[i];
+			child.position.x -= 5;
+			child.position.z += 1;
+			child.position.y -= 6;
 		}
 	}
 
@@ -227,7 +254,7 @@ class ThreejsRenderer {
 	fillLines() {
 		var objects = this.figure.obj.children;
 		for ( var i = 0; i < objects.length; i++ ) {
-			var z = objects[i].position.y;
+			var z = Math.round(objects[i].position.y);
 			this.rows[this.cells_in_height - z - 1].push(objects[i]);
 		}
 	}
@@ -257,11 +284,15 @@ class ThreejsRenderer {
 		}
 	}
 
-	removeProjection() {
-		for ( var i = this.projection.obj.children.length - 1; i >= 0; i = this.projection.obj.children.length - 1 ) {
-			this.AM.putAsset(this.projection.obj.children[i]);
-			this.projection.obj.remove(this.projection.obj.children[i]);
+	removeAccessoryFigures(figure) {
+		for ( var i = this[figure].obj.children.length - 1; i >= 0; i = this[figure].obj.children.length - 1 ) {
+			this.AM.putAsset(this[figure].obj.children[i]);
+			this[figure].obj.remove(this[figure].obj.children[i]);
 		}
+	}
+
+	removePreview() {
+
 	}
 
 	destroyFigures(i, game_is_over) {

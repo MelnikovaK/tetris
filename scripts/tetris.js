@@ -33,6 +33,7 @@ class Tetris {
 		//figures 
 		this.figures = []; 
 		this.figure_rotations = {}; 
+		this.next_figure;
 
 		this.initFigures(config.figures); 
 		this.initFiguresRotations(); 
@@ -99,7 +100,7 @@ class Tetris {
 	dropFigure() { 
 		var counter = this.getDropPosition();
 		this.move( 0, counter );
-		Utils.triggerCustomEvent( window, this.FIGURE_MOVED ); 
+		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
 	} 
 
 	getDropPosition() { 
@@ -149,8 +150,8 @@ class Tetris {
 
 	moveFigureByDirection(direction) { 
 		if ( this.testMove (direction.x, 0)) this.move(direction.x, 0);
-		this.updateProjection(); 
-		Utils.triggerCustomEvent( window, this.FIGURE_MOVED ); 
+		// this.updateProjection(); 
+		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
 	} 
 
 	setPause() { 
@@ -181,10 +182,11 @@ class Tetris {
 
 	startGame() { 
 		var scope = this; 
-		this.figure = this.getNewFigureData(); 
+		this.figure = this.getNewFigureData();
+		this.next_figure = this.getNewFigureData();
 		this.moveToTheMiddle(); 
-		this.projection = JSON.parse(JSON.stringify(this.figure)); 
-		this.updateProjection(); 
+		// this.projection = JSON.parse(JSON.stringify(this.figure)); 
+		// this.updateProjection(); 
 		this.figure_on_finish = false; 
 		this.points = 0; 
 		this.on_pause = false; 
@@ -214,17 +216,17 @@ class Tetris {
 					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
 
 					scope.fillLine(); 
-					scope.figure = scope.getNewFigureData(); 
+					scope.figure = scope.next_figure;
+					scope.next_figure = scope.getNewFigureData(); 
 					scope.moveToTheMiddle(); 
-					scope.projection = JSON.parse(JSON.stringify(scope.figure)); 
+					// scope.projection = JSON.parse(JSON.stringify(scope.figure)); 
 
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 
 					scope.removeFullLines(); 
-					scope.updateProjection(); 
+					// scope.updateProjection(); 
 				} 
-				// redraw 
-				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED ); 
+				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED, {projection_coord: scope.getDropPosition()} ); 
 			}; 
 		} 
 		this.gameStep(); 
@@ -239,13 +241,13 @@ class Tetris {
 			dot.x = dot.x - diffX - diffY; 
 			dot.y = dot.y - diffY + diffX; 
 		} 
-		
+
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0; 
 		else this.figure.rotation_state++;
 
-		this.updateProjection(); 
+		// this.updateProjection(); 
 		Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "rotation", loop: false} ); 
-		Utils.triggerCustomEvent( window, this.FIGURE_MOVED ); 
+		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
 	} 
 
 	initFiguresRotations() { 
@@ -319,17 +321,16 @@ class Tetris {
 		Utils.triggerCustomEvent( window, this.GAME_IS_OVER ); 
 	} 
 
-	updateProjection() { 
-		var counter = this.getDropPosition(); 
-		for ( var i = 0; i < this.projection.shape.length; i++) { 
-			var dot = this.projection.shape[i]; 
-			dot.x = this.figure.shape[i].x; 
-			dot.y = this.figure.shape[i].y + counter; 
-		} 
-	} 
+	// updateProjection() { 
+	// 	var counter = this.getDropPosition(); 
+	// 	for ( var i = 0; i < this.projection.shape.length; i++) { 
+	// 		var dot = this.projection.shape[i]; 
+	// 		dot.x = this.figure.shape[i].x; 
+	// 		dot.y = this.figure.shape[i].y + counter; 
+	// 	} 
+	// } 
 
 	getNewFigureData() { 
 		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * this.figures.length)]));
 	} 
-
 }
