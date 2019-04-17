@@ -28,7 +28,7 @@ class ThreejsRenderer {
 
 		this.AM = new AssetManager(this);
 
-		this.lines = [];
+		this.rows = [];
 		
 		this.preloadTextures();
 
@@ -221,23 +221,23 @@ class ThreejsRenderer {
 	}
 
 	initLines() {
-		for ( var i = 0; i < this.tetris.lines.length; i++ ) this.lines[i] = [];
+		for ( var i = 0; i < this.tetris.rows.length; i++ ) this.rows[i] = [];
 	}
 
 	fillLines() {
 		var objects = this.figure.obj.children;
 		for ( var i = 0; i < objects.length; i++ ) {
 			var z = objects[i].position.y;
-			this.lines[this.cells_in_height - z - 1].push(objects[i]);
+			this.rows[this.cells_in_height - z - 1].push(objects[i]);
 		}
 	}
 
 	moveLines(line_index) {
-		var removing_figures = [...this.lines[line_index]];
+		var removing_figures = [...this.rows[line_index]];
 		for ( var i = line_index; i > 0; i-- ) {
-			this.lines[i] = this.lines[i-1].slice();
-			for ( var j = 0; j < this.lines[i].length; j++ ) {
-				if (this.lines[i][j].position.y > 0) this.lines[i][j].position.y--;
+			this.rows[i] = this.rows[i-1].slice();
+			for ( var j = 0; j < this.rows[i].length; j++ ) {
+				if (this.rows[i][j].position.y > 0) this.rows[i][j].position.y--;
 			}
 		}
 		return removing_figures;
@@ -252,8 +252,8 @@ class ThreejsRenderer {
 	}
 
 	removeAllFigures() {
-		for ( var i = 0; i < this.lines.length; i++ ) {
-			this.removeFigures(this.lines[i]);
+		for ( var i = 0; i < this.rows.length; i++ ) {
+			this.removeFigures(this.rows[i]);
 		}
 	}
 
@@ -267,17 +267,17 @@ class ThreejsRenderer {
 	destroyFigures(i, game_is_over) {
 		var scope = this;
 		var removing_figures;
-		for ( var j = 0; j < this.lines[i].length; j++ ) {
+		for ( var j = 0; j < this.rows[i].length; j++ ) {
 		(function(i, j) {
 			var counter = 0.1;
 			var x_direction_value = ~~( Math.random() * i) * Math.random();
-			var obj = scope.lines[i][j];
+			var obj = scope.rows[i][j];
 			if ( !move ) {
 				var move = function() {
-					if ( counter == 0.2 && j == scope.lines[i].length - 1 && !game_is_over) removing_figures = scope.moveLines(i);
+					if ( counter == 0.2 && j == scope.rows[i].length - 1 && !game_is_over) removing_figures = scope.moveLines(i);
 	        if ( counter < 4 ) setTimeout( move, 60 );
 					else {
-						if ( j == scope.lines[i].length - 1 && !game_is_over) scope.removeFigures(removing_figures);
+						if ( j == scope.rows[i].length - 1 && !game_is_over) scope.removeFigures(removing_figures);
 						return;
 					}
 					obj.position.y -= (Math.random() + 1) * counter * 0.1;
@@ -293,21 +293,21 @@ class ThreejsRenderer {
 	}
 
 	destroyAllFigures(i) {
-		for ( var i = 0; i < this.lines.length; i++ ) {
+		for ( var i = 0; i < this.rows.length; i++ ) {
 			this.destroyFigures(i, true);
 		}
 	}
 
 	jumpFigures() {
 		var scope = this;
-		for ( var i = 0; i < this.lines.length; i++) {
-			if ( !this.lines[i].length ) continue;
-			for ( var j = 0; j < this.lines[i].length; j++ ) {
+		for ( var i = 0; i < this.rows.length; i++) {
+			if ( !this.rows[i].length ) continue;
+			for ( var j = 0; j < this.rows[i].length; j++ ) {
 			(function(i, j) {
 				var counter = 1;
-				var obj = scope.lines[i][j];
+				var obj = scope.rows[i][j];
 				if ( !move ) {
-					var interv = 40;
+					var interv = 30;
 					var height = 0.25;
 					var move = function() {
 						if (counter > 6 ) {

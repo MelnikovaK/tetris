@@ -57,7 +57,7 @@ class Tetris {
 		}); 
 
 		window.addEventListener( "screens: game paused" , function () { 
-			scope.stepause(); 
+			scope.setPause(); 
 		}); 
 
 		this.inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) { 
@@ -97,11 +97,8 @@ class Tetris {
 	} 
 
 	dropFigure() { 
-		var counter = this.getDropPosition(); 
-		for ( var i = 0; i < this.figure.shape.length; i++) { 
-			var dot = this.figure.shape[i]; 
-			dot.y += counter; 
-		} 
+		var counter = this.getDropPosition();
+		this.move( 0, counter );
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED ); 
 	} 
 
@@ -115,41 +112,43 @@ class Tetris {
 	} 
 
 
-	testMove(dx,dy) { 
-		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
-			var part = this.figure.shape[i]; 
+	testMove(dx,dy, index) { 
+		var scope = this;
+		if ( index ) {
+			if ( !checkDotCoordinates( dx, dy, this.figure.shape[index]) ) return false;
+		}
+		else for ( var i = 0; i < this.figure.shape.length; i++ ) if ( !checkDotCoordinates( dx, dy, this.figure.shape[i] ) ) return false;
+		return true; 
+
+		function checkDotCoordinates(dx,dy,part) {
 			var new_x = part.x + dx; 
 			var new_y = part.y + dy; 
-			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false;
-			if ( this.lines[new_y][new_x]) return false; 
-		} 
-		return true; 
-	} 
+
+			if ( scope.rows[new_y] == undefined || scope.rows[new_y][new_x] == undefined ) return false;
+			if ( scope.rows[new_y][new_x]) return false; 
+			return true;
+		}
+	}
+
+	move(dx, dy) {
+		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
+			var dot = this.figure.shape[i];
+			dot.x += dx;
+			dot.y += dy;
+		}
+	}
 
 	testRotattion() { 
 		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
-			var part = this.figure.shape[i]; 
 			var dx = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x; 
-			var dy =
-			 
-			this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y; 
-			var new_x = part.x - dx - dy; 
-			var new_y = part.y - dy + dx; 
-
-			if ( this.lines[new_y] == undefined || this.lines[new_y][new_x] == undefined ) return false; 
-			if ( this.lines[new_y][new_x]) return false; 
-		} 
-
+			var dy = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y; 
+			if ( !this.testMove( -dx - dy, - dy + dx, i ) ) return false;
+		}
 		return true; 
 	} 
 
 	moveFigureByDirection(direction) { 
-		if ( this.testMove (direction.x, 0)) { 
-			for ( var i = 0; i < this.figure.shape.length; i++) { 
-				var dot = this.figure.shape[i]; 
-				dot.x += direction.x; 
-			} 
-		} 
+		if ( this.testMove (direction.x, 0)) this.move(direction.x, 0);
 		this.updateProjection(); 
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED ); 
 	} 
@@ -165,11 +164,11 @@ class Tetris {
 	} 
 
 	initLines() { 
-		this.lines = []; 
+		this.rows = []; 
 		for ( var y = 0; y < this.cells_height; y++ ) { 
-			this.lines.push([]); 
-			for ( var x = 0; x < this.cells_horizontal; x++) this.lines[y][x] = false; 
-			if ( !this.empty_line ) this.empty_line = this.lines[y].slice(); 
+			this.rows.push([]); 
+			for ( var x = 0; x < this.cells_horizontal; x++) this.rows[y][x] = false; 
+			if ( !this.empty_line ) this.empty_line = this.rows[y].slice(); 
 		} 
 	} 
 
@@ -195,12 +194,10 @@ class Tetris {
 		if(!this.gameStep){ 
 
 			this.gameStep = function(){ 
-				// schedule the next game step 
 				scope.game_timeout = setTimeout( scope.gameStep, scope.logic_step_interval ); 
 
 				if ( scope.on_pause ) return; 
 
-				// scope.updateProjection(); 
 				scope.moveFigure(); 
 
 				if(scope.game_is_over) { 
@@ -212,13 +209,17 @@ class Tetris {
 
 				if ( scope.figure_on_finish ) { 
 					scope.figure_on_finish = false; 
-					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
+
 					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES ); 
+					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
+
 					scope.fillLine(); 
 					scope.figure = scope.getNewFigureData(); 
 					scope.moveToTheMiddle(); 
 					scope.projection = JSON.parse(JSON.stringify(scope.figure)); 
-					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH ); 
+
+					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
+
 					scope.removeFullLines(); 
 					scope.updateProjection(); 
 				} 
@@ -235,10 +236,8 @@ class Tetris {
 			var dot = this.figure.shape[i]; 
 			var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x; 
 			var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y; 
-			if ( this.testMove(diffX, diffY)); { 
 			dot.x = dot.x - diffX - diffY; 
 			dot.y = dot.y - diffY + diffX; 
-		} 
 		} 
 
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0; 
@@ -276,8 +275,8 @@ class Tetris {
 
 	removeFullLines() { 
 		row: 
-		for ( var y = 0; y < this.lines.length; y++ ) { 
-			var row = this.lines[y]; 
+		for ( var y = 0; y < this.rows.length; y++ ) { 
+			var row = this.rows[y]; 
 			for ( var x = 0; x < row.length; x++ ) { 
 			if ( !row[x] ) continue row; 
 			} 
@@ -287,27 +286,29 @@ class Tetris {
 			Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "row", loop: false} ); 
 			Utils.triggerCustomEvent( window, this.GET_POINT ); 
 			for ( var i = y; i > 0; i-- ) 
-				this.lines[i] = this.lines[i-1].slice();
-			this.lines[0] = this.empty_line.slice(); 
+				this.rows[i] = this.rows[i-1].slice();
+			this.rows[0] = this.empty_line.slice(); 
 		}
 	} 
 
 	moveFigure() { 
 		var possibility_to_move = this.testMove(0,1); 
-		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
-			var dot = this.figure.shape[i]; 
-			if ( possibility_to_move ) dot.y++; 
-			if ( !possibility_to_move ) { 
-				this.figure_on_finish = true; 
-				if ( dot.y < 3 ) this.game_is_over = true; 
-			} 
+		if ( possibility_to_move ) this.move(0,1) 
+		else { 
+			this.figure_on_finish = true; 
+			for ( var i = 0; i < this.figure.shape.length; i++ ) {
+				if ( this.figure.shape[i].y < 3 ) {
+					this.game_is_over = true; 
+					break;
+				}
+			}
 		} 
 	} 
 
 	fillLine() { 
 		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
 			var part = this.figure.shape[i]; 
-			this.lines[part.y][part.x] = true; 
+			this.rows[part.y][part.x] = true; 
 		} 
 	} 
 
