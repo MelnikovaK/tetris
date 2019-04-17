@@ -142,7 +142,7 @@ class Tetris {
 		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
 			var dx = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x; 
 			var dy = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y; 
-			if ( !this.testMove( -dx - dy, - dy + dx, i ) ) return false;
+			if ( !this.testMove( -dx-dy, -dy+dx, i ) ) return false;
 		}
 		return true; 
 	} 
@@ -239,9 +239,10 @@ class Tetris {
 			dot.x = dot.x - diffX - diffY; 
 			dot.y = dot.y - diffY + diffX; 
 		} 
-
+		
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0; 
-		else this.figure.rotation_state++; 
+		else this.figure.rotation_state++;
+
 		this.updateProjection(); 
 		Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "rotation", loop: false} ); 
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED ); 
