@@ -234,6 +234,7 @@ class ThreejsRenderer {
 			var dot = this.figure.shape[i];
 			var proj = this.projection.shape[i];
 			if ( dot.y >= 2 ) this.figure.obj.children[i].visible = true;
+			else this.figure.obj.children[i].visible = false;
 			var obj = this.figure.obj.children[i];
 			obj.position.x = dot.x;
 			obj.position.y = this.cells_in_height - dot.y - 1;
