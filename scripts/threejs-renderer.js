@@ -63,21 +63,22 @@ class ThreejsRenderer {
 		});
 
 		window.addEventListener( tetris.FIGURE_MOVED , function (e) {
-			if ( scope.figure ) scope.updateFigurePosition(e.detail.projection_coord);
+			if ( !scope.figure || !scope.figure.obj.children.length ) return;
+			scope.updateFigurePosition(e.detail.projection_coord);
 		});
 
 		window.addEventListener( tetris.GAME_IS_OVER , function () {
 			scope.removeAccessoryFigures('projection');
-			scope.removeAccessoryFigures('next_figure');
 			scope.removePreview();
 			scope.fillLines();
 			setTimeout( function() {
 				scope.destroyAllFigures();
 			}, 800);
-			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 			setTimeout( function() {
 				scope.removeAllFigures();
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
+				window.cancelAnimationFrame(scope.requestAnimationFrame_id);
+				scope.removeAccessoryFigures('next_figure');
 			}, 3000);
 		});
 
@@ -188,9 +189,15 @@ class ThreejsRenderer {
 
 	initGameField() {
 		var wallMaterial = new THREE.MeshLambertMaterial( { color:'#4D56FF', side: THREE.BackSide});
+		var previewMaterial = new THREE.MeshLambertMaterial( { color:'#FBFF38'});
 		var wall = new THREE.Mesh(new THREE.BoxBufferGeometry( this.cells_horizontal, this.cells_in_height - 2, this.cells_vertical ), wallMaterial);
 		wall.position.y = this.cells_in_height / 2 - 1;
 		this.game_container.add( wall );
+		var preview = new THREE.Mesh(new THREE.PlaneBufferGeometry( 7, 6, 1, 1 ), previewMaterial);
+		this.game_container.add( preview );
+
+		preview.position.x = -10;
+		preview.position.y = 9;
 	}
 
 	startRendering() {
@@ -211,13 +218,11 @@ class ThreejsRenderer {
 			this[name].obj.add(this.AM.pullAsset(is_proj ? this.tetris.figure.name : this.tetris[name].name))
 			var child = this[name].obj.children[i];
 			child.visible = is_visible;
-
-			child.rotation.z = 0;
-
 			child.material.transparent = true;
 			child.material.opacity = opacity;
 			child.position.x = this[name].shape[i].x;
 			child.position.y = this.cells_in_height - this[name].shape[i].y - 1;
+			child.rotation.z = 0;
 			child.position.z = 0;
 		}
 		this.game_field.add(this[name].obj);
@@ -227,10 +232,8 @@ class ThreejsRenderer {
 		for (var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
 			var proj = this.projection.shape[i];
-
-			if (dot.y >= 2)this.figure.obj.children[i].visible = true;
+			if ( dot.y >= 2 ) this.figure.obj.children[i].visible = true;
 			var obj = this.figure.obj.children[i];
-			console.log(this.figure)
 			obj.position.x = dot.x;
 			obj.position.y = this.cells_in_height - dot.y - 1;
 			this.projection.obj.children[i].position.x = dot.x;
