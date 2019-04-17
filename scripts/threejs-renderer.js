@@ -33,10 +33,10 @@ class ThreejsRenderer {
 		this.preloadTextures();
 
 		this.camera_rotations = { 
-		'camera_left' : { parameter: 'x', value: -1 },
-		'camera_right': { parameter: 'x', value: 1 },
-		'camera_up': { parameter: 'y', value: 1 }, 
-		'camera_down': { parameter: 'y', value: -1 }
+			'camera_left' : { parameter: 'x', value: -1 },
+			'camera_right': { parameter: 'x', value: 1 },
+			'camera_up': { parameter: 'y', value: 1 }, 
+			'camera_down': { parameter: 'y', value: -1 }
 		}; 
 		
 
@@ -82,9 +82,11 @@ class ThreejsRenderer {
 
 		inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			var acttion_name = e.detail.name;
-			if ( scope.camera_rotations[acttion_name] && scope.current_action != acttion_name ) clearInterval(scope.moveCam ); 
+			if ( scope.camera_rotations[acttion_name] ) {
+	 			if ( scope.current_action != acttion_name ) clearInterval(scope.moveCam ); 
 				scope.current_action = acttion_name; 
 				scope.moveCam = setInterval( scope.moveCamera.bind( scope, scope.camera_rotations[acttion_name].parameter, scope.camera_rotations[acttion_name].value ), 60); 
+			}
 		});
 
 		inputController.target.addEventListener( inputController.ACTION_DEACTIVATED, function (e) {
