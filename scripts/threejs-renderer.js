@@ -31,6 +31,13 @@ class ThreejsRenderer {
 		this.lines = [];
 		
 		this.preloadTextures();
+
+		this.camera_rotations = { 
+		'camera_left' : { parameter: 'x', value: -1 },
+		'camera_right': { parameter: 'x', value: 1 },
+		'camera_up': { parameter: 'y', value: 1 }, 
+		'camera_down': { parameter: 'y', value: -1 }
+		}; 
 		
 
 		window.addEventListener( "screens: start game" , function () {
@@ -71,23 +78,18 @@ class ThreejsRenderer {
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
 			var line_index = e.detail.line_number;
 			scope.destroyFigures(line_index, false);
-			
 		});
 
 		inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			var acttion_name = e.detail.name;
-			if ( acttion_name == 'camera_left') scope.moveCameraHorizontal(true, true);
-			if ( acttion_name == 'camera_right') scope.moveCameraHorizontal(true, false);
-			if ( acttion_name == 'camera_up') scope.moveCameraVertical(true, true);
-			if ( acttion_name == 'camera_down') scope.moveCameraVertical(true, false);
+			if ( scope.camera_rotations[acttion_name] && scope.current_action != acttion_name ) clearInterval(scope.moveCam ); 
+				scope.current_action = acttion_name; 
+				scope.moveCam = setInterval( scope.moveCamera.bind( scope, scope.camera_rotations[acttion_name].parameter, scope.camera_rotations[acttion_name].value ), 60); 
 		});
 
 		inputController.target.addEventListener( inputController.ACTION_DEACTIVATED, function (e) {
 			var acttion_name = e.detail.name;
-			if ( acttion_name == 'camera_left') scope.moveCameraHorizontal(false);
-			if ( acttion_name == 'camera_right') scope.moveCameraHorizontal(false);
-			if ( acttion_name == 'camera_up') scope.moveCameraVertical(false);
-			if ( acttion_name == 'camera_down') scope.moveCameraVertical(false);
+			if ( scope.current_action == acttion_name ) clearInterval(scope.moveCam);
 		});
 	}
 	preloadTextures() {
@@ -115,27 +117,10 @@ class ThreejsRenderer {
 		this.wall_texture = textureLoader.load( this.PARTICLES_PATH + "sprite-explosion2.png");
 	}
 
-	moveCameraHorizontal(is_start, is_left) {
-		var scope = this;
-		if ( is_start ) {
-			this.hor_interval_id = setInterval( function() {
-				scope.camera.position.x += is_left ? -1 : 1;
-				scope.camera.lookAt( new THREE.Vector3(0,9,3) );
-
-			}, 60)
-		} else clearInterval(this.hor_interval_id);
+	moveCamera( moving_coord, param) {
+		this.camera.position[moving_coord] += param;
+		this.camera.lookAt( new THREE.Vector3(0,9,3) );
 	}
-
-	moveCameraVertical(is_start, is_up) {
-		var scope = this;
-		if ( is_start ) {
-			this.ver_interval_id = setInterval( function() {
-				scope.camera.position.y += is_up ? 1 : -1;
-				scope.camera.lookAt( new THREE.Vector3(0,9,3) );
-			}, 60)
-		} else clearInterval(this.ver_interval_id);
-	}
-
 
 	initScene() {
 		var scope = this;
@@ -155,7 +140,7 @@ class ThreejsRenderer {
 		    );
 
 		camera.position.set( 3, 13, 10);
-		camera.lookAt( new THREE.Vector3(0,8,3) );
+		camera.lookAt( new THREE.Vector3(0,9,3) );
 
 		var scene = this.scene = new THREE.Scene();
 		this.scene.add(this.camera);
@@ -240,7 +225,7 @@ class ThreejsRenderer {
 	moveLines(line_index) {
 		var removing_figures = [...this.lines[line_index]];
 		for ( var i = line_index; i > 0; i-- ) {
-			this.lines[i] = this.lines[i-1];
+			this.lines[i] = this.lines[i-1].slice();
 			for ( var j = 0; j < this.lines[i].length; j++ ) {
 				if (this.lines[i][j].position.y > 0) this.lines[i][j].position.y--;
 			}

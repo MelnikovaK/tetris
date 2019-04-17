@@ -30,7 +30,7 @@
 
 		start_screen: 'start-screen',
 
-		logic_step_interval: 500,
+		logic_step_interval: 700,
 		
 		input: {
 			keyboard_enabled: true,
