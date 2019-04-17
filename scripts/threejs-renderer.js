@@ -43,6 +43,7 @@ class ThreejsRenderer {
 		window.addEventListener( "screens: start game" , function () {
 			scope.updateGameObjects('figure', 1, false);
 			scope.updateGameObjects('projection', 0.7, true);
+			scope.updateFigurePosition();
 			scope.initLines();
 			scope.startRendering();
 		});
@@ -70,8 +71,8 @@ class ThreejsRenderer {
 			}, 800);
 			window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 			setTimeout( function() {
-				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
 				scope.removeAllFigures();
+				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
 			}, 3000);
 		});
 
