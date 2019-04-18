@@ -49,15 +49,15 @@ class ThreejsRenderer {
 			scope.updateGameObjects('next_figure',false, 1, true);
 			scope.setPreview();
 			scope.updateGameObjects('figure', false, 1, false);
-			scope.updateGameObjects('projection', true, 0.4, true);
+			scope.updateGameObjects('projection', true, 0.2, true);
 		});
 
 
 		window.addEventListener( tetris.FIGURE_ON_FINISH , function () {
-			scope.removeAccessoryFigures('projection');
-			scope.removeAccessoryFigures('next_figure');
 			scope.fillLines();
 			scope.jumpFigures();
+			scope.removeAccessoryFigures('projection');
+			scope.removeAccessoryFigures('next_figure');
 			
 		});
 
@@ -227,7 +227,6 @@ class ThreejsRenderer {
 			shape: is_proj ? this.tetris.figure.shape.slice() : this.tetris[name].shape,
 			obj: new THREE.Object3D()
 		}
-
 		for ( var i =  0; i < this[name].shape.length; i++) {
 			this[name].obj.add(this.AM.pullAsset(is_proj ? this.tetris.figure.name : this.tetris[name].name))
 			var child = this[name].obj.children[i];
@@ -236,7 +235,6 @@ class ThreejsRenderer {
 			child.geometry.computeVertexNormals();
 			child.material.transparent = true;
 			child.material.opacity = opacity;
-			child.material.blending = opacity < 1 ? THREE.AdditiveBlending : THREE.NormalBlending;
 			child.position.x = this[name].shape[i].x;
 			child.position.y = is_proj ? 0 : this.cells_in_height - this[name].shape[i].y - 1;
 			child.rotation.x = 0;
@@ -255,11 +253,11 @@ class ThreejsRenderer {
 			//
 			var obj = this.figure.obj.children[i];
 
+			obj.position.x = dot.x;
+			obj.position.y = this.cells_in_height - dot.y - 1;
 			if ( this.figure.shape[i].pivot ) {
 				this.pointLight.position.set( obj.position.x, obj.position.y, 1 );
 			}
-			obj.position.x = dot.x;
-			obj.position.y = this.cells_in_height - dot.y - 1;
 			//
 			this.projection.obj.children[i].position.x = dot.x;
 			this.projection.obj.children[i].position.y = obj.position.y - proj_coord;
@@ -325,7 +323,7 @@ class ThreejsRenderer {
 		for ( var j = 0; j < this.rows[i].length; j++ ) {
 		(function(i, j) {
 			var counter = 0.1;
-			var x_direction_value = Math.sin(Math.random()) * counter;
+			var x_direction_value = Math.sin(Math.random()) * counter * Math.random();
 			var z_direction_value = ~~( Math.random() * i) * 0.01;
 			var obj = scope.rows[i][j];
 			if ( !move ) {
@@ -336,7 +334,9 @@ class ThreejsRenderer {
 						if ( j == scope.rows[i].length - 1 && !game_is_over) scope.removeFigures(removing_figures);
 						return;
 					}
-					obj.position.y -= (Math.random()) * counter;
+					if ( counter > 1 ) obj.position.y -= (Math.random()) * counter;
+					if ( !game_is_over ) obj.position.y -= (Math.random()) * counter;
+					else if ( counter > 1 ) obj.position.y -= (Math.random()) * counter;
 					obj.position.z += z_direction_value;
 					obj.position.x += x_direction_value;
 					obj.rotation.x += Math.sin(Math.random()) * counter * 0.01;
@@ -355,9 +355,6 @@ class ThreejsRenderer {
 			i++;
 			if ( i == scope.rows.length) clearInterval(interv)
 		}, 200)
-		// for ( var i = 0; i < this.rows.length; i++ ) {
-		// 	this.destroyFigures(i, true);
-		// }
 	}
 
 	jumpFigures() {
@@ -379,7 +376,7 @@ class ThreejsRenderer {
 		        if ( counter < 12) setTimeout( move, interv );
 						else return;
 						obj.position.y += Math.sin(counter) * height;
-						counter++;
+						counter++; 
 					}				
 				}
 				move();
@@ -390,17 +387,17 @@ class ThreejsRenderer {
 	
 
 	createAssets() {
-		this.AM.addAsset('rectangle', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#86DA10'}));} , 15);
-		this.AM.addAsset('cross', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FFB3F9'}));} , 15);
-		this.AM.addAsset('square', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FF1C00'}));} , 15);
-		this.AM.addAsset('stairs-left', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#00ACF5'})); }, 15);
-		this.AM.addAsset('stairs-right', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#B400F5'})); }, 15);
-		this.AM.addAsset('t-shape', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FF890A'}));} , 15);
-		this.AM.addAsset('l-left', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#ED50D8'}));} , 15);
-		this.AM.addAsset('l-right', function() {return createShape(new THREE.MeshPhongMaterial( { color: '#0FFFC6'}));} , 15);		
+		this.AM.addAsset('rectangle', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#86DA10', shininess: 50}));} , 15);
+		this.AM.addAsset('cross', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FFB3F9', shininess: 50}));} , 15);
+		this.AM.addAsset('square', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FF1C00', shininess: 50}));} , 15);
+		this.AM.addAsset('stairs-left', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#00ACF5', shininess: 50})); }, 15);
+		this.AM.addAsset('stairs-right', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#B400F5', shininess: 50})); }, 15);
+		this.AM.addAsset('t-shape', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FF890A', shininess: 50}));} , 15);
+		this.AM.addAsset('l-left', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#ED50D8', shininess: 50}));} , 15);
+		this.AM.addAsset('l-right', function() {return createShape(new THREE.MeshPhongMaterial( { color: '#0FFFC6', shininess: 50}));} , 15);		
 
 		function createShape(material) {
-			return new THREE.Mesh(new THREE.BoxGeometry( 1, 1, 1, 10, 10, 10 ), material);
+			return new THREE.Mesh(new THREE.BoxGeometry( 1, 1, 1, 5, 5, 5 ), material);
 
 		}
 	}

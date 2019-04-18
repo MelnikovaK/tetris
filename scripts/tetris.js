@@ -201,10 +201,10 @@ class Tetris {
 
 				if ( scope.figure_on_finish ) {
 					scope.figure_on_finish = false;
-					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES ); 
-					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
 					scope.purFigureToGlass();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
+					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES ); 
+					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
 					scope.removeFullLines();
 					scope.updateFigures();
 				} 

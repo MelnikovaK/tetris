@@ -30,6 +30,10 @@ canvas {
 	top: 0;
 	left: 0;
 }
+.game-screen {
+	color: white;
+
+}
 
 .pause {
 	display: block;
@@ -50,6 +54,7 @@ h1 {
 	border: 1px solid black;
 	display: none;
 	position: fixed; 
+	color: black;
 	top: 100px; 
 	left: 40%;
 	z-index: 5;
@@ -62,6 +67,7 @@ h1 {
 	border: 1px solid black;
 	display: none;
 	position: fixed; 
+	color: black;
 	top: 100px; 
 	left: 40%;
 	z-index: 5;
@@ -96,6 +102,8 @@ h1 {
 .game-screen_points_container {
 	position: absolute;
 	font-size: 30px;
+	color: white;
+
 	padding: 20px;
 	z-index: 15;	
 }
