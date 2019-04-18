@@ -116,39 +116,30 @@ class Tetris {
 	testMove (rotation_i, replace, dx, dy) {
 		var scope = this;
 
-		if ( !checkDotCoordinates()) return false;
-		if (replace) {
-			for ( var i = 0; i < this.figure.shape.length; i++ ) {
-				var dot = this.figure.shape[i];
-				if ( rotation_i ) {
-					var figure_current_phase = this.figure_rotations[this.figure.name][rotation_i][i];
-					dot.x += -figure_current_phase.x - figure_current_phase.y; 
-					dot.y += -figure_current_phase.y + figure_current_phase.x; 
-				} else {
-					dot.x += dx; 
-					dot.y += dy; 
-				}
-			}
-		}
+
+		if ( !checkDotCoordinates(false)) return false;
+		if (replace) checkDotCoordinates(replace);
 		return true;
 
-		function checkDotCoordinates() {
+		function checkDotCoordinates(replace) {
 			var diff_x, diff_y;
 			for ( var i = 0; i < scope.figure.shape.length; i++ ) {
 				var part = scope.figure.shape[i];
 				if ( rotation_i ) {
 					var figure_current_phase = scope.figure_rotations[scope.figure.name][rotation_i][i];
-					diff_x = -figure_current_phase.x - figure_current_phase.y; 
-					diff_y = -figure_current_phase.y + figure_current_phase.x; 
-				} else {
-					diff_x = dx; 
-					diff_y = dy; 
+					dx = -figure_current_phase.x - figure_current_phase.y; 
+					dy = -figure_current_phase.y + figure_current_phase.x; 
 				}
-				var new_x = part.x + diff_x; 
-				var new_y = part.y + diff_y;
-				var glass_row = scope.rows[new_y];
-				if ( glass_row == undefined || glass_row[new_x] == undefined ) return false;
-				if ( glass_row[new_x]) return false; 
+				if ( replace ) {
+					part.x += dx; 
+					part.y += dy; 
+				} else {
+					var new_x = part.x + dx; 
+					var new_y = part.y + dy;
+					var glass_row = scope.rows[new_y];
+					if ( glass_row == undefined || glass_row[new_x] == undefined ) return false;
+					if ( glass_row[new_x]) return false; 
+				}
 			}
 			return true;
 		}
@@ -233,13 +224,7 @@ class Tetris {
 
 	rotate() {
 		if ( this.figure.name == 'square' ) return; 
-		// for ( var i = 0; i < this.figure.shape.length; i++ ) { 
-		// 	var dot = this.figure.shape[i]; 
-		// 	var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x; 
-		// 	var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y; 
-		// 	dot.x = dot.x - diffX - diffY; 
-		// 	dot.y = dot.y - diffY + diffX; 
-		// } 
+
 		var new_rotation_state = this.figure.rotation_state == 4 ? 1 : this.figure.rotation_state + 1 ;
 		if ( !this.testMove( this.figure.rotation_state, true, 0, 0 ) ) return;
 		this.figure.rotation_state = new_rotation_state;
@@ -292,7 +277,7 @@ class Tetris {
 		}
 	} 
 
-	moveFigure() { 
+	moveFigure() {
 		var possibility_to_move = this.testMove(0, true, 0, 1); 
 		if ( !possibility_to_move ) {
 			this.figure_on_finish = true; 

@@ -331,7 +331,7 @@ class ThreejsRenderer {
 			if ( !move ) {
 				var move = function() {
 					if ( counter == 0.4 && j == scope.rows[i].length - 1 && !game_is_over) removing_figures = scope.moveLines(i);
-	        if ( counter < 4 ) setTimeout( move, 20 );
+	        if ( counter < 8 ) setTimeout( move, 20 );
 					else {
 						if ( j == scope.rows[i].length - 1 && !game_is_over) scope.removeFigures(removing_figures);
 						return;
