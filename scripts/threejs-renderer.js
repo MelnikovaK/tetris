@@ -77,7 +77,7 @@ class ThreejsRenderer {
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
 				window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 				scope.removeAccessoryFigures('next_figure');
-			}, 3000);
+			}, 5000);
 		});
 
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
@@ -326,17 +326,17 @@ class ThreejsRenderer {
 		(function(i, j) {
 			var counter = 0.1;
 			var x_direction_value = Math.sin(Math.random()) * counter;
-			var z_direction_value = ~~( Math.random() * i) * 0.05;
+			var z_direction_value = ~~( Math.random() * i) * 0.01;
 			var obj = scope.rows[i][j];
 			if ( !move ) {
 				var move = function() {
 					if ( counter == 0.4 && j == scope.rows[i].length - 1 && !game_is_over) removing_figures = scope.moveLines(i);
-	        if ( counter < 8 ) setTimeout( move, 20 );
+	        if ( counter < 8 ) setTimeout( move, 30 );
 					else {
 						if ( j == scope.rows[i].length - 1 && !game_is_over) scope.removeFigures(removing_figures);
 						return;
 					}
-					obj.position.y -= (Math.random() + 1) * counter * 0.05;
+					obj.position.y -= (Math.random()) * counter;
 					obj.position.z += z_direction_value;
 					obj.position.x += x_direction_value;
 					obj.rotation.x += Math.sin(Math.random()) * counter * 0.01;
@@ -349,9 +349,15 @@ class ThreejsRenderer {
 	}
 
 	destroyAllFigures(i) {
-		for ( var i = 0; i < this.rows.length; i++ ) {
-			this.destroyFigures(i, true);
-		}
+		var i = 0, scope = this;
+		var interv = setInterval(function() {
+			scope.destroyFigures(i, true);
+			i++;
+			if ( i == scope.rows.length) clearInterval(interv)
+		}, 200)
+		// for ( var i = 0; i < this.rows.length; i++ ) {
+		// 	this.destroyFigures(i, true);
+		// }
 	}
 
 	jumpFigures() {

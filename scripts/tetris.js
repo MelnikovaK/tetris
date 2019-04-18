@@ -203,7 +203,7 @@ class Tetris {
 					scope.figure_on_finish = false;
 					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES ); 
 					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
-					scope.fillLine();
+					scope.purFigureToGlass();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
 					scope.removeFullLines();
 					scope.updateFigures();
@@ -290,7 +290,7 @@ class Tetris {
 		} 
 	} 
 
-	fillLine() { 
+	purFigureToGlass() { 
 		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
 			var part = this.figure.shape[i]; 
 			this.rows[part.y][part.x] = true; 
