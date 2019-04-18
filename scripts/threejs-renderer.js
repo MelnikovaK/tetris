@@ -141,7 +141,7 @@ class ThreejsRenderer {
 		var scope = this;
 
 		const VIEW_ANGLE = 90;
-		const ASPECT = window.innerWidth / window.innerHeight;
+		const ASPECT = 1;//window.innerWidth / window.innerHeight;
 		const NEAR = .01;
 		const FAR = 500;
 
@@ -154,7 +154,7 @@ class ThreejsRenderer {
 		        FAR
 		    );
 
-		camera.position.set( localStorage.x ? +localStorage.x : 3, localStorage.y ? +localStorage.y : 13, 10);
+		camera.position.set( localStorage.x ? +localStorage.x : 3, localStorage.y ? +localStorage.y : 13, 15);
 		camera.lookAt( new THREE.Vector3(0,9,3) );
 
 		var scene = this.scene = new THREE.Scene();
@@ -174,6 +174,18 @@ class ThreejsRenderer {
 
 		var spotLightHelper = new THREE.SpotLightHelper( spotLight );
 		scene.add( spotLightHelper );
+
+		var loader = new THREE.CubeTextureLoader();
+		loader.setCrossOrigin( "" );
+		loader.setPath( 'https://threejs.org/examples/textures/cube/pisa/' );
+
+		var cubeTexture = this.cubeTexture = loader.load( [
+		  'px.png', 'nx.png',
+		  'py.png', 'ny.png',
+		  'pz.png', 'nz.png'
+		] );
+
+		scene.background = cubeTexture;
 
 		// var pointLight = new THREE.PointLight( 0xffffff, 1 );
 		// this.scene.add( pointLight );
@@ -197,6 +209,7 @@ class ThreejsRenderer {
 
 		//
 		var pointLight = this.pointLight = new THREE.PointLight( 0xffffff, 1 );
+		pointLight.intensity = .1;
 		this.game_field.add( pointLight );	
 	}
 
@@ -210,7 +223,7 @@ class ThreejsRenderer {
 		this.game_container.add( preview );
 
 		preview.position.x = -9;
-		preview.position.y = 9;
+		preview.position.y = 15;
 	}
 
 	startRendering() {
@@ -232,7 +245,7 @@ class ThreejsRenderer {
 			var child = this[name].obj.children[i];
 			child.visible = is_visible;
 
-			child.geometry.computeVertexNormals();
+			// child.geometry.computeVertexNormals();
 			child.material.transparent = true;
 			child.material.opacity = opacity;
 			child.position.x = this[name].shape[i].x;
@@ -387,17 +400,96 @@ class ThreejsRenderer {
 	
 
 	createAssets() {
-		this.AM.addAsset('rectangle', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#86DA10', shininess: 50}));} , 15);
-		this.AM.addAsset('cross', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FFB3F9', shininess: 50}));} , 15);
-		this.AM.addAsset('square', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FF1C00', shininess: 50}));} , 15);
-		this.AM.addAsset('stairs-left', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#00ACF5', shininess: 50})); }, 15);
-		this.AM.addAsset('stairs-right', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#B400F5', shininess: 50})); }, 15);
-		this.AM.addAsset('t-shape', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FF890A', shininess: 50}));} , 15);
-		this.AM.addAsset('l-left', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#ED50D8', shininess: 50}));} , 15);
-		this.AM.addAsset('l-right', function() {return createShape(new THREE.MeshPhongMaterial( { color: '#0FFFC6', shininess: 50}));} , 15);		
+			var scope = this;
+			let width = 1;
+			let height = 1;
+			let depth = 1;
+			let radius0 = 0.1;
+			let smoothness = 4;
 
+		  let shape = new THREE.Shape();
+		  let eps = 0.00001;
+		  let radius = radius0 - eps;
+		  shape.absarc( eps, eps, eps, -Math.PI / 2, -Math.PI, true );
+		  shape.absarc( eps, height -  radius * 2, eps, Math.PI, Math.PI / 2, true );
+		  shape.absarc( width - radius * 2, height -  radius * 2, eps, Math.PI / 2, 0, true );
+		  shape.absarc( width - radius * 2, eps, eps, 0, -Math.PI / 2, true );
+		  var geometry = new THREE.ExtrudeBufferGeometry( shape, {
+		    amount: depth - radius0 * 2,
+		    bevelEnabled: true,
+		    bevelSegments: smoothness * 2,
+		    steps: 1,
+		    bevelSize: radius,
+		    bevelThickness: radius0,
+		    curveSegments: smoothness
+		  });
+		  
+		  geometry.center();
+
+		var metallness = .5;
+		var roughness = .5;
+
+		this.AM.addAsset('rectangle', function() { return createShape(new THREE.MeshStandardMaterial( {
+			color: '#86DA10',
+			// shininess: 50,
+    	metalness: metallness,
+    	envMap: scope.cubeTexture,
+    	roughness: roughness
+    }));} , 15);
+		this.AM.addAsset('cross', function() { return createShape(new THREE.MeshStandardMaterial( {
+			color: '#FFB3F9',
+			// shininess: 50,
+    	metalness: metallness,
+    	envMap: scope.cubeTexture,
+    	roughness: roughness
+    }));} , 15);
+		this.AM.addAsset('square', function() { return createShape(new THREE.MeshStandardMaterial( {
+			color: '#FF1C00',
+			// shininess: 50,
+    	metalness: metallness,
+    	envMap: scope.cubeTexture,
+    	roughness: roughness
+    }));} , 15);
+		this.AM.addAsset('stairs-left', function() { return createShape(new THREE.MeshStandardMaterial( {
+			color: '#00ACF5',
+			// shininess: 50,
+    	metalness: metallness,
+    	envMap: scope.cubeTexture,
+    	roughness: roughness
+    })); }, 15);
+		this.AM.addAsset('stairs-right', function() { return createShape(new THREE.MeshStandardMaterial( {
+			color: '#B400F5',
+			// shininess: 50,
+    	metalness: metallness,
+    	envMap: scope.cubeTexture,
+    	roughness: roughness
+    })); }, 15);
+		this.AM.addAsset('t-shape', function() { return createShape(new THREE.MeshStandardMaterial( {
+			color: '#FF890A',
+			// shininess: 50,
+    	metalness: metallness,
+    	envMap: scope.cubeTexture,
+    	roughness: roughness
+    }));} , 15);
+		this.AM.addAsset('l-left', function() { return createShape(new THREE.MeshStandardMaterial( {
+			color: '#ED50D8',
+			// shininess: 50,
+    	metalness: metallness,
+    	envMap: scope.cubeTexture,
+    	roughness: roughness
+    }));} , 15);
+		this.AM.addAsset('l-right', function() {return createShape(new THREE.MeshStandardMaterial( {
+			color: '#0FFFC6',
+			// shininess: 50,
+    	metalness: metallness,
+    	envMap: scope.cubeTexture,
+    	roughness: roughness
+    }));} , 15);		
+
+	
 		function createShape(material) {
-			return new THREE.Mesh(new THREE.BoxGeometry( 1, 1, 1, 5, 5, 5 ), material);
+			// return new THREE.Mesh(new THREE.BoxGeometry( 1, 1, 1, 5, 5, 5 ), material);
+			return new THREE.Mesh( geometry.clone(), material);
 
 		}
 	}

@@ -11,7 +11,7 @@
 		SOUNDS_PATH: SOUNDS_PATH,
 		cells_horizontal: 10,
 		cells_vertical: 1,
-		cells_height: 15,
+		cells_height: 20,
 		field_width: 900,
 		field_height: 900,
 		cell_width: 900/20,
