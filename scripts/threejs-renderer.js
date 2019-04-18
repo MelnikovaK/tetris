@@ -158,7 +158,7 @@ class ThreejsRenderer {
 
 		var scene = this.scene = new THREE.Scene();
 		this.scene.add(this.camera);
-		this.scene.background = new THREE.Color( 0xcce0ff );
+		this.scene.background = new THREE.Color('#000547');
 
 		this.renderer.setSize(this.field_width, this.field_height);
 		this.container.appendChild(this.renderer.domElement);
@@ -231,7 +231,7 @@ class ThreejsRenderer {
 			this[name].obj.add(this.AM.pullAsset(is_proj ? this.tetris.figure.name : this.tetris[name].name))
 			var child = this[name].obj.children[i];
 			child.visible = is_visible;
-			child.geometry.mergeVertices();
+
 			child.geometry.computeVertexNormals();
 			child.material.transparent = true;
 			child.material.opacity = opacity;
@@ -245,24 +245,24 @@ class ThreejsRenderer {
 	}
 
 	updateFigurePosition(proj_coord) {
+		var pivot_i;
 		for (var i = 0; i < this.figure.shape.length; i++) {
 			var dot = this.figure.shape[i];
 			var proj = this.projection.shape[i];
 			if ( dot.y >= 2 ) this.figure.obj.children[i].visible = true;
 			else this.figure.obj.children[i].visible = false;
-			
 			//
 			var obj = this.figure.obj.children[i];
-			obj.position.x = dot.x;
-			obj.position.y = this.cells_in_height - dot.y - 1;
-			if( i==0 ) {
+
+			if ( this.figure.shape[i].pivot ) {
 				this.pointLight.position.set( obj.position.x, obj.position.y, 1 );
 			}
+			obj.position.x = dot.x;
+			obj.position.y = this.cells_in_height - dot.y - 1;
 			//
 			this.projection.obj.children[i].position.x = dot.x;
 			this.projection.obj.children[i].position.y = obj.position.y - proj_coord;
 		}
-		
 	}
 
 	setPreview() {
