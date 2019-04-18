@@ -4,6 +4,7 @@ class Tetris {
 
 		this.FIGURE_MOVED = 'tetris: figure_moved'; 
 		this.FIGURE_ON_FINISH = 'tetris: figure_on-finish'; 
+		this.FIGURE_UPDATED = 'tetris: figure_updated'; 
 		this.GAME_IS_OVER = 'tetris: game_is_over'; 
 		this.LINE_IS_FULL = 'tetris: line_is_full'; 
 		this.GET_POINT = 'tetris:get_point'; 
@@ -113,7 +114,7 @@ class Tetris {
 	} 
 
 
-	testMove(dx,dy, index) { 
+	testMove(dx,dy, index) {
 		var scope = this;
 		if ( index ) {
 			if ( !checkDotCoordinates( dx, dy, this.figure.shape[index]) ) return false;
@@ -124,9 +125,9 @@ class Tetris {
 		function checkDotCoordinates(dx,dy,part) {
 			var new_x = part.x + dx; 
 			var new_y = part.y + dy; 
-
-			if ( scope.rows[new_y] == undefined || scope.rows[new_y][new_x] == undefined ) return false;
-			if ( scope.rows[new_y][new_x]) return false; 
+			var glass_row = scope.rows[new_y];
+			if ( glass_row == undefined || glass_row[new_x] == undefined ) return false;
+			if ( glass_row[new_x]) return false; 
 			return true;
 		}
 	}
@@ -141,8 +142,9 @@ class Tetris {
 
 	testRotattion() { 
 		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
-			var dx = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x; 
-			var dy = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y; 
+			var figure_current_phase = this.figure_rotations[this.figure.name][this.figure.rotation_state][i];
+			var dx = figure_current_phase.x; 
+			var dy = figure_current_phase.y; 
 			if ( !this.testMove( -dx-dy, -dy+dx, i ) ) return false;
 		}
 		return true; 
@@ -150,7 +152,6 @@ class Tetris {
 
 	moveFigureByDirection(direction) { 
 		if ( this.testMove (direction.x, 0)) this.move(direction.x, 0);
-		// this.updateProjection(); 
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
 	} 
 
@@ -182,11 +183,7 @@ class Tetris {
 
 	startGame() { 
 		var scope = this; 
-		this.figure = this.getNewFigureData();
-		this.next_figure = this.getNewFigureData();
-		this.moveToTheMiddle(); 
-		// this.projection = JSON.parse(JSON.stringify(this.figure)); 
-		// this.updateProjection(); 
+		this.updateFigures();
 		this.figure_on_finish = false; 
 		this.points = 0; 
 		this.on_pause = false; 
@@ -196,11 +193,9 @@ class Tetris {
 		if(!this.gameStep){ 
 
 			this.gameStep = function(){ 
-				scope.game_timeout = setTimeout( scope.gameStep, scope.logic_step_interval ); 
-
+				scope.game_timeout = setTimeout( scope.gameStep, scope.logic_step_interval );
 				if ( scope.on_pause ) return; 
-
-				scope.moveFigure(); 
+				scope.moveFigure();
 
 				if(scope.game_is_over) { 
 					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "over", loop: false} ); 
@@ -209,30 +204,30 @@ class Tetris {
 					return; 
 				} 
 
-				if ( scope.figure_on_finish ) { 
-					scope.figure_on_finish = false; 
-
+				if ( scope.figure_on_finish ) {
+					scope.figure_on_finish = false;
 					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES ); 
 					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
-
-					scope.fillLine(); 
-					scope.figure = scope.next_figure;
-					scope.next_figure = scope.getNewFigureData(); 
-					scope.moveToTheMiddle(); 
-					// scope.projection = JSON.parse(JSON.stringify(scope.figure)); 
-
+					scope.fillLine();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
-
-					scope.removeFullLines(); 
-					// scope.updateProjection(); 
+					scope.removeFullLines();
+					scope.updateFigures();
 				} 
+
 				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED, {projection_coord: scope.getDropPosition()} ); 
 			}; 
 		} 
 		this.gameStep(); 
 	} 
 
-	rotate() { 
+	updateFigures() {
+		this.figure = this.next_figure || this.getNewFigureData();
+		this.next_figure = this.getNewFigureData();
+		this.moveToTheMiddle();
+		Utils.triggerCustomEvent( window, this.FIGURE_UPDATED );
+	}
+
+	rotate() {
 		if ( this.figure.name == 'square' || !this.testRotattion()) return; 
 		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
 			var dot = this.figure.shape[i]; 
@@ -245,7 +240,6 @@ class Tetris {
 		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0; 
 		else this.figure.rotation_state++;
 
-		// this.updateProjection(); 
 		Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "rotation", loop: false} ); 
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
 	} 
@@ -281,7 +275,7 @@ class Tetris {
 		for ( var y = 0; y < this.rows.length; y++ ) { 
 			var row = this.rows[y]; 
 			for ( var x = 0; x < row.length; x++ ) { 
-			if ( !row[x] ) continue row; 
+				if ( !row[x] ) continue row; 
 			} 
 			this.logic_step_interval -= 15; 
 			this.points += 5; 
@@ -301,6 +295,7 @@ class Tetris {
 			this.figure_on_finish = true; 
 			for ( var i = 0; i < this.figure.shape.length; i++ ) {
 				if ( this.figure.shape[i].y < 3 ) {
+					console.log(this.figure)
 					this.game_is_over = true; 
 					break;
 				}
@@ -321,14 +316,6 @@ class Tetris {
 		Utils.triggerCustomEvent( window, this.GAME_IS_OVER ); 
 	} 
 
-	// updateProjection() { 
-	// 	var counter = this.getDropPosition(); 
-	// 	for ( var i = 0; i < this.projection.shape.length; i++) { 
-	// 		var dot = this.projection.shape[i]; 
-	// 		dot.x = this.figure.shape[i].x; 
-	// 		dot.y = this.figure.shape[i].y + counter; 
-	// 	} 
-	// } 
 
 	getNewFigureData() { 
 		return JSON.parse(JSON.stringify(this.figures[~~( Math.random() * this.figures.length)]));
