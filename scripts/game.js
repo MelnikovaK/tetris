@@ -75,6 +75,9 @@
 				},
 				"acceleration": {
 					keys: [90],
+				},
+				"fullscreen": {
+					keys: [69],
 				}
 			}
 		},

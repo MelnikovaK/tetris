@@ -27,6 +27,7 @@ class ThreejsRenderer {
 		this.CENTER = new THREE.Vector3( this.cells_horizontal / 2, 0, this.cells_vertical / 2 );
 
 		this.AM = new AssetManager(this);
+		this.fullscreen = false;
 
 		this.rows = [];
 		
@@ -93,6 +94,7 @@ class ThreejsRenderer {
 
 		inputController.target.addEventListener( inputController.ACTION_ACTIVATED, function (e) {
 			var acttion_name = e.detail.name;
+			if ( acttion_name == 'fullscreen' ) scope.setFullScreen();
 			if ( scope.camera_rotations[acttion_name] ) {
 	 			if ( scope.current_action != acttion_name ) clearInterval(scope.moveCam ); 
 				scope.current_action = acttion_name; 
@@ -194,6 +196,12 @@ class ThreejsRenderer {
 		// 	t+=.01;
 		// 	pointLight.position.set( Math.sin(t)*10, Math.cos(t)*10+5, 1 );
 		// });
+
+	}
+	setFullScreen() {
+		this.fullscreen = this.fullscreen == true ? false : true;
+		if ( this.fullscreen ) this.renderer.setSize(window.innerWidth, window.innerHeight);
+		else this.renderer.setSize(this.field_width, this.field_height);
 
 	}
 

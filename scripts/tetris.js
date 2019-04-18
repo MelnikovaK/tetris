@@ -137,8 +137,15 @@ class Tetris {
 					var new_x = part.x + dx; 
 					var new_y = part.y + dy;
 					var glass_row = scope.rows[new_y];
-					if ( glass_row == undefined || glass_row[new_x] == undefined ) return false;
-					if ( glass_row[new_x]) return false; 
+					if ( glass_row == undefined || glass_row[new_x] == undefined ) {
+						scope.lower_part = {x: part.x, y: part.y}
+
+						return false;
+					}
+					if ( glass_row[new_x] ) {
+						scope.lower_part = {x: part.x, y: part.y}
+						return false; 
+					}
 				}
 			}
 			return true;
@@ -203,7 +210,7 @@ class Tetris {
 					scope.figure_on_finish = false;
 					scope.purFigureToGlass();
 					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
-					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES ); 
+					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES, { x: scope.lower_part.x, y: scope.lower_part.y} ); 
 					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
 					scope.removeFullLines();
 					scope.updateFigures();
@@ -214,7 +221,6 @@ class Tetris {
 		} 
 		this.gameStep(); 
 	} 
-
 	updateFigures() {
 		this.figure = this.next_figure || this.getNewFigureData();
 		this.next_figure = this.getNewFigureData();

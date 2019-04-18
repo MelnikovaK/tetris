@@ -6,7 +6,7 @@ var accel = {
       spread: new THREE.Vector3( 0.5 )
     },
     activeMultiplier: 200,
-
+    duration: 1,
     velocity: {
       value: new THREE.Vector3( 1 )
     },
@@ -21,5 +21,5 @@ var accel = {
         new THREE.Color('grey'), new THREE.Color('skyblue')
       ]
     },
-    opacity: { value: [0.1, 0.2, 0] }
+    opacity: { value: [0.1, 0.1, 0.1] }
 }

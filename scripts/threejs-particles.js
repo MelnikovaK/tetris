@@ -9,8 +9,8 @@ class ThreejsParticles {
 		window.addEventListener( game.GAME_IS_OVER , function () {
 		});
 
-		window.addEventListener( game.EMIT_PARTICLES , function () {
-			scope.updateEmitterGroup(scope.accel_group);
+		window.addEventListener( game.EMIT_PARTICLES , function (e) {
+			scope.updateEmitterGroup(scope.accel_group, e.detail.x, e.detail.y);
 		});
 
 		window.addEventListener( game.LINE_IS_FULL , function () {
@@ -64,13 +64,12 @@ class ThreejsParticles {
 			},
 			depthTest: true,
 			depthWrite: false,
-			blending: THREE.AdditiveBlending,
+			// blending: THREE.AdditiveBlending,
 			scale: 600
 		});
 	} 
 
-	updateEmitterGroup( emitter_group ) {
-		var figure = this.game.figure.shape[3];
-    	emitter_group.triggerPoolEmitter( 1, (new THREE.Vector3( figure.x, 0, this.game.cells_height - figure.y )) );
+	updateEmitterGroup( emitter_group, x, y ) {
+    	emitter_group.triggerPoolEmitter( 1, (new THREE.Vector3( x, 0, this.game.cells_height - y - 1 )) );
 	}
 }
