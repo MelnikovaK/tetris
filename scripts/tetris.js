@@ -94,64 +94,68 @@ class Tetris {
 			if (el.substr(-1) == '*') pivot = true; 
 			shape.push({x: +el[0], y: +el[2], pivot: pivot}) 
 		}); 
-		this.figures.push({name: figure, shape: shape, rotation_state: 0 }) 
+		this.figures.push({name: figure, shape: shape, rotation_state: 1 }) 
 		} 
 	} 
 
 	dropFigure() { 
 		var counter = this.getDropPosition();
-		this.move( 0, counter );
+		this.testMove( 0, true, 0, counter );
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
 	} 
 
 	getDropPosition() { 
 		var counter = 0; 
 		while ( 1 ) { 
-			if ( !this.testMove(0, counter) ) break; 
+			if ( !this.testMove(0, false, 0, counter) ) break; 
 			counter++; 
 		} 
 		return counter - 1; 
 	} 
 
-
-	testMove(dx,dy, index) {
+	testMove (rotation_i, replace, dx, dy) {
 		var scope = this;
-		if ( index ) {
-			if ( !checkDotCoordinates( dx, dy, this.figure.shape[index]) ) return false;
-		}
-		else for ( var i = 0; i < this.figure.shape.length; i++ ) if ( !checkDotCoordinates( dx, dy, this.figure.shape[i] ) ) return false;
-		return true; 
 
-		function checkDotCoordinates(dx,dy,part) {
-			var new_x = part.x + dx; 
-			var new_y = part.y + dy; 
-			var glass_row = scope.rows[new_y];
-			if ( glass_row == undefined || glass_row[new_x] == undefined ) return false;
-			if ( glass_row[new_x]) return false; 
+		if ( !checkDotCoordinates()) return false;
+		if (replace) {
+			for ( var i = 0; i < this.figure.shape.length; i++ ) {
+				var dot = this.figure.shape[i];
+				if ( rotation_i ) {
+					var figure_current_phase = this.figure_rotations[this.figure.name][rotation_i][i];
+					dot.x += -figure_current_phase.x - figure_current_phase.y; 
+					dot.y += -figure_current_phase.y + figure_current_phase.x; 
+				} else {
+					dot.x += dx; 
+					dot.y += dy; 
+				}
+			}
+		}
+		return true;
+
+		function checkDotCoordinates() {
+			var diff_x, diff_y;
+			for ( var i = 0; i < scope.figure.shape.length; i++ ) {
+				var part = scope.figure.shape[i];
+				if ( rotation_i ) {
+					var figure_current_phase = scope.figure_rotations[scope.figure.name][rotation_i][i];
+					diff_x = -figure_current_phase.x - figure_current_phase.y; 
+					diff_y = -figure_current_phase.y + figure_current_phase.x; 
+				} else {
+					diff_x = dx; 
+					diff_y = dy; 
+				}
+				var new_x = part.x + diff_x; 
+				var new_y = part.y + diff_y;
+				var glass_row = scope.rows[new_y];
+				if ( glass_row == undefined || glass_row[new_x] == undefined ) return false;
+				if ( glass_row[new_x]) return false; 
+			}
 			return true;
 		}
 	}
 
-	move(dx, dy) {
-		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
-			var dot = this.figure.shape[i];
-			dot.x += dx;
-			dot.y += dy;
-		}
-	}
-
-	testRotattion() { 
-		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
-			var figure_current_phase = this.figure_rotations[this.figure.name][this.figure.rotation_state][i];
-			var dx = figure_current_phase.x; 
-			var dy = figure_current_phase.y; 
-			if ( !this.testMove( -dx-dy, -dy+dx, i ) ) return false;
-		}
-		return true; 
-	} 
-
 	moveFigureByDirection(direction) { 
-		if ( this.testMove (direction.x, 0)) this.move(direction.x, 0);
+		this.testMove (0, true, direction.x, 0)
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
 	} 
 
@@ -228,17 +232,17 @@ class Tetris {
 	}
 
 	rotate() {
-		if ( this.figure.name == 'square' || !this.testRotattion()) return; 
-		for ( var i = 0; i < this.figure.shape.length; i++ ) { 
-			var dot = this.figure.shape[i]; 
-			var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x; 
-			var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y; 
-			dot.x = dot.x - diffX - diffY; 
-			dot.y = dot.y - diffY + diffX; 
-		} 
-
-		if ( this.figure.rotation_state == 3 ) this.figure.rotation_state = 0; 
-		else this.figure.rotation_state++;
+		if ( this.figure.name == 'square' ) return; 
+		// for ( var i = 0; i < this.figure.shape.length; i++ ) { 
+		// 	var dot = this.figure.shape[i]; 
+		// 	var diffX = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].x; 
+		// 	var diffY = this.figure_rotations[this.figure.name][this.figure.rotation_state][i].y; 
+		// 	dot.x = dot.x - diffX - diffY; 
+		// 	dot.y = dot.y - diffY + diffX; 
+		// } 
+		var new_rotation_state = this.figure.rotation_state == 4 ? 1 : this.figure.rotation_state + 1 ;
+		if ( !this.testMove( this.figure.rotation_state, true, 0, 0 ) ) return;
+		this.figure.rotation_state = new_rotation_state;
 
 		Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "rotation", loop: false} ); 
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
@@ -256,14 +260,14 @@ class Tetris {
 					break; 
 				} 
 			} 
-			for ( var state = 0; state < 4; state++ ) { 
+			for ( var state = 1; state <= 4; state++ ) { 
 				this.figure_rotations[figure.name][state] = []; 
 				for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) { 
 					var dot = figure.shape[part_i]; 
 					var diffX = dot.x - pivot.x; 
 					var diffY = dot.y - pivot.y; 
 					dot.x = dot.x - diffX - diffY; 
-					dot.y = dot.y - diffY + diffX; 
+					dot.y = dot.y - diffY + diffX;
 					this.figure_rotations[figure.name][state].push({x: diffX, y: diffY}); 
 				} 
 			} 
@@ -289,13 +293,11 @@ class Tetris {
 	} 
 
 	moveFigure() { 
-		var possibility_to_move = this.testMove(0,1); 
-		if ( possibility_to_move ) this.move(0,1) 
-		else { 
+		var possibility_to_move = this.testMove(0, true, 0, 1); 
+		if ( !possibility_to_move ) {
 			this.figure_on_finish = true; 
 			for ( var i = 0; i < this.figure.shape.length; i++ ) {
 				if ( this.figure.shape[i].y < 3 ) {
-					console.log(this.figure)
 					this.game_is_over = true; 
 					break;
 				}

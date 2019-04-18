@@ -238,7 +238,7 @@ class ThreejsRenderer {
 			child.material.blending = opacity < 1 ? THREE.AdditiveBlending : THREE.NormalBlending;
 			child.position.x = this[name].shape[i].x;
 			child.position.y = is_proj ? 0 : this.cells_in_height - this[name].shape[i].y - 1;
-			child.rotation.z = 0;
+			child.rotation.x = 0;
 			child.position.z = 0;
 		}
 		this.game_field.add(this[name].obj);
@@ -324,20 +324,22 @@ class ThreejsRenderer {
 		for ( var j = 0; j < this.rows[i].length; j++ ) {
 		(function(i, j) {
 			var counter = 0.1;
-			var x_direction_value = ~~( Math.random() * i) * Math.random();
+			var x_direction_value = Math.sin(Math.random()) * counter;
+			var z_direction_value = ~~( Math.random() * i) * 0.05;
+			console.log(z_direction_value);
 			var obj = scope.rows[i][j];
 			if ( !move ) {
 				var move = function() {
-					if ( counter == 0.2 && j == scope.rows[i].length - 1 && !game_is_over) removing_figures = scope.moveLines(i);
-	        if ( counter < 4 ) setTimeout( move, 60 );
+					if ( counter == 0.4 && j == scope.rows[i].length - 1 && !game_is_over) removing_figures = scope.moveLines(i);
+	        if ( counter < 4 ) setTimeout( move, 20 );
 					else {
 						if ( j == scope.rows[i].length - 1 && !game_is_over) scope.removeFigures(removing_figures);
 						return;
 					}
 					obj.position.y -= (Math.random() + 1) * counter * 0.1;
-					obj.position.x += Math.sin( x_direction_value );
-
-					obj.rotation.z += Math.sin(Math.random()) * counter * 0.1;
+					obj.position.z += z_direction_value;
+					obj.position.x += x_direction_value;
+					obj.rotation.x += Math.sin(Math.random()) * counter * 0.01;
 					counter += 0.1;
 				}				
 			}
