@@ -133,6 +133,7 @@ class ThreejsRenderer {
 
 	moveCamera( moving_coord, param) {
 		this.camera.position[moving_coord] += param;
+		localStorage.setItem(moving_coord, this.camera.position[moving_coord])
 		this.camera.lookAt( new THREE.Vector3(0,9,3) );
 	}
 
@@ -153,7 +154,7 @@ class ThreejsRenderer {
 		        FAR
 		    );
 
-		camera.position.set( 3, 13, 10);
+		camera.position.set( localStorage.x ? +localStorage.x : 3, localStorage.y ? +localStorage.y : 13, 10);
 		camera.lookAt( new THREE.Vector3(0,9,3) );
 
 		var scene = this.scene = new THREE.Scene();
@@ -326,7 +327,6 @@ class ThreejsRenderer {
 			var counter = 0.1;
 			var x_direction_value = Math.sin(Math.random()) * counter;
 			var z_direction_value = ~~( Math.random() * i) * 0.05;
-			console.log(z_direction_value);
 			var obj = scope.rows[i][j];
 			if ( !move ) {
 				var move = function() {
@@ -336,7 +336,7 @@ class ThreejsRenderer {
 						if ( j == scope.rows[i].length - 1 && !game_is_over) scope.removeFigures(removing_figures);
 						return;
 					}
-					obj.position.y -= (Math.random() + 1) * counter * 0.1;
+					obj.position.y -= (Math.random() + 1) * counter * 0.05;
 					obj.position.z += z_direction_value;
 					obj.position.x += x_direction_value;
 					obj.rotation.x += Math.sin(Math.random()) * counter * 0.01;
