@@ -231,6 +231,8 @@ class ThreejsRenderer {
 			this[name].obj.add(this.AM.pullAsset(is_proj ? this.tetris.figure.name : this.tetris[name].name))
 			var child = this[name].obj.children[i];
 			child.visible = is_visible;
+			child.geometry.mergeVertices();
+			child.geometry.computeVertexNormals();
 			child.material.transparent = true;
 			child.material.opacity = opacity;
 			child.material.blending = opacity < 1 ? THREE.AdditiveBlending : THREE.NormalBlending;
@@ -380,7 +382,6 @@ class ThreejsRenderer {
 	
 
 	createAssets() {
-
 		this.AM.addAsset('rectangle', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#86DA10'}));} , 15);
 		this.AM.addAsset('cross', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FFB3F9'}));} , 15);
 		this.AM.addAsset('square', function() { return createShape(new THREE.MeshPhongMaterial( { color: '#FF1C00'}));} , 15);
@@ -391,8 +392,8 @@ class ThreejsRenderer {
 		this.AM.addAsset('l-right', function() {return createShape(new THREE.MeshPhongMaterial( { color: '#0FFFC6'}));} , 15);		
 
 		function createShape(material) {
-			return new THREE.Mesh(new THREE.BoxBufferGeometry( 1, 1, 1 ), material);
+			return new THREE.Mesh(new THREE.BoxGeometry( 1, 1, 1, 10, 10, 10 ), material);
+
 		}
 	}
-
 }
