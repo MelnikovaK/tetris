@@ -180,8 +180,7 @@ class PageManager {
 		var $screen = this.addScreenTemplate( 'start-screen',
 		`
 			<div class="screen start-screen">
-				<h1> game </h1>
-				<button class="start-game button" data-show-screen="game-screen">New game</button>
+				<button class="start-game button" data-show-screen="game-screen">Start game</button>
 				</div>
 			</div>
 
@@ -219,7 +218,6 @@ class PageManager {
 		var $screen = this.addScreenTemplate( 'finish-screen',
 		`
 			<div class="screen  finish-screen">
-				<h1> Game over </h1>
 				<div>Score: <span class="finish-screen__score"></span></div>
 				<button class="start-game button" data-show-screen="game-screen">Start new game</button>
 			</div>

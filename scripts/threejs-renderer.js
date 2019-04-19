@@ -27,7 +27,7 @@ class ThreejsRenderer {
 		this.CENTER = new THREE.Vector3( this.cells_horizontal / 2, 0, this.cells_vertical / 2 );
 
 		this.AM = new AssetManager(this);
-		this.fullscreen = false;
+		this.fullscreen = true;
 
 		this.rows = [];
 		
@@ -143,7 +143,7 @@ class ThreejsRenderer {
 		var scope = this;
 
 		const VIEW_ANGLE = 90;
-		const ASPECT = 1;//window.innerWidth / window.innerHeight;
+		const ASPECT = window.innerWidth / window.innerHeight;
 		const NEAR = .01;
 		const FAR = 500;
 
@@ -163,7 +163,7 @@ class ThreejsRenderer {
 		this.scene.add(this.camera);
 		this.scene.background = new THREE.Color('#000547');
 
-		this.renderer.setSize(this.field_width, this.field_height);
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.container.appendChild(this.renderer.domElement);
 
 		var gridHelper = new THREE.GridHelper( 12, 12 );
@@ -189,20 +189,11 @@ class ThreejsRenderer {
 
 		scene.background = cubeTexture;
 
-		// var pointLight = new THREE.PointLight( 0xffffff, 1 );
-		// this.scene.add( pointLight );
-		// var t = 0;
-		// setInterval(function(){
-		// 	t+=.01;
-		// 	pointLight.position.set( Math.sin(t)*10, Math.cos(t)*10+5, 1 );
-		// });
-
 	}
 	setFullScreen() {
 		this.fullscreen = this.fullscreen == true ? false : true;
 		if ( this.fullscreen ) this.renderer.setSize(window.innerWidth, window.innerHeight);
 		else this.renderer.setSize(this.field_width, this.field_height);
-
 	}
 
 	initContainers() {

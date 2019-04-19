@@ -1,14 +1,13 @@
 canvas {
 	display: block;
-
-	border: 2px solid #FFF652;
  	position: relative;
   	top: 0;
   	left: 0;
 }
+body {
+	margin: 0 0;
+	font-family: 'Cute Font', cursive;
 
-#game_field {
-	/*background-color: #F5F2C6;*/
 }
 
 .game-screen__game_over {
@@ -32,6 +31,71 @@ canvas {
 }
 .game-screen {
 	color: white;
+}
+
+
+.start-screen button{
+	position: absolute;
+	width: 300px;
+	height: 60px;
+	left: 40%;
+	bottom: 50%;
+	font-size: 45px;
+}
+
+
+.start-screen {
+	border: 30px solid white;
+	background-image: url('../assets/bg.png'), url('../assets/title1.gif');
+	background-repeat: no-repeat, no-repeat;
+	background-position-x: center, center;
+	background-position-y: bottom, top;
+	background-size: 80% 60%, 50% 60% ;
+	width: 96%;
+	height: 871px;
+}
+
+h1{
+	width: 100%;
+	margin: 5% 0 3%;
+	font-size: 60px ;
+	text-align: center;
+}
+
+.finish-screen {
+	width: 100%;
+	height: 100%;
+	background-image: url('../assets/bg.png'), url('../assets/ov.png');
+	background-size: 80% 72%, 52% 48% ;
+	background-repeat: no-repeat, no-repeat;
+	background-position-x: center, center;
+	background-position-y: bottom, top;
+}
+
+.finish-screen div {
+	text-align: center;
+	position: relative;
+	border-radius: 10px;
+
+	color: #4A38FF;
+	width: 300px;
+	height: 60px;
+	line-height: 60px;
+	text-align: center;
+	font-size: 45px;
+	top: 35%;
+	left: 42.5%;
+	margin: 0 0 20px;
+	border: 2px solid #4A38FF;
+
+
+}
+.finish-screen button {
+	position: absolute;
+	width: 300px;
+	height: 60px;
+	left: 42%;
+	bottom: 47%;
 
 }
 
@@ -40,37 +104,78 @@ canvas {
 	
 }
 button {
+	font-family: 'Cute Font', cursive;
+	background-color: #F0000D;
+	border: none;
+  	color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 40px;
 	margin: 10px;
+	line-height: 60px;
 }
 
-h1 {
-	text-align: center;
+button:hover {
+	background-color: #4A38FF;
 }
+
 
 .game-screen__modal-form {
-	width: 280px;
-	height: 150px;
+	position: fixed; 
+	display: none;
+	width: 400px;
+	height: 250px;
+	left: 40%;
 	background: white;
 	border: 1px solid black;
-	display: none;
-	position: fixed; 
+	border-radius: 10px;
 	color: black;
-	top: 100px; 
-	left: 40%;
 	z-index: 5;
 }
 
+.game-screen__modal-form div {
+	font-size: 25px;
+	text-align: center;
+}
+.game-screen__modal-form button {
+	width: 130px;
+	height: 40px;
+	margin: 34px;
+	font-size: 30px;
+	border-radius: 10px;
+	line-height: 40px;
+	
+}
+
+.game-screen_pause-btn {
+	margin-right: 10%;
+}
 .game-over__modal-form {
-	width: 280px;
-	height: 150px;
-	background: white;
-	border: 1px solid black;
-	display: none;
 	position: fixed; 
-	color: black;
+	display: none;
 	top: 100px; 
 	left: 40%;
+	width: 400px;
+	height: 250px;
+	background: white;
+	border: 1px solid black;
+	border-radius: 10px;
+	color: black;
 	z-index: 5;
+}
+
+.game-over__modal-form div {
+	font-size: 25px;
+	text-align: center;
+}
+.game-over__modal-form button {
+	width: 130px;
+	height: 40px;
+	margin: 22px 34%;
+	border-radius: 10px;
+	line-height: 40px;
+	
 }
 
 .overlay, .game-over__overlay {
@@ -91,19 +196,26 @@ h1 {
 
 .game-screen_pause-btn {
 	position: absolute;
+	border-radius: 10px;
 	right: 0;
-	margin:  20px;
-	width: 80px;
+	margin: 20px;
+	width: 109px;
 	height: 40px;
-	font-size: 20px;
+	font-size: 30px;
+	line-height: 40px;
 	z-index: 15;
 }
 
 .game-screen_points_container {
 	position: absolute;
+	border-radius: 10px;
+	margin: 20px;
+	width: 109px;
+	height: 40px;
+	background-color: #F0000D;
 	font-size: 30px;
+	text-align: center;
 	color: white;
-
-	padding: 20px;
+	margin-left: 1%;
 	z-index: 15;	
 }
