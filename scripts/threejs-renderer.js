@@ -179,12 +179,12 @@ class ThreejsRenderer {
 
 		var loader = new THREE.CubeTextureLoader();
 		loader.setCrossOrigin( "" );
-		loader.setPath( 'https://threejs.org/examples/textures/cube/pisa/' );
+		loader.setPath( 'https://threejs.org/examples/textures/cube/MilkyWay/' );
 
 		var cubeTexture = this.cubeTexture = loader.load( [
-		  'px.png', 'nx.png',
-		  'py.png', 'ny.png',
-		  'pz.png', 'nz.png'
+		  'dark-s_px.jpg', 'dark-s_nx.jpg',
+		  'dark-s_py.jpg', 'dark-s_ny.jpg',
+		  'dark-s_pz.jpg', 'dark-s_nz.jpg'
 		] );
 
 		scene.background = cubeTexture;

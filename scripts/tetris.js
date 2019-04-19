@@ -102,6 +102,7 @@ class Tetris {
 		var counter = this.getDropPosition();
 		this.testMove( 0, true, 0, counter );
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
+		this.updateCustomsOnFinish();
 	} 
 
 	getDropPosition() { 
@@ -207,13 +208,7 @@ class Tetris {
 				} 
 
 				if ( scope.figure_on_finish ) {
-					scope.figure_on_finish = false;
-					scope.purFigureToGlass();
-					Utils.triggerCustomEvent( window, scope.FIGURE_ON_FINISH );
-					Utils.triggerCustomEvent( window, scope.EMIT_PARTICLES, { x: scope.lower_part.x, y: scope.lower_part.y} ); 
-					Utils.triggerCustomEvent( window, scope.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
-					scope.removeFullLines();
-					scope.updateFigures();
+					scope.updateCustomsOnFinish();
 				} 
 
 				Utils.triggerCustomEvent( window, scope.FIGURE_MOVED, {projection_coord: scope.getDropPosition()} ); 
@@ -221,11 +216,22 @@ class Tetris {
 		} 
 		this.gameStep(); 
 	} 
+
 	updateFigures() {
 		this.figure = this.next_figure || this.getNewFigureData();
 		this.next_figure = this.getNewFigureData();
 		this.moveToTheMiddle();
 		Utils.triggerCustomEvent( window, this.FIGURE_UPDATED );
+	}
+
+	updateCustomsOnFinish() {
+		this.figure_on_finish = false;
+		this.purFigureToGlass();
+		Utils.triggerCustomEvent( window, this.FIGURE_ON_FINISH );
+		Utils.triggerCustomEvent( window, this.EMIT_PARTICLES, { x: this.lower_part.x, y: this.lower_part.y} ); 
+		Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
+		this.removeFullLines();
+		this.updateFigures();
 	}
 
 	rotate() {
