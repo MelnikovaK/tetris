@@ -83,7 +83,7 @@ class ThreejsRenderer {
 				Utils.triggerCustomEvent( window, scope.SHOW_FINISH_SCREEN );
 				window.cancelAnimationFrame(scope.requestAnimationFrame_id);
 				scope.removeAccessoryFigures('next_figure');
-			}, 5000);
+			}, 3500);
 		});
 
 		window.addEventListener( tetris.LINE_IS_FULL , function (e) {
@@ -145,7 +145,7 @@ class ThreejsRenderer {
 			scope.initGameField();
 
 		 	Utils.triggerCustomEvent( window, scope.PRELOAD_COMPLETE, {scene: scope.scene, camera: scope.camera, 
-		 														renderer: scope.renderer, game_container: scope.game_field});
+		 														renderer: scope.renderer, game_field: scope.game_field});
 		};
 
 		manager.onProgress = function( item, loaded, total ) {
@@ -308,7 +308,7 @@ class ThreejsRenderer {
 	setPreview() {
 		for ( var i = 0; i < this.next_figure.obj.children.length; i++ ) {
 			var child = this.next_figure.obj.children[i];
-			child.position.x -= 9;
+			child.position.x -= 10;
 			child.position.z += 1;
 			child.position.y -= 5;
 		}
@@ -391,11 +391,14 @@ class ThreejsRenderer {
 
 	destroyAllFigures(i) {
 		var i = 0, scope = this;
-		var interv = setInterval(function() {
+		var interval = 200;
+		var move =  function() {
 			scope.destroyFigures(i, true);
 			i++;
-			if ( i == scope.rows.length) clearInterval(interv)
-		}, 200)
+			if ( i < scope.rows.length) setTimeout( move, interval )
+			interval -= i * 2 + 5;
+		}
+		move();
 	}
 
 	jumpFigures() {

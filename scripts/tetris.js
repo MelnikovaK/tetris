@@ -13,6 +13,7 @@ class Tetris {
 		this.PLAY_SOUND = "sound-manager:play"; 
 		this.PAUSE_SOUND = "sound-manager:pause"; 
 		this.SHAKE_SCREEN = "tetris:shake_screen"; 
+		this.FIGURE_DROP = 'tetris:figure_drop'
 
 		this.PARTICLES_PATH = config.PARTICLES_PATH; 
 
@@ -97,12 +98,21 @@ class Tetris {
 		}); 
 		this.figures.push({name: figure, shape: shape, rotation_state: 1 }) 
 		} 
-	} 
+	}
+
+	getFigurePivot(figure) {
+		for ( var i = 0; i < figure.shape.length; i++) {
+			var part = figure.shape[i];
+			if ( part.pivot ) return part;
+		}
+	}
 
 	dropFigure() { 
 		var counter = this.getDropPosition();
 		this.testMove( 0, true, 0, counter );
 		Utils.triggerCustomEvent( window, this.FIGURE_MOVED, {projection_coord: this.getDropPosition()} ); 
+		var pivot = this.getFigurePivot(this.figure);
+		Utils.triggerCustomEvent( window, this.FIGURE_DROP, { x: pivot.x, y: this.lower_part.y, z: 0} ); 
 		this.updateCustomsOnFinish();
 	} 
 
@@ -117,8 +127,6 @@ class Tetris {
 
 	testMove (rotation_i, replace, dx, dy) {
 		var scope = this;
-
-
 		if ( !checkDotCoordinates(false)) return false;
 		if (replace) checkDotCoordinates(replace);
 		return true;
@@ -226,7 +234,7 @@ class Tetris {
 		this.figure_on_finish = false;
 		this.purFigureToGlass();
 		Utils.triggerCustomEvent( window, this.FIGURE_ON_FINISH );
-		Utils.triggerCustomEvent( window, this.EMIT_PARTICLES, { x: this.lower_part.x, y: this.lower_part.y} ); 
+		Utils.triggerCustomEvent( window, this.EMIT_PARTICLES, { x: this.lower_part.x, y: this.lower_part.y, z: 0} ); 
 		Utils.triggerCustomEvent( window, this.PLAY_SOUND, {sound_id: "interface", loop: false} ); 
 		this.removeFullLines();
 		this.updateFigures();
@@ -247,14 +255,8 @@ class Tetris {
 		for ( var i = 1; i < this.figures.length; i++ ) { 
 			var figure = JSON.parse(JSON.stringify(this.figures[i])); 
 			this.figure_rotations[figure.name] = {}; 
-			var pivot; 
-			//find pivot 
-			for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) { 
-				if ( figure.shape[part_i].pivot ) { 
-					pivot = figure.shape[part_i]; 
-					break; 
-				} 
-			} 
+			var pivot = this.getFigurePivot(figure); 
+			
 			for ( var state = 1; state <= 4; state++ ) { 
 				this.figure_rotations[figure.name][state] = []; 
 				for ( var part_i = 0; part_i < figure.shape.length; part_i++ ) { 
@@ -265,7 +267,7 @@ class Tetris {
 					dot.y = dot.y - diffY + diffX;
 					this.figure_rotations[figure.name][state].push({x: diffX, y: diffY}); 
 				} 
-			} 
+			}
 		} 
 	} 
 
