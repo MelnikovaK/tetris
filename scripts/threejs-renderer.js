@@ -30,6 +30,7 @@ class ThreejsRenderer {
 		this.fullscreen = true;
 
 		this.rows = [];
+		this.able_to_shake = true;
 		
 		this.preloadTextures();
 
@@ -51,6 +52,10 @@ class ThreejsRenderer {
 			scope.setPreview();
 			scope.updateGameObjects('figure', false, 1, false);
 			scope.updateGameObjects('projection', true, 0.2, true);
+		});
+
+		window.addEventListener( tetris.SHAKE_SCREEN , function (e) {
+			if ( scope.able_to_shake ) scope.shakeGlass(e.detail.side);
 		});
 
 
@@ -106,6 +111,26 @@ class ThreejsRenderer {
 			var acttion_name = e.detail.name;
 			if ( scope.current_action == acttion_name ) clearInterval(scope.moveCam);
 		});
+	}
+
+	shakeGlass(direction) {
+		this.able_to_shake = false;
+		var	height = 0.25,
+				counter = 0,
+				scope= this,
+				start_position = this.game_container.position.x;
+		var move = function() {
+      if ( counter < 7) setTimeout( move, 16 );
+			else {
+				scope.able_to_shake = true;
+				scope.game_container.position.x = start_position;
+				return;
+			}
+			if ( direction == 'right') scope.game_container.position.x += Math.sin(counter) * height * 0.5;
+			else scope.game_container.position.x -= Math.sin(counter) * height * 0.5;
+			counter += 0.5;
+		}
+		move();
 	}
 
 	preloadTextures() {
@@ -206,6 +231,9 @@ class ThreejsRenderer {
 		this.game_field.position.z = - this.cells_vertical / 2 + .5;
 		this.game_container.add(this.game_field);
 
+		this.previewContainer = new THREE.Object3D();
+		this.scene.add(this.previewContainer);
+
 		//
 		var pointLight = this.pointLight = new THREE.PointLight( 0xffffff, 1 );
 		pointLight.intensity = .1;
@@ -219,7 +247,7 @@ class ThreejsRenderer {
 		wall.position.y = this.cells_in_height / 2 - 1;
 		this.game_container.add( wall );
 		var preview = new THREE.Mesh(new THREE.PlaneBufferGeometry( 6, 6, 1, 1 ), previewMaterial);
-		this.game_container.add( preview );
+		this.previewContainer.add( preview );
 
 		preview.position.x = -9;
 		preview.position.y = 15;
@@ -252,7 +280,8 @@ class ThreejsRenderer {
 			child.rotation.x = 0;
 			child.position.z = 0;
 		}
-		this.game_field.add(this[name].obj);
+		if ( name == 'next_figure' ) this.previewContainer.add(this[name].obj);
+		else this.game_field.add(this[name].obj);
 	}
 
 	updateFigurePosition(proj_coord) {
@@ -279,9 +308,9 @@ class ThreejsRenderer {
 	setPreview() {
 		for ( var i = 0; i < this.next_figure.obj.children.length; i++ ) {
 			var child = this.next_figure.obj.children[i];
-			child.position.x -= 5;
+			child.position.x -= 9;
 			child.position.z += 1;
-			child.position.y -= 6;
+			child.position.y -= 5;
 		}
 	}
 

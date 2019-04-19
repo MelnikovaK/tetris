@@ -12,6 +12,7 @@ class Tetris {
 		this.EMIT_PARTICLES = 'tetris:emit_particles'; 
 		this.PLAY_SOUND = "sound-manager:play"; 
 		this.PAUSE_SOUND = "sound-manager:pause"; 
+		this.SHAKE_SCREEN = "tetris:shake_screen"; 
 
 		this.PARTICLES_PATH = config.PARTICLES_PATH; 
 
@@ -138,14 +139,11 @@ class Tetris {
 					var new_x = part.x + dx; 
 					var new_y = part.y + dy;
 					var glass_row = scope.rows[new_y];
-					if ( glass_row == undefined || glass_row[new_x] == undefined ) {
+					if ( glass_row == undefined || glass_row[new_x] == undefined || glass_row[new_x]) {
+						if (glass_row != undefined && glass_row[new_x] == undefined) Utils.triggerCustomEvent( window, scope.SHAKE_SCREEN, 
+							 {side: new_x < 0 ? 'left' : 'right'} ); 
 						scope.lower_part = {x: part.x, y: part.y}
-
 						return false;
-					}
-					if ( glass_row[new_x] ) {
-						scope.lower_part = {x: part.x, y: part.y}
-						return false; 
 					}
 				}
 			}
